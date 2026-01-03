@@ -6,7 +6,7 @@ const guide = {
     Traditional: '传统网页应用',
     SPA: '单页应用',
     Native: '原生应用',
-    MachineToMachine: 'Machine-to-machine',
+    MachineToMachine: '机器对机器',
     Protected: '非 SDK 集成',
     ThirdParty: '第三方应用',
     SAML: 'SAML 应用',
