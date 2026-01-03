@@ -3,6 +3,8 @@ const add_on = {
     'MFA ist ein Add-on für ${{price, number}} pro Monat für den {{planName}}. Der erste Monat wird anteilig basierend auf deinem Abrechnungszyklus berechnet. <a>Erfahre mehr</a>',
   security_features_inline_notification:
     'Aktiviere CAPTCHA, individuelle Sperrerfahrung und andere erweiterte Sicherheitsfunktionen - alles in einem Add-on-Paket für nur ${{price, number}}/Monat enthalten.',
+  custom_domain:
+    'Erweitern Sie auf bis zu 10 benutzerdefinierte Domains für nur ${{price, number}}. Der erste Monat wird anteilig basierend auf Ihrem Abrechnungszyklus berechnet. <a>Mehr erfahren</a>',
   footer: {
     api_resource:
       'Zusätzliche Ressourcen kosten <span>${{price, number}} pro Monat / Stück</span>. Der erste Monat wird anteilig basierend auf deinem Abrechnungszyklus berechnet. <a>Erfahre mehr</a>',
@@ -14,6 +16,12 @@ const add_on = {
       'Zusätzliche Mitglieder kosten <span>${{price, number}} pro Monat / Stück</span>. Der erste Monat wird anteilig basierend auf deinem Abrechnungszyklus berechnet. <a>Erfahre mehr</a>',
     organization:
       'Organisation ist ein Add-on für <span>${{price, number}} pro Monat</span> für {{planName}} mit unbegrenzten Organisationen. Der erste Monat wird anteilig basierend auf deinem Abrechnungszyklus berechnet. <a>Erfahre mehr</a>',
+    saml_apps:
+      'Zusätzliche SAML-Apps kosten <span>${{price, number}} pro Monat / Stück</span>. Der erste Monat wird anteilig basierend auf deinem Abrechnungszyklus berechnet. <a>Erfahre mehr</a>',
+    third_party_apps:
+      'Zusätzliche Apps von Drittanbietern kosten <span>${{price, number}} pro Monat / Stück</span>. Der erste Monat wird anteilig basierend auf deinem Abrechnungszyklus berechnet. <a>Erfahre mehr</a>',
+    roles:
+      'Rollenbasierte Zugriffskontrolle ist ein Add-on für <span>${{price, number}} pro Monat</span> im Pro-Plan mit unbegrenzten Rollen. Der erste Monat wird anteilig basierend auf deinem Abrechnungszyklus berechnet. <a>Erfahre mehr</a>',
   },
 };
 

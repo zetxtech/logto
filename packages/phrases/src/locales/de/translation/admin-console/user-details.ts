@@ -137,6 +137,20 @@ const user_details = {
       edited: 'Das Token {{name}} wurde erfolgreich bearbeitet.',
     },
   },
+  connections: {
+    title: 'Verbindung',
+    description:
+      'Der Benutzer verknüpft Drittanbieterkonten für die Anmeldung über soziale Netzwerke, Enterprise SSO oder den Zugriff auf Ressourcen.',
+    token_status_column: 'Token-Status',
+    token_status: {
+      active: 'Aktiv',
+      expired: 'Abgelaufen',
+      inactive: 'Inaktiv',
+      not_applicable: 'Nicht zutreffend',
+      available: 'Verfügbar',
+      not_available: 'Nicht verfügbar',
+    },
+  },
 };
 
 export default Object.freeze(user_details);

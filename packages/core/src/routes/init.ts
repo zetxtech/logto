@@ -12,6 +12,7 @@ import type TenantContext from '#src/tenants/TenantContext.js';
 import koaAuth from '../middleware/koa-auth/index.js';
 import koaOidcAuth from '../middleware/koa-auth/koa-oidc-auth.js';
 import koaCors from '../middleware/koa-cors.js';
+import koaEmailI18n from '../middleware/koa-email-i18n.js';
 
 import { accountApiPrefix } from './account/constants.js';
 import accountRoutes from './account/index.js';
@@ -34,7 +35,6 @@ import dashboardRoutes from './dashboard.js';
 import domainRoutes from './domain.js';
 import emailTemplateRoutes from './email-template/index.js';
 import experienceApiRoutes from './experience/index.js';
-import googleOneTapRoutes, { googleOneTapApiPrefix } from './google-one-tap/index.js';
 import hookRoutes from './hook.js';
 import interactionRoutes from './interaction/index.js';
 import logRoutes from './log.js';
@@ -48,6 +48,7 @@ import roleRoutes from './role.js';
 import roleScopeRoutes from './role.scope.js';
 import samlApplicationAnonymousRoutes from './saml-application/anonymous.js';
 import samlApplicationRoutes from './saml-application/index.js';
+import secretsRoutes from './secret.js';
 import sentinelActivitiesRoutes from './sentinel-activities.js';
 import signInExperiencesRoutes from './sign-in-experience/index.js';
 import ssoConnectors from './sso-connector/index.js';
@@ -69,6 +70,7 @@ const createRouters = (tenant: TenantContext) => {
 
   const experienceRouter: AnonymousRouter = new Router();
   experienceRouter.use(koaAuditLog(tenant.queries));
+  experienceRouter.use(koaEmailI18n(tenant.queries));
   experienceApiRoutes(experienceRouter, tenant);
 
   const managementRouter: ManagementApiRouter = new Router();
@@ -113,20 +115,15 @@ const createRouters = (tenant: TenantContext) => {
   oneTimeTokenRoutes(managementRouter, tenant);
   captchaProviderRoutes(managementRouter, tenant);
   sentinelActivitiesRoutes(managementRouter, tenant);
-  if (EnvSet.values.isDevFeaturesEnabled) {
-    customProfileFieldsRoutes(managementRouter, tenant);
-  }
+  customProfileFieldsRoutes(managementRouter, tenant);
+  secretsRoutes(managementRouter, tenant);
 
   // General anonymous router for publicly accessible APIs
   const anonymousRouter: AnonymousRouter = new Router();
 
-  // Logto anonymous router for APIs that require Logto domain whitelist
-  // These APIs use koa-logto-anonymous-cors middleware to restrict access
-  // to only Logto-related domains (*.logto.io, *.logto.dev, etc.)
-  const logtoAnonymousRouter: AnonymousRouter = new Router();
-
   const userRouter: UserRouter = new Router();
   userRouter.use(koaOidcAuth(tenant));
+  userRouter.use(koaEmailI18n(tenant.queries));
   // TODO(LOG-10147): Rename to koaApiHooks, this middleware is used for both management API and user API
   userRouter.use(koaManagementApiHooks(tenant.libraries.hooks));
   accountRoutes(userRouter, tenant);
@@ -138,45 +135,22 @@ const createRouters = (tenant: TenantContext) => {
   authnRoutes(anonymousRouter, tenant);
   samlApplicationAnonymousRoutes(anonymousRouter, tenant);
 
-  // Logto anonymous APIs - restricted to Logto domains only
-  googleOneTapRoutes(logtoAnonymousRouter, tenant);
-
   wellKnownOpenApiRoutes(anonymousRouter, {
-    experienceRouters: [experienceRouter, interactionRouter],
-    managementRouters: [managementRouter, anonymousRouter, logtoAnonymousRouter],
+    experienceRouters: [experienceRouter],
+    managementRouters: [managementRouter, anonymousRouter],
     userRouters: [userRouter],
   });
 
   // The swagger.json should contain all API routers.
-  swaggerRoutes(anonymousRouter, [
-    managementRouter,
-    anonymousRouter,
-    logtoAnonymousRouter,
-    experienceRouter,
-    userRouter,
-    // TODO: interactionRouter should be removed from swagger.json
-    interactionRouter,
-  ]);
+  swaggerRoutes(anonymousRouter, [managementRouter, anonymousRouter, experienceRouter, userRouter]);
 
-  return [
-    experienceRouter,
-    interactionRouter,
-    managementRouter,
-    anonymousRouter,
-    logtoAnonymousRouter,
-    userRouter,
-  ];
+  return [experienceRouter, interactionRouter, managementRouter, anonymousRouter, userRouter];
 };
 
 export default function initApis(tenant: TenantContext): Koa {
   const apisApp = new Koa();
   const { adminUrlSet, cloudUrlSet } = EnvSet.values;
-  apisApp.use(
-    koaCors(
-      [adminUrlSet, cloudUrlSet],
-      [accountApiPrefix, verificationApiPrefix, googleOneTapApiPrefix]
-    )
-  );
+  apisApp.use(koaCors([adminUrlSet, cloudUrlSet], [accountApiPrefix, verificationApiPrefix]));
   apisApp.use(koaBodyEtag());
 
   for (const router of createRouters(tenant)) {

@@ -31,7 +31,7 @@ export const updateCustomProfileFieldsSieOrder = async (
   order: UpdateCustomProfileFieldSieOrder[]
 ) =>
   authedAdminApi
-    .post('custom-profile-fields/sie-order', {
+    .post('custom-profile-fields/properties/sie-order', {
       json: { order },
     })
     .json<CustomProfileField[]>();
@@ -41,3 +41,6 @@ export const findAllCustomProfileFields = async () =>
 
 export const findCustomProfileFieldByName = async (name: string) =>
   authedAdminApi.get(`custom-profile-fields/${name}`).json<CustomProfileField>();
+
+export const batchCreateCustomProfileFields = async (data: CustomProfileFieldUnion[]) =>
+  authedAdminApi.post('custom-profile-fields/batch', { json: data }).json<CustomProfileField[]>();

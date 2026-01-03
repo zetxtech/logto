@@ -11,13 +11,6 @@ const connectors = {
   demo_tip: '演示連接器僅用於演示且最多只能發送 100 條消息，不建議在生產環境中部署。',
   social_demo_tip: '演示連接器僅用於演示目的，不建議在生產璃廠中部署。',
   connector_type: '類型',
-  connector_status: '登錄體驗',
-  connector_status_in_use: '使用中',
-  connector_status_not_in_use: '未使用',
-  not_in_use_tip: {
-    content: '未使用意味著你的登錄體驗並沒有使用這個登錄方式。<a>{{link}}</a>去添加。',
-    go_to_sie: '前往登錄體驗',
-  },
   placeholder_title: '社交連接器',
   placeholder_description:
     'Logto 提供了許多廣泛使用的社交登錄連接器，同時你還可以使用標準協議創建自己的連接器。',
@@ -59,9 +52,16 @@ const connectors = {
     sync_profile_only_at_sign_up: '首次註冊時同步',
     sync_profile_each_sign_in: '每次登錄時同步',
     sync_profile_tip: '同步用戶的用戶名、頭像等個人資料信息',
-    callback_uri: 'Callback URI',
+    enable_token_storage: {
+      title: '存儲令牌以持續訪問 API',
+      description:
+        '在 Secret Vault 中存儲訪問和刷新令牌。允許自動 API 調用而無需用戶重複授權。例如：讓你的 AI Agent 在持續授權下向 Google 日曆添加事件。<a>了解如何調用第三方 API</a>',
+    },
+    callback_uri: '重新導向 URI（回調 URI）',
     callback_uri_description:
-      '也稱為重定向 URI，在社交授權後，用戶將被發送回 Logto 的 URI，復制並粘貼到社交提供者的配置頁面中。',
+      'Redirect URI 是在社交授權後用戶被重新導向的位置。請將此 URI 加入 IdP 的設定中。',
+    callback_uri_custom_domain_description:
+      '如果你在 Logto 使用多個<a>自訂網域</a>，請務必把所有對應的回調 URI 加入 IdP，確保社交登入在每個網域都能運作。\n\n預設的 Logto 網域 (*.logto.app) 一直有效；只有在你也想支援該網域下的登入時才需要包含它。',
     acs_url: 'Assertion consumer service URL',
   },
   platform: {
@@ -74,6 +74,11 @@ const connectors = {
   drawer_subtitle: '參考以下步驟完善或修改你的連接器設置',
   unknown: '未知連接器',
   standard_connectors: '標準連接器',
+  create_form: {
+    third_party_connectors:
+      '集成第三方提供商以快速社交登錄、社交帳戶鏈接和 API 訪問。<a>了解更多</a>',
+    standard_connectors: '或者，你可以通過標準協議自定義你的社交連接器。',
+  },
 };
 
 export default Object.freeze(connectors);

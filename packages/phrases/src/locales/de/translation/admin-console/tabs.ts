@@ -3,7 +3,7 @@ const tabs = {
   dashboard: 'Dashboard',
   applications: 'Anwendungen',
   api_resources: 'API Ressourcen',
-  sign_in_experience: 'Anmeldeoberfläche',
+  sign_in_experience: 'Anmeldung & Konto',
   connectors: 'Connectoren',
   enterprise_sso: 'Unternehmens-SSO',
   security: 'Sicherheit',

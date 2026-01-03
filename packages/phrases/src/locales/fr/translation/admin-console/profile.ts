@@ -110,6 +110,55 @@ const profile = {
   unlink_confirm_text: 'Oui, détacher',
   unlink_reminder:
     'Les utilisateurs ne pourront plus se connecter avec le compte <span></span> si vous le détachez. Êtes-vous sûr de vouloir continuer ?',
+  fields: {
+    name: 'Nom',
+    name_description:
+      'Le nom complet de l\'utilisateur sous forme affichable, incluant tous les composants du nom (par exemple, "Jane Doe").',
+    avatar: 'Avatar',
+    avatar_description: "URL de l'image d'avatar de l'utilisateur.",
+    familyName: 'Nom de famille',
+    familyName_description: 'Le(s) nom(s) de famille de l\'utilisateur (par exemple, "Doe").',
+    givenName: 'Prénom',
+    givenName_description: 'Le(s) prénom(s) de l\'utilisateur (par exemple, "Jane").',
+    middleName: 'Deuxième prénom',
+    middleName_description: 'Le(s) deuxième(s) prénom(s) de l\'utilisateur (par exemple, "Marie").',
+    nickname: 'Surnom',
+    nickname_description:
+      "Nom familier ou surnom de l'utilisateur, qui peut différer de son nom légal.",
+    preferredUsername: "Nom d'utilisateur préféré",
+    preferredUsername_description:
+      "Identifiant abrégé par lequel l'utilisateur souhaite être référencé.",
+    profile: 'Profil',
+    profile_description:
+      "URL de la page de profil lisible par l'utilisateur (par exemple, profil de réseau social).",
+    website: 'Site web',
+    website_description: "URL du site web personnel ou du blog de l'utilisateur.",
+    gender: 'Genre',
+    gender_description:
+      'Le genre auto-identifié de l\'utilisateur (par exemple, "Femme", "Homme", "Non-binaire").',
+    birthdate: 'Date de naissance',
+    birthdate_description:
+      'La date de naissance de l\'utilisateur dans un format spécifié (par exemple, "MM-jj-aaaa").',
+    zoneinfo: 'Fuseau horaire',
+    zoneinfo_description:
+      'Le fuseau horaire de l\'utilisateur au format IANA (par exemple, "America/New_York" ou "Europe/Paris").',
+    locale: 'Langue',
+    locale_description:
+      'La langue de l\'utilisateur au format IETF BCP 47 (par exemple, "fr-FR" ou "zh-CN").',
+    address: {
+      formatted: 'Adresse',
+      streetAddress: 'Adresse postale',
+      locality: 'Ville',
+      region: 'Région',
+      postalCode: 'Code postal',
+      country: 'Pays',
+    },
+    address_description:
+      "L'adresse complète de l'utilisateur sous forme affichable, incluant tous les composants de l'adresse (par exemple, \"123 Rue Principale, Ville, France 12345\").",
+    fullname: 'Nom complet',
+    fullname_description:
+      'Combine de manière flexible familyName, givenName et middleName en fonction de la configuration.',
+  },
 };
 
 export default Object.freeze(profile);

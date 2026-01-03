@@ -1,5 +1,6 @@
-import type { Provider } from 'oidc-provider';
+import { type Provider } from 'oidc-provider';
 
+import { TokenUsageType } from '#src/queries/daily-token-usage.js';
 import type Queries from '#src/tenants/Queries.js';
 import { getConsoleLogFromContext } from '#src/utils/console.js';
 
@@ -12,9 +13,16 @@ import { deleteSessionExtensions } from './session.js';
  * @see {@link https://github.com/panva/node-oidc-provider/blob/v7.x/docs/README.md#im-getting-a-client-authentication-failed-error-with-no-details Getting auth error with no details?}
  * @see {@link https://github.com/panva/node-oidc-provider/blob/v7.x/docs/events.md OIDC Provider events}
  */
-export const addOidcEventListeners = (provider: Provider, queries: Queries) => {
+export const addOidcEventListeners = (tenantId: string, provider: Provider, queries: Queries) => {
   const { recordTokenUsage } = queries.dailyTokenUsage;
-  const countTokenUsage = async () => recordTokenUsage(new Date());
+
+  // Listener for user access tokens (increment user_token_usage)
+  const userTokenUsageListener = async () =>
+    recordTokenUsage(new Date(), { type: TokenUsageType.User });
+
+  // Listener for client credentials/M2M tokens (increment m2m_token_usage)
+  const m2mTokenUsageListener = async () =>
+    recordTokenUsage(new Date(), { type: TokenUsageType.M2m });
 
   provider.addListener('grant.success', grantListener);
   provider.addListener('grant.error', grantListener);
@@ -45,16 +53,15 @@ export const addOidcEventListeners = (provider: Provider, queries: Queries) => {
     return deleteSessionExtensions(queries, session);
   });
 
-  // Record token usage.
-  for (const event of [
-    'access_token.saved',
-    'access_token.issued',
-    'client_credentials.saved',
-    'client_credentials.issued',
-    'initial_access_token.saved',
-    'registration_access_token.saved',
-    'refresh_token.saved',
-  ]) {
-    provider.addListener(event, countTokenUsage);
-  }
+  // Record token usage on token issue and save events, with proper type distinction
+  // - `initial_access_token.saved`: client registration related, DCR not enabled in our setup
+  // - `registration_access_token.saved`: client registration related, DCR not enabled in our setup
+
+  // User access tokens - increment user_token_usage
+  provider.addListener('access_token.saved', userTokenUsageListener);
+  provider.addListener('access_token.issued', userTokenUsageListener);
+
+  // Client credentials/M2M tokens - increment m2m_token_usage
+  provider.addListener('client_credentials.saved', m2mTokenUsageListener);
+  provider.addListener('client_credentials.issued', m2mTokenUsageListener);
 };

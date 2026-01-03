@@ -14,14 +14,6 @@ const connectors = {
   social_demo_tip:
     '데모 연동은 데모 전용으로 설계되었으며 실제 운영 환경에 배포하는 것은 권장되지 않습니다.',
   connector_type: '종류',
-  connector_status: '로그인 경험',
-  connector_status_in_use: '사용 중',
-  connector_status_not_in_use: '사용 중이 아님',
-  not_in_use_tip: {
-    content:
-      '사용 중이 아님은 로그인 환경에서 이 로그인 방법을 사용하지 않았음을 의미해요. <a>{{link}}</a> 이 로그인 방법을 추가해주세요.',
-    go_to_sie: '로그인 경험으로 가서',
-  },
   placeholder_title: '소셜 연동',
   placeholder_description:
     'Logto는 널리 사용되는 다양한 소셜 로그인 커넥터를 제공하고 있으며, 표준 프로토콜을 사용하여 자신만의 커넥터를 만들 수도 있어요.',
@@ -63,9 +55,16 @@ const connectors = {
     sync_profile_only_at_sign_up: '회원가입할 때 동기화',
     sync_profile_each_sign_in: '로그인할 때마다 동기화',
     sync_profile_tip: '이름과 아바타와 같은 기본적인 사용자 프로필을 동기화해요.',
-    callback_uri: 'Callback URI',
+    enable_token_storage: {
+      title: '지속적인 API 액세스를 위한 토큰 저장',
+      description:
+        'Secret Vault에 액세스 및 새로 고침 토큰을 저장하세요. 사용자의 반복적인 동의 없이 자동 API 호출을 허용합니다. 예: 지속적인 권한 부여로 여러분의 AI 에이전트가 Google 캘린더에 이벤트를 추가하도록 하세요. <a>타사 API 호출 방법 알아보기</a>',
+    },
+    callback_uri: '리디렉션 URI(콜백 URI)',
     callback_uri_description:
-      '리다이렉트 URI라고도 불려요. 사용자의 소셜 인증 이후 되돌아올 Logto URI예요. 소셜 공급자의 설정 페이지에 붙여넣으세요.',
+      '리디렉션 URI는 소셜 인증 이후 사용자가 다시 이동하는 위치입니다. 이 URI를 IdP 구성에 추가하세요.',
+    callback_uri_custom_domain_description:
+      'Logto에서 여러 <a>사용자 지정 도메인</a>을 사용하는 경우 각 도메인에서 소셜 로그인이 동작하도록 모든 해당 콜백 URI를 IdP에 반드시 추가하세요.\n\n기본 Logto 도메인 (*.logto.app)은 항상 유효하므로 해당 도메인에서의 로그인을 지원하려는 경우에만 포함하세요.',
     acs_url: '단언 소비 서비스 URL',
   },
   platform: {
@@ -78,6 +77,11 @@ const connectors = {
   drawer_subtitle: '연동하기 위해 가이드를 따라 주세요.',
   unknown: '알 수 없는 연동',
   standard_connectors: '기본 커넥터',
+  create_form: {
+    third_party_connectors:
+      '타사 공급자를 통합하여 빠른 소셜 로그인, 소셜 계정 연결, API 액세스를 제공합니다. <a>자세히 알아보기</a>',
+    standard_connectors: '또는 표준 프로토콜로 사용자의 소셜 커넥터를 맞춤화할 수 있습니다.',
+  },
 };
 
 export default Object.freeze(connectors);

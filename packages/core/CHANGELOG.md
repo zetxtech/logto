@@ -1,5 +1,345 @@
 # Change Log
 
+## 1.35.0
+
+### Minor Changes
+
+- 116dcf5e7d: support reCaptcha domain customization
+
+  You can now customize the domain for reCaptcha, for example, using reCaptcha with `recaptcha.net` domain.
+
+- d551f5ccc3: support creating third-party SPA and Native applications
+
+  Previously, only traditional web applications could be marked as third-party apps. Now you can also create third-party single-page applications (SPA) and native applications, enabling more flexible OAuth/OIDC integration scenarios.
+
+- 7c87ebc068: add client IP address to passwordless connector message payload
+
+  The `SendMessageData` type now includes an optional `ip` field that contains the client IP address of the user who triggered the message. This can be used by HTTP email/SMS connectors for rate limiting, fraud detection, or logging purposes.
+
+- 116dcf5e7d: support reCAPTCHA Enterprise checkbox mode
+
+  You can now choose between two verification modes for reCAPTCHA Enterprise:
+
+  - **Invisible**: Score-based verification that runs automatically in the background (default)
+  - **Checkbox**: Displays the "I'm not a robot" widget for user interaction
+
+  Note: The verification mode must match your reCAPTCHA key type configured in Google Cloud Console.
+
+### Patch Changes
+
+- a6858e76cf: update SAML relay state length and improve error handling
+
+  The data type of the `relay_state` column in the `saml_application_sessions` table has been changed from varchar(256) to varchar(512) to accommodate longer Relay State values. For example, when Firebase acts as a Service Provider and initiates a SAML request, the relay state length is approximately 300-400 characters, which previously prevented Firebase from integrating with Logto as an SP before this fix.
+
+  Additionally, we have updated the error handling logic in the APIs related to the SAML authentication flow to make error messages more straightforward.
+
+- 462e430445: update the `getI18nEmailTemplate` fallback logic to also attempt to retrieve the `generic` template with default locale, if both the locale-specific and fallback templates are unavailable
+- Updated dependencies [a6858e76cf]
+- Updated dependencies [116dcf5e7d]
+- Updated dependencies [e751e8d5ce]
+- Updated dependencies [462e430445]
+- Updated dependencies [d551f5ccc3]
+- Updated dependencies [7c87ebc068]
+- Updated dependencies [116dcf5e7d]
+  - @logto/phrases@1.24.0
+  - @logto/schemas@1.35.0
+  - @logto/experience@1.18.0
+  - @logto/console@1.32.0
+  - @logto/connector-kit@4.7.0
+  - @logto/demo-app@1.5.0
+  - @logto/account@0.1.0
+  - @logto/cli@1.35.0
+
+## 1.34.0
+
+### Minor Changes
+
+- 08f887c448: support cross-app authentication callbacks within the same browser session
+
+  When multiple applications are initiating authentication requests within the same browser session,
+  authentication callbacks may interfere with each other due to the shared `_interaction` cookie.
+
+  To resolve this, we now change the cookie from a plain UID string to a structured mapping object
+  `{ [app_id]: interaction_uid }`, and maintain the `app_id` in either the URL search parameters or HTTP
+  headers for all authentication-related requests and redirects. This ensures that each application can
+  correctly identify its own authentication context without interference from others.
+
+  The fallback mechanism is also implemented to ensure backward compatibility.
+
+- c3266a917a: add a new webhook event "Identifier.Lockout", which is triggered when a user is locked out due to repeated failed sign-in attempts
+
+### Patch Changes
+
+- 900201a48c: align refresh token grant lifetime with 180-day TTL
+
+  Refresh tokens were expiring after 14 days because the provider grant TTL was still capped at the default two weeks, regardless of the configured refresh token TTL.
+
+  Now set the OIDC grant TTL to 180 days so refresh tokens can live for their configured duration, also expand the refresh token TTL up to 180 days.
+
+- dadbea6936: fix email/phone template selection during sign up
+
+  Previously, the send code API (Experience API) always switched to the `TemplateType.BindMfa` email template as soon as an interaction already had an identified user. During multi-step sign-up flows (for example, username + email), the interaction can already identify the user before the email step finishes, so legitimate sign-up verifications were mistakenly treated as MFA binding and used the wrong template.
+
+  The fix checks if the email/phone identifier is part of the sign-up identifiers. If it is, then we are still in the sign-up flow and should use the appropriate sign-up email/phone template. Only when the email/phone is not part of the sign-up identifiers (meaning the sign-up flow is complete) and the interaction has an identified user, do we switch to the `BindMfa` template.
+
+- c6554587ee: improve SSO connectors with case-insensitive domain matching
+
+  According to the latest standards, email domains should be treated as case-insensitive. To ensure robust and user-friendly authentication, we need to locate SSO connectors correctly regardless of the letter case in the provided email domain.
+
+  - Domain normalization on insert: The domains configured for SSO connectors are now normalized to lowercase before being inserted into the database. This ensures consistency and prevents issues arising from varied casing. As part of this change, identical domains with different casing will be treated as duplicates and rejected to maintain data integrity.
+  - Case-insensitive search for SSO connectors: The get SSO connectors by email endpoint has been updated to perform a case-insensitive search when matching email domains. This guarantees that the correct enabled SSO connector is identified, regardless of the casing used in the user's email address.
+
+- Updated dependencies [900201a48c]
+- Updated dependencies [08f887c448]
+- Updated dependencies [c3266a917a]
+  - @logto/schemas@1.34.0
+  - @logto/experience@1.17.0
+  - @logto/console@1.31.0
+  - @logto/phrases@1.23.0
+  - @logto/account-center@0.1.0
+  - @logto/cli@1.34.0
+  - @logto/demo-app@1.5.0
+
+## 1.33.0
+
+### Minor Changes
+
+- dff3918c8d: add API for MFA skip controls
+
+  expose logto_config endpoints in account and management APIs for managing MFA skip controls
+
+  - /api/my-account/logto-configs
+  - /api/admin/users/:userId/logto-configs
+
+- 4f5b4e33dc: append `applicationId` to the experience API audit logs
+
+### Patch Changes
+
+- f55e171956: fix a bug that the `locale` param used in email templates does not respect the user custom languages
+- e5d3dd3278: remove deprecated interaction API endpoints from OpenAPI swagger documentation.
+
+  The legacy interaction API endpoints are no longer supported and have been replaced by the Experience API endpoints.
+
+- bb495efcae: add body-based personal access token APIs
+
+  introduce PATCH/POST endpoints that accept token names in the request body to support special characters while keeping path-based routes for compatibility:
+
+  - PATCH /api/users/{userId}/personal-access-tokens
+  - POST /api/users/{userId}/personal-access-tokens/delete
+
+- Updated dependencies [3ed4d0a91e]
+- Updated dependencies [bb495efcae]
+- Updated dependencies [568db900bb]
+- Updated dependencies [7a32a89911]
+- Updated dependencies [47dbdd8332]
+  - @logto/experience@1.16.1
+  - @logto/console@1.30.0
+  - @logto/phrases@1.22.0
+  - @logto/demo-app@1.5.0
+  - @logto/schemas@1.33.0
+  - @logto/cli@1.33.0
+
+## 1.32.0
+
+### Minor Changes
+
+- ad4f9d6abf: add support to the OIDC standard authentication parameter `ui_locales`
+
+  We are now supporting the standard OIDC `ui_locales` auth parameter to customize the language of the authentication pages. You can pass the `ui_locales` parameter in the `signIn` method via the `extraParams` option in all Logto SDKs.
+
+  ### What it does
+
+  - Determines the UI language of the Logto-hosted sign-in experience at runtime. Logto picks the first language tag in `ui_locales` that is supported in your tenant's language library.
+  - Affects email localization for messages triggered by the interaction (e.g., verification code emails).
+  - Exposes the original value to email templates as a variable `uiLocales`, allowing you to include it in the email subject/content if needed.
+
+  ### Example
+
+  If you want to display the sign-in page in French (Canada), you can do it like this:
+
+  ```ts
+  await logtoClient.signIn({
+    redirectUri: "https://your.app/callback",
+    extraParams: {
+      ui_locales: "fr-CA fr en",
+    },
+  });
+  ```
+
+  Refer to the [documentation](https://docs.logto.io/end-user-flows/authentication-parameters/ui-locales) for more details.
+
+- 1fb8593659: add email/phone MFA via verification codes
+
+  Summary
+
+  - Add two new MFA factors: Email verification code and SMS (phone) verification code.
+  - Support binding these factors during registration or first sign-in when MFA is required.
+  - Support verifying these factors on subsequent sign-ins with dedicated MFA verification pages.
+  - Update Console to configure these factors and surface guidance/conflict warnings.
+  - Support customizing forgot password methods in Sign-in Experience (related).
+
+  To learn more about this feature, please refer to the documentation: https://docs.logto.io/end-user-flows/mfa
+
+- 0ef4260e34: unify branding customization options between applications and organizations
+
+  We are now offering a more unified experience for branding customization options between applications and organizations, including:
+
+  - Branding colors (light and dark mode)
+  - Branding logos and favicons (both light and dark mode)
+  - Custom CSS
+
+  When all branding customization options are set, the precedence of the options are as follows:
+  Organization > Application > Omni sign-in experience settings
+
+### Patch Changes
+
+- 1e77967e7c: fix(core): bind WebAuthn `rpId` to request domain for account api
+
+  - Before: WebAuthn registration via the account API always bound passkeys to the Logto default domain.
+  - After: The `rpId` now matches the domain you use to access the API (including custom domains), consistent with the sign-in experience.
+
+- Updated dependencies [ad4f9d6abf]
+- Updated dependencies [5da6792d40]
+- Updated dependencies [147f257503]
+- Updated dependencies [1fb8593659]
+- Updated dependencies [0ef4260e34]
+  - @logto/experience@1.16.0
+  - @logto/schemas@1.32.0
+  - @logto/connector-kit@4.6.0
+  - @logto/phrases-experience@1.12.0
+  - @logto/console@1.29.0
+  - @logto/phrases@1.21.0
+  - @logto/cli@1.32.0
+  - @logto/demo-app@1.5.0
+
+## 1.31.0
+
+### Minor Changes
+
+- 316840062e: Add PBKDF2 support for legacy password verification
+
+  Added support for PBKDF2 (Password-Based Key Derivation Function 2) algorithm in legacy password verification. This enhancement allows the system to properly verify passwords that were hashed using PBKDF2 methods, improving compatibility with existing password systems during migration.
+
+  Example usage for user migration with PBKDF2-hashed passwords:
+
+  ```json
+  {
+    "username": "john_doe",
+    "primaryEmail": "john.doe@example.com",
+    "passwordAlgorithm": "Legacy",
+    "passwordDigest": "[\"pbkdf2\", [\"mySalt123\", \"1000\", \"20\", \"sha512\", \"@\"], \"c465f66c6ac481a7a17e9ed5b4e2e7e7288d892f12bf1c95c140901e9a70436e\"]"
+  }
+  ```
+
+  Where the arguments are:
+
+  - `salt`: user-defined salt value
+  - `iterations`: number of iterations (e.g., 1000)
+  - `keylen`: key length (e.g., 20)
+  - `digest`: hash algorithm (e.g., 'sha512')
+  - `@`: placeholder for the input password
+
+- bb385eb15d: add a new feature for collecting user profile on new user registration
+
+  You can now collect user profile information on the last step of your registration flow.
+
+  ### Getting started
+
+  1. In Console: `Sign-in Experience > Collect user profile`. Add your profile fields:
+
+     - Use built-in basics (Name, Gender, Birthdate, Address, …); or
+     - Create custom fields (choose type, label, validation rules, required, etc.).
+
+  2. Drag & drop to reorder fields in the list; the order reflects in the form.
+  3. Test by signing up a new user in the demo app; a "Tell us about yourself" step will appear with your fields.
+  4. Registration completes only after all required fields are filled.
+
+  Check out our [docs](https://docs.logto.io/end-user-flows/collect-user-profile) for more details.
+
+### Patch Changes
+
+- Updated dependencies [8ae82d585e]
+- Updated dependencies [bb385eb15d]
+  - @logto/phrases-experience@1.11.0
+  - @logto/phrases@1.20.0
+  - @logto/experience@1.15.0
+  - @logto/console@1.28.0
+  - @logto/schemas@1.31.0
+  - @logto/demo-app@1.5.0
+  - @logto/cli@1.31.0
+
+## 1.30.1
+
+### Patch Changes
+
+- Updated dependencies [4cc321dbb]
+  - @logto/core-kit@2.6.1
+  - @logto/cli@1.30.1
+  - @logto/console@1.27.0
+  - @logto/demo-app@1.5.0
+  - @logto/experience@1.14.0
+  - @logto/phrases-experience@1.10.1
+  - @logto/schemas@1.30.1
+
+## 1.30.0
+
+### Minor Changes
+
+- 34964af46: feat: support custom scope in the social verification API
+
+  This change allows developers to specify a custom `scope` parameter in the user account social verification API. If a scope is provided, it will be used to generate the authorization URI; otherwise, the default scope configured in the connector will be used.
+
+  - Affected endpoints:
+    - `POST /api/verifications/social`
+
+- 289ab5119: add totp and backup code via account api
+
+  Users can now add TOTP and backup code via Account API.
+
+  The endpoints are:
+
+  - `POST /api/my-account/mfa-verifications/totp-secret/generate`: Generate a TOTP secret.
+  - `POST /api/my-account/mfa-verifications/backup-codes/generate`: Generate backup codes.
+  - `POST /api/my-account/mfa-verifications`: Add a TOTP or backup code using the generated secret or codes.
+  - `GET /api/my-account/mfa-verifications/backup-codes`: Retrieve backup codes.
+
+- 0343699d7: feat: introduce Logto Secret Vault and federated token set storage
+
+  This update introduces the new [Secret vault](https://docs.logto.io/secret-vault/) feature in Logto.
+
+  The Secret Vault is designed to securely store sensitive user data — such as access tokens, API keys, passcodes, and other confidential information. These secrets are typically used to access third-party services on behalf of users, making secure storage essential.
+
+  With this release, federated token set storage support is added to both social and enterprise SSO connectors. When enabled, Logto will securely store the token set issued by the provider after a successful user authentication. Applications can then retrieve the access token later to access third-party APIs without requiring the user to reauthenticate.
+
+  Supported connectors include:
+
+  - **Social connectors**: GitHub, Google, Facebook, Standard OAuth 2.0, and Standard OIDC.
+  - **Enterprise SSO connectors**: All OIDC-based SSO connectors.
+
+  1. Enable the token storage as needed for social and enterprise SSO connectors in the Logto Console or via the Logto Management API.
+  2. Once enabled, Logto will automatically store the token set issued by the provider after a successful user authentication.
+  3. After the token set is stored, you can retrieve the access token via the Logto Account API for the user. This allows your application to access third-party APIs without requiring the user to reauthenticate.
+
+  For more details, please check the [Federated token set storage](https://docs.logto.io/secret-vault/federated-token-set) documentation.
+
+  Note:
+  For OSS users, to enable the Secret Vault feature, you must set the `SECRET_VAULT_KEK` environment variable to a valid base64 enabled secret key. This key is used to encrypt and decrypt the secrets stored in the vault. For more information, please refer to the [configuration variables](https://docs.logto.io/concepts/core-service/configuration#variables) documentation.
+
+### Patch Changes
+
+- Updated dependencies [9a4e11cf8]
+- Updated dependencies [34964af46]
+- Updated dependencies [34964af46]
+- Updated dependencies [0343699d7]
+- Updated dependencies [0343699d7]
+- Updated dependencies [3f5533080]
+  - @logto/schemas@1.30.0
+  - @logto/connector-kit@4.4.0
+  - @logto/console@1.27.0
+  - @logto/cli@1.30.0
+  - @logto/demo-app@1.5.0
+  - @logto/experience@1.14.0
+
 ## 1.29.0
 
 ### Minor Changes

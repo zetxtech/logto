@@ -9,14 +9,16 @@ const domain = {
   error_hint:
     'Убедитесь, что вы обновили свои DNS записи. Мы будем проверять каждые {{value}} секунд.',
   custom: {
-    custom_domain: 'Пользовательский домен',
+    custom_domain: 'Пользовательские домены',
     custom_domain_description:
       'Улучшите свой брендинг, используя пользовательский домен. Этот домен будет использоваться в вашем процессе входа.',
-    custom_domain_field: 'Пользовательский домен',
-    custom_domain_placeholder: 'Ваш.домен.com',
+    custom_domain_field: 'Пользовательские домены',
+    custom_domain_placeholder: 'auth.domain.com',
+    add_custom_domain_field: 'Добавить пользовательский домен',
+    custom_domains_field: 'Пользовательские домены',
     add_domain: 'Добавить домен',
     invalid_domain_format:
-      'Please provide a valid domain URL with a minimum of three parts, e.g. "your.domain.com."',
+      'Please provide a valid domain URL with a minimum of three parts, e.g. "auth.domain.com."',
     verify_domain: 'Проверить домен',
     enable_ssl: 'Включить SSL',
     checking_dns_tip:
@@ -40,6 +42,8 @@ const domain = {
         'Если ранее вы настраивали этот пользовательский домен в своём провайдере социальных коннекторов или конечной точке приложения, вам нужно сначала изменить URI на домен по умолчанию Logto "<span>{{domain}}</span>". Это необходимо для правильной работы кнопки социальной авторизации.',
       deleted: 'Пользовательский домен успешно удалён!',
     },
+    config_custom_domain_description:
+      'Настройте пользовательские домены для следующих функций: приложения, социальные коннекторы и корпоративные коннекторы.',
   },
   default: {
     default_domain: 'Домен по умолчанию',
@@ -53,6 +57,12 @@ const domain = {
     'Вы можете настроить имя домена этого URI, чтобы соответствовать конечной точке вашего приложения. Выберите "{{custom}}" или "{{default}}".',
   custom_acs_url_note:
     'You can customize the domain name of this URI to match your identity provider assertion consumer service URL. Choose either "{{custom}}" or "{{default}}".',
+  switch_custom_domain_tip:
+    'Переключите домен, чтобы увидеть соответствующий эндпоинт. Добавьте больше доменов через <a>пользовательские домены</a>.',
+  switch_saml_app_domain_tip:
+    'Переключите домен, чтобы увидеть соответствующие URL. В протоколах SAML URL метаданных могут размещаться на любом доступном домене. Однако выбранный домен определяет SSO‑service URL, на который SP перенаправляет пользователей для аутентификации, что влияет на опыт входа и видимость URL.',
+  switch_saml_connector_domain_tip:
+    'Переключите домен, чтобы увидеть соответствующие URL. Выбранный домен определяет ваш ACS URL и то, куда будет перенаправлен пользователь после SSO входа. Выберите домен, который соответствует ожидаемому поведению перенаправления вашего приложения.',
 };
 
 export default Object.freeze(domain);

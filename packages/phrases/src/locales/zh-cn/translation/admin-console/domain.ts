@@ -11,9 +11,11 @@ const domain = {
     custom_domain: '自定义域名',
     custom_domain_description: '通过使用自定义域名来提高品牌形象。此域名将用于你的登录体验。',
     custom_domain_field: '自定义域名',
-    custom_domain_placeholder: 'your.domain.com',
+    custom_domain_placeholder: 'auth.domain.com',
+    add_custom_domain_field: '添加自定义域名',
+    custom_domains_field: '自定义域名',
     add_domain: '添加域名',
-    invalid_domain_format: '请提供一个有效的域名 URL，至少有三个部分，例如 "your.domain.com."',
+    invalid_domain_format: '请提供一个有效的域名 URL，至少有三个部分，例如 "auth.domain.com."',
     verify_domain: '验证域名',
     enable_ssl: '启用 SSL',
     checking_dns_tip:
@@ -35,6 +37,8 @@ const domain = {
         '如果你之前已在社交连接器提供商或应用程序终结点中设置了此自定义域名，则需要先将 URI 修改为 Logto 默认域名 "<span>{{domain}}</span>"。这对于社交登录按钮的正常工作是必要的。',
       deleted: '自定义域名删除成功！',
     },
+    config_custom_domain_description:
+      '配置自定义域名以设置以下功能：应用、社交连接器和企业连接器。',
   },
   default: {
     default_domain: '默认域名',
@@ -47,6 +51,11 @@ const domain = {
     '你可以根据需要自定义此 URI 的域名，以匹配你的应用程序端点。选择 "{{custom}}" 或 "{{default}}"。',
   custom_acs_url_note:
     '您可以根据需要自定义此 URI 的域名，以匹配您的身份提供方断言使用者服务 URL。选择 "{{custom}}" 或 "{{default}}"。',
+  switch_custom_domain_tip: '切换域名以查看对应的端点。通过 <a>自定义域名</a> 添加更多域名。',
+  switch_saml_app_domain_tip:
+    '切换域名以查看对应的 URL。对于 SAML 协议，元数据 URL 可以托管在任意可访问的域名上。但所选域名决定 SP 用于重定向终端用户进行认证的 SSO 服务 URL，这会影响登录体验与 URL 的可见性。',
+  switch_saml_connector_domain_tip:
+    '切换域名以查看对应的 URL。所选域名决定你的 ACS URL，这会影响用户在 SSO 登录后被重定向的位置。请选择与应用期望重定向行为一致的域名。',
 };
 
 export default Object.freeze(domain);

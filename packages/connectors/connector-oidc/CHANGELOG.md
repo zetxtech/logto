@@ -1,5 +1,44 @@
 # @logto/connector-oidc
 
+## 1.6.2
+
+### Patch Changes
+
+- Updated dependencies [462e430445]
+- Updated dependencies [7c87ebc068]
+  - @logto/connector-kit@4.7.0
+  - @logto/connector-oauth@1.7.2
+
+## 1.6.1
+
+### Patch Changes
+
+- Updated dependencies [ad4f9d6abf]
+- Updated dependencies [5da6792d40]
+  - @logto/connector-kit@4.6.0
+  - @logto/connector-oauth@1.7.1
+
+## 1.6.0
+
+### Minor Changes
+
+- 0343699d7: feat: add token storage support to social connectors
+
+  The connector has been updated to support token storage. When enabled, Logto will securely store the token set issued by social providers in the [Secret Vault](https://docs.logto.io/secret-vault/) after successful user authentication. This allows your application to retrieve the access token later and access third-party APIs without requiring the user to reauthenticate. Please check the [Federated token set storage](https://docs.logto.io/secret-vault/federated-token-set) for more details.
+
+- 34964af46: feat: support custom scope in the `getAuthorizationUri` method
+
+  This change allows the `getAuthorizationUri` method in the social connectors to accept an extra `scope` parameter, enabling more flexible authorization requests.
+
+  If the scope is provided, it will be used in the authorization request; otherwise, the default scope configured in the connector settings will be used.
+
+### Patch Changes
+
+- Updated dependencies [0343699d7]
+- Updated dependencies [34964af46]
+  - @logto/connector-oauth@1.7.0
+  - @logto/connector-kit@4.4.0
+
 ## 1.5.0
 
 ### Minor Changes

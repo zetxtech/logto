@@ -14,6 +14,7 @@ import koaGuard from '#src/middleware/koa-guard.js';
 import type TenantContext from '#src/tenants/TenantContext.js';
 import assertThat from '#src/utils/assert-that.js';
 
+import { createNewMfaCodeVerificationRecord } from './classes/verifications/code-verification.js';
 import { experienceRoutes } from './const.js';
 import { type ExperienceInteractionRouterContext } from './types.js';
 
@@ -41,7 +42,9 @@ function verifiedInteractionGuard<
       })
     );
 
-    await experienceInteraction.guardMfaVerificationStatus();
+    if (experienceInteraction.interactionEvent === InteractionEvent.SignIn) {
+      await experienceInteraction.guardMfaVerificationStatus();
+    }
 
     return next();
   };
@@ -49,7 +52,7 @@ function verifiedInteractionGuard<
 
 export default function interactionProfileRoutes<T extends ExperienceInteractionRouterContext>(
   router: Router<unknown, T>,
-  tenant: TenantContext
+  { libraries, queries }: TenantContext
 ) {
   router.post(
     `${experienceRoutes.profile}`,
@@ -101,6 +104,18 @@ export default function interactionProfileRoutes<T extends ExperienceInteraction
         }
         case 'password': {
           await experienceInteraction.profile.setPasswordDigestWithValidation(profilePayload.value);
+          break;
+        }
+        /**
+         * Handle non-identifier user profile attributes. The submitted data will be validated and split into
+         * standard user profile attributes and custom user profile attributes. The standard user profile attributes
+         * will be set to the user profile, and the custom user profile attributes will be set to the user custom data.
+         */
+        case 'extraProfile': {
+          const { validateAndParseCustomProfile } = experienceInteraction.profile.profileValidator;
+          await experienceInteraction.profile.setProfileWithValidation(
+            validateAndParseCustomProfile(profilePayload.values)
+          );
           break;
         }
       }
@@ -169,6 +184,23 @@ export default function interactionProfileRoutes<T extends ExperienceInteraction
     }
   );
 
+  // Mark optional additional MFA binding suggestion as skipped in current interaction
+  router.post(
+    `${experienceRoutes.mfa}/mfa-suggestion-skipped`,
+    koaGuard({ status: [204, 400, 403, 404, 422] }),
+    verifiedInteractionGuard(),
+    async (ctx, next) => {
+      const { experienceInteraction } = ctx;
+
+      experienceInteraction.mfa.skipAdditionalBindingSuggestion();
+      await experienceInteraction.save();
+
+      ctx.status = 204;
+
+      return next();
+    }
+  );
+
   router.post(
     `${experienceRoutes.mfa}`,
     koaGuard({
@@ -202,6 +234,52 @@ export default function interactionProfileRoutes<T extends ExperienceInteraction
         }
         case MfaFactor.BackupCode: {
           await experienceInteraction.mfa.addBackupCodeByVerificationId(verificationId, log);
+          break;
+        }
+        case MfaFactor.EmailVerificationCode: {
+          await experienceInteraction.profile.setProfileByVerificationId(
+            SignInIdentifier.Email,
+            verificationId,
+            log
+          );
+          const { primaryEmail } = experienceInteraction.profile.data;
+          // If the primary email is set, create a new MFA code verification record
+          // to bypass the MFA verification step.
+          if (primaryEmail) {
+            const codeVerification = createNewMfaCodeVerificationRecord(
+              libraries,
+              queries,
+              {
+                type: SignInIdentifier.Email,
+                value: primaryEmail,
+              },
+              true
+            );
+            experienceInteraction.setVerificationRecord(codeVerification);
+          }
+          break;
+        }
+        case MfaFactor.PhoneVerificationCode: {
+          await experienceInteraction.profile.setProfileByVerificationId(
+            SignInIdentifier.Phone,
+            verificationId,
+            log
+          );
+          const { primaryPhone } = experienceInteraction.profile.data;
+          // If the primary phone is set, create a new MFA code verification record
+          // to bypass the MFA verification step.
+          if (primaryPhone) {
+            const codeVerification = createNewMfaCodeVerificationRecord(
+              libraries,
+              queries,
+              {
+                type: SignInIdentifier.Phone,
+                value: primaryPhone,
+              },
+              true
+            );
+            experienceInteraction.setVerificationRecord(codeVerification);
+          }
           break;
         }
       }

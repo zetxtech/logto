@@ -2,8 +2,8 @@ import { appInsights } from '@logto/app-insights/node';
 import type { SendMessagePayload, TemplateType } from '@logto/connector-kit';
 import { templateTypeGuard, ConnectorError, ConnectorErrorCodes } from '@logto/connector-kit';
 import {
-  buildDemoAppDataForTenant,
-  demoAppApplicationId,
+  buildBuiltInApplicationDataForTenant,
+  isBuiltInApplicationId,
   type Passcode,
   type User,
 } from '@logto/schemas';
@@ -28,8 +28,11 @@ export const passcodeMaxTryCount = 10;
 
 export type PasscodeLibrary = ReturnType<typeof createPasscodeLibrary>;
 
-export type SendPasscodeContextPayload = Pick<SendMessagePayload, 'locale'> &
-  VerificationCodeContextInfo;
+export type SendPasscodeContextPayload = Pick<SendMessagePayload, 'locale' | 'uiLocales'> &
+  VerificationCodeContextInfo & {
+    /** The client IP address for rate limiting and fraud detection. */
+    ip?: string;
+  };
 
 export const createPasscodeLibrary = (queries: Queries, connectorLibrary: ConnectorLibrary) => {
   const {
@@ -91,13 +94,16 @@ export const createPasscodeLibrary = (queries: Queries, connectorLibrary: Connec
       throw new ConnectorError(ConnectorErrorCodes.InvalidConfig);
     }
 
+    const { ip, ...payloadContext } = contextPayload ?? {};
+
     const response = await sendMessage({
       to: emailOrPhone,
       type: messageTypeResult.data,
       payload: {
         code: passcode.code,
-        ...contextPayload,
+        ...payloadContext,
       },
+      ...(ip && { ip }),
     });
 
     return { dbEntry, metadata, response };
@@ -165,8 +171,8 @@ export const createPasscodeLibrary = (queries: Queries, connectorLibrary: Connec
     try {
       const [application, applicationSignInExperience, organization, userData] = await Promise.all([
         applicationId
-          ? applicationId === demoAppApplicationId
-            ? buildDemoAppDataForTenant('') // Use empty string as the tenantId will be ignored here.
+          ? isBuiltInApplicationId(applicationId)
+            ? Promise.resolve(buildBuiltInApplicationDataForTenant('', applicationId))
             : queries.applications.findApplicationById(applicationId)
           : undefined,
         applicationId

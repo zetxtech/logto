@@ -50,12 +50,11 @@ export const defaultMetadata: ConnectorMetadata = {
     },
     {
       key: 'scope',
-      type: ConnectorConfigFormItemType.Text,
+      type: ConnectorConfigFormItemType.MultilineText,
       label: 'Scope',
       required: false,
-      placeholder: '<scope>',
-      description:
-        "The `scope` determines permissions granted by the user's authorization. If you are not sure what to enter, do not worry, just leave it blank.",
+      placeholder: 'Enter the scopes (separated by a space)',
+      description: "The `scope` determines permissions granted by the user's authorization. ",
     },
     {
       key: 'prompts',
@@ -71,7 +70,17 @@ export const defaultMetadata: ConnectorMetadata = {
         })),
       defaultValue: [OidcPrompt.SelectAccount],
     },
+    {
+      key: 'offlineAccess',
+      type: ConnectorConfigFormItemType.Switch,
+      required: false,
+      label: 'Refresh access token',
+      defaultValue: false,
+      description:
+        'Enable Google `offline` access to request a refresh token, allowing your app to refresh the access token without user re-authorization. (Note: "consent" prompt is required)',
+    },
   ],
+  isTokenStorageSupported: true,
 };
 
 export const defaultTimeout = 5000;

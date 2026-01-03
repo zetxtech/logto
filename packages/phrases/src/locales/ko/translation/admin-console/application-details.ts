@@ -4,7 +4,7 @@ const application_details = {
   check_guide: '가이드 확인',
   settings: '설정',
   settings_description:
-    'An "Application" is a registered software or service that can access user info or act for a user. Applications help recognize who’s asking for what from Logto and handle the sign-in and permission. Fill in the required fields for authentication.',
+    '애플리케이션은 사용자 정보를 조회하거나 사용자를 대신해 동작할 수 있도록 등록된 소프트웨어나 서비스입니다. 애플리케이션은 Logto가 누가 무엇을 요청하는지 파악하고, 로그인과 권한 부여를 처리하도록 돕습니다. 인증을 위해 필수 필드를 모두 입력하세요.',
   integration: '통합',
   integration_description:
     '로그토에서 클라우드플레어의 엣지 네트워크로 구동되는 안전한 워커를 사용하여 세계적인 최고 수준의 성능 및 전 세계 0ms의 차가운 시작을 구동합니다.',
@@ -153,6 +153,18 @@ const application_details = {
     organization_title: '조직',
     organization_description: '제3자 앱에서 특정 조직 데이터에 액세스하려는 권한을 선택하세요.',
     grant_organization_level_permissions: '조직 데이터의 권한 부여',
+    oidc_title: 'OIDC',
+    oidc_description:
+      '핵심 OIDC 권한은 앱에 자동으로 구성됩니다. 이러한 스코프는 인증에 필수이며 사용자 동의 화면에 표시되지 않습니다.',
+    default_oidc_permissions: '기본 OIDC 권한',
+    permission_column: '권한',
+    guide_column: '가이드',
+    openid_permission: 'openid',
+    openid_permission_guide:
+      "OAuth 리소스 접근에는 선택 사항입니다.\nOIDC 인증에는 필수입니다. ID 토큰에 대한 접근을 부여하며 'userinfo_endpoint'에 접근할 수 있습니다.",
+    offline_access_permission: 'offline_access',
+    offline_access_permission_guide:
+      '선택 사항입니다. 장기 접근 또는 백그라운드 작업을 위한 리프레시 토큰을 가져옵니다.',
   },
   roles: {
     assign_button: '머신 간 역할 할당',

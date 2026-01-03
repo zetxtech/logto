@@ -15,14 +15,6 @@ const connectors = {
   social_demo_tip:
     "Le connecteur de démonstration est conçu exclusivement à des fins de démonstration et n'est pas recommandé pour le déploiement dans un environnement de production.",
   connector_type: 'Type',
-  connector_status: 'Expérience de connexion',
-  connector_status_in_use: "En cours d'utilisation",
-  connector_status_not_in_use: 'Non utilisé',
-  not_in_use_tip: {
-    content:
-      "L'option Non utilisé signifie que votre expérience de connexion n'a pas utilisé cette méthode de connexion. <a>{{link}}</a> pour ajouter cette méthode de connexion.",
-    go_to_sie: "Aller à l'expérience de connexion",
-  },
   placeholder_title: 'Connecteur social',
   placeholder_description:
     "Logto propose de nombreux connecteurs de connexion sociale couramment utilisés, mais vous pouvez également créer le vôtre à l'aide des protocoles standard.",
@@ -68,9 +60,16 @@ const connectors = {
     sync_profile_each_sign_in: 'Toujours effectuer une synchronisation à chaque connexion',
     sync_profile_tip:
       'Synchronisez le profil de base du fournisseur social, tel que les noms des utilisateurs et leurs avatars.',
-    callback_uri: 'URI de rappel',
+    enable_token_storage: {
+      title: 'Stocker les jetons pour un accès API persistant',
+      description:
+        "Stockez les jetons d'accès et de rafraîchissement dans le Secret Vault. Permet des appels API automatisés sans consentement utilisateur répété. Exemple : laissez votre agent AI ajouter des événements à Google Calendar avec une autorisation persistante. <a>Découvrez comment appeler des API tierces</a>",
+    },
+    callback_uri: 'URI de redirection (URI de rappel)',
     callback_uri_description:
-      "Également appelée URI de redirection, c'est l'URI dans Logto où les utilisateurs seront renvoyés après l'autorisation sociale, copiez et collez sur la page de configuration du fournisseur social.",
+      "L'URI de redirection est l'endroit où les utilisateurs sont redirigés après l'autorisation sociale. Ajoutez cette URI à la configuration de votre IdP.",
+    callback_uri_custom_domain_description:
+      'Si vous utilisez plusieurs <a>domaines personnalisés</a> dans Logto, veillez à ajouter toutes les URI de rappel correspondantes à votre IdP afin que la connexion sociale fonctionne sur chaque domaine.\n\nLe domaine Logto par défaut (*.logto.app) est toujours valide ; incluez-le uniquement si vous souhaitez aussi prendre en charge les connexions sous ce domaine.',
     acs_url: "URL de service de consommation d'assertions",
   },
   platform: {
@@ -84,6 +83,12 @@ const connectors = {
   drawer_subtitle: 'Suivez les instructions pour intégrer votre connecteur',
   unknown: 'Connecteur inconnu',
   standard_connectors: 'Connecteurs standard',
+  create_form: {
+    third_party_connectors:
+      "Intégrez des fournisseurs tiers pour une connexion sociale rapide, un lien de compte social, et l'accès API. <a>En savoir plus</a>",
+    standard_connectors:
+      'Ou vous pouvez personnaliser votre connecteur social par un protocole standard.',
+  },
 };
 
 export default Object.freeze(connectors);

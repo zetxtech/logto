@@ -129,6 +129,19 @@ const user_details = {
       edited: '토큰 {{name}}이/가 성공적으로 편집되었습니다.',
     },
   },
+  connections: {
+    title: '연결',
+    description: '사용자는 소셜 로그인, 기업 SSO 또는 리소스 접근을 위해 타사 계정을 연결합니다.',
+    token_status_column: '토큰 상태',
+    token_status: {
+      active: '활성화',
+      expired: '만료됨',
+      inactive: '비활성화',
+      not_applicable: '해당 없음',
+      available: '사용 가능',
+      not_available: '사용 불가능',
+    },
+  },
 };
 
 export default Object.freeze(user_details);

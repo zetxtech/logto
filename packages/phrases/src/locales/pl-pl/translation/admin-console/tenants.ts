@@ -14,6 +14,11 @@ const tenants = {
       'Ustaw nazwę najemcy i wyświetl informacje o regionie hostowania danych oraz typie najemcy.',
     tenant_id: 'ID Najemcy',
     tenant_name: 'Nazwa Najemcy',
+    /** UNTRANSLATED */
+    tenant_instance: 'Select your instance',
+    /** UNTRANSLATED */
+    tenant_instance_description:
+      'Select where your tenant will be hosted. Choose Logto Cloud for public shared infrastructure, or a private instance for dedicated resources.',
     tenant_region: 'Region hostowania danych',
     tenant_region_description:
       'Fizyczna lokalizacja, w której hostowane są zasoby twojego najemcy (użytkownicy, aplikacje itp.). Tego nie można zmienić po utworzeniu.',
@@ -53,6 +58,8 @@ const tenants = {
     tenant_usage_purpose: 'Co chcesz zrobić z tym najemcą?',
     development_description:
       'Wyłącznie do testów i nie powinien być używany w produkcji. Nie jest wymagana subskrypcja.',
+    development_description_for_private_regions:
+      'Wyłącznie do testów i nie powinien być używany w produkcji.',
     development_hint:
       'Posiada wszystkie funkcje Pro, ale ma ograniczenia, takie jak baner logowania.',
     production_description:

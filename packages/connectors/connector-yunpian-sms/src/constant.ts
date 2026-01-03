@@ -9,13 +9,19 @@ export const defaultMetadata: ConnectorMetadata = {
   platform: null,
   name: {
     en: 'YunPian SMS Service',
+    'zh-CN': '云片短信服务',
     zh: '云片短信服务',
+    'tr-TR': 'YunPian SMS Hizmeti',
+    ko: 'YunPian SMS 서비스',
   },
   logo: './logo.svg',
   logoDark: null,
   description: {
     en: 'YunPian is a SMS service provider.',
+    'zh-CN': '云片网是一家短信服务提供商。',
     zh: '云片网是一家短信服务提供商。',
+    'tr-TR': 'YunPian, bir SMS servis sağlayıcısıdır.',
+    ko: 'YunPian은 SMS 서비스 제공업체입니다.',
   },
   readme: './README.md',
   formItems: [
@@ -45,7 +51,27 @@ export const defaultMetadata: ConnectorMetadata = {
           content: '您的验证码是 {{code}}。如非本人操作，请忽略本短信',
         },
         {
+          usageType: 'OrganizationInvitation',
+          content: '您的验证码是 {{code}}。如非本人操作，请忽略本短信',
+        },
+        {
           usageType: 'Generic',
+          content: '您的验证码是 {{code}}。如非本人操作，请忽略本短信',
+        },
+        {
+          usageType: 'UserPermissionValidation',
+          content: '您的验证码是 {{code}}。如非本人操作，请忽略本短信',
+        },
+        {
+          usageType: 'BindNewIdentifier',
+          content: '您的验证码是 {{code}}。如非本人操作，请忽略本短信',
+        },
+        {
+          usageType: 'MfaVerification',
+          content: '您的验证码是 {{code}}。如非本人操作，请忽略本短信',
+        },
+        {
+          usageType: 'BindMfa',
           content: '您的验证码是 {{code}}。如非本人操作，请忽略本短信',
         },
       ],

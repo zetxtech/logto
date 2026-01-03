@@ -1,30 +1,31 @@
 import { type AdminConsoleKey } from '@logto/phrases';
 import type { Application } from '@logto/schemas';
 import { ApplicationType } from '@logto/schemas';
-import { conditional } from '@silverhand/essentials';
 import { type ReactElement, useContext, useMemo } from 'react';
 import { useController, useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import Modal from 'react-modal';
 import useSWR, { useSWRConfig } from 'swr';
 
-import { GtagConversionId, reportConversion } from '@/components/Conversion/utils';
+import { GtagConversionId, reportToGoogle } from '@/components/Conversion/utils';
 import LearnMore from '@/components/LearnMore';
-import { pricingLink, defaultPageSize, integrateLogto } from '@/consts';
+import { pricingLink, defaultPageSize, integrateLogto, thirdPartyApp } from '@/consts';
 import { isCloud } from '@/consts/env';
 import { latestProPlanId } from '@/consts/subscriptions';
 import { SubscriptionDataContext } from '@/contexts/SubscriptionDataProvider';
+import { TenantsContext } from '@/contexts/TenantsProvider';
 import { LinkButton } from '@/ds-components/Button';
 import DynamicT from '@/ds-components/DynamicT';
 import FormField from '@/ds-components/FormField';
 import ModalLayout from '@/ds-components/ModalLayout';
 import RadioGroup, { Radio } from '@/ds-components/RadioGroup';
 import TextInput from '@/ds-components/TextInput';
+import TextLink from '@/ds-components/TextLink';
 import { type RequestError } from '@/hooks/use-api';
 import useApi from '@/hooks/use-api';
 import useApplicationsUsage from '@/hooks/use-applications-usage';
-import useCurrentUser from '@/hooks/use-current-user';
+import useDocumentationUrl from '@/hooks/use-documentation-url';
 import TypeDescription from '@/pages/Applications/components/TypeDescription';
 import modalStyles from '@/scss/modal.module.scss';
 import { applicationTypeI18nKey } from '@/types/applications';
@@ -79,19 +80,20 @@ function CreateForm({
   const { data } = useSWR<[Application[], number], RequestError>(
     !isCloud &&
       defaultCreateType === ApplicationType.SAML &&
-      buildUrl(applicationsEndpoint, {
-        page: String(1),
-        page_size: String(defaultPageSize),
-        isThirdParty: 'false',
-        type: ApplicationType.SAML,
-      })
+      buildUrl(applicationsEndpoint, [
+        ['page', String(1)],
+        ['page_size', String(defaultPageSize)],
+        ['isThirdParty', 'false'],
+        ['types', ApplicationType.SAML],
+      ])
   );
+
   const [_, samlAppTotalCount] = data ?? [];
 
   const {
     currentSubscription: { planId, isEnterprisePlan },
   } = useContext(SubscriptionDataContext);
-  const { user } = useCurrentUser();
+  const { currentTenant } = useContext(TenantsContext);
   const { mutate: mutateGlobal } = useSWRConfig();
   const isPaidTenant = isPaidPlan(planId, isEnterprisePlan);
 
@@ -106,7 +108,61 @@ function CreateForm({
   const { t } = useTranslation(undefined, { keyPrefix: 'admin_console' });
   const api = useApi();
 
-  const { hasMachineToMachineAppsReachedLimit } = useApplicationsUsage();
+  const {
+    hasMachineToMachineAppsReachedLimit,
+    hasSamlAppsReachedLimit,
+    hasThirdPartyAppsReachedLimit,
+  } = useApplicationsUsage();
+
+  const { getDocumentationUrl } = useDocumentationUrl();
+
+  const applicationType = watch('type');
+  const isThirdPartyApp = watch('isThirdParty');
+
+  const paywall = useMemo(() => {
+    if (isPaidTenant) {
+      return;
+    }
+
+    if (applicationType === ApplicationType.MachineToMachine) {
+      return latestProPlanId;
+    }
+
+    if (applicationType === ApplicationType.SAML) {
+      return latestProPlanId;
+    }
+
+    if (isThirdPartyApp) {
+      return latestProPlanId;
+    }
+  }, [applicationType, isPaidTenant, isThirdPartyApp]);
+
+  const hasAddOnTag = useMemo(() => {
+    if (!isPaidTenant) {
+      return false;
+    }
+
+    if (applicationType === ApplicationType.MachineToMachine) {
+      return hasMachineToMachineAppsReachedLimit;
+    }
+
+    if (applicationType === ApplicationType.SAML) {
+      return hasSamlAppsReachedLimit;
+    }
+
+    if (isThirdPartyApp) {
+      return hasThirdPartyAppsReachedLimit;
+    }
+
+    return false;
+  }, [
+    applicationType,
+    hasMachineToMachineAppsReachedLimit,
+    hasSamlAppsReachedLimit,
+    hasThirdPartyAppsReachedLimit,
+    isPaidTenant,
+    isThirdPartyApp,
+  ]);
 
   const onSubmit = handleSubmit(
     trySubmitSafe(async (data) => {
@@ -121,7 +177,7 @@ function CreateForm({
 
       // Report the conversion event after the application is created. Note that the conversion
       // should be set as count once since this will be reported multiple times.
-      reportConversion({ gtagId: GtagConversionId.CreateFirstApp, transactionId: user?.id });
+      reportToGoogle(GtagConversionId.CreateFirstApp, { transactionId: currentTenant?.id });
 
       toast.success(t('applications.application_created'));
       // Trigger a refetch of the applications list
@@ -141,7 +197,15 @@ function CreateForm({
     }
 
     if (isDefaultCreateThirdParty) {
-      return 'applications.create_subtitle_third_party';
+      return (
+        <Trans
+          components={{
+            a: <TextLink href={getDocumentationUrl(thirdPartyApp)} targetBlank="noopener" />,
+          }}
+        >
+          {t('applications.third_party_application_placeholder_description')}
+        </Trans>
+      );
     }
 
     return (
@@ -150,7 +214,7 @@ function CreateForm({
         interpolation={{ name: defaultCreateFrameworkName }}
       />
     );
-  }, [defaultCreateFrameworkName, isDefaultCreateThirdParty]);
+  }, [defaultCreateFrameworkName, getDocumentationUrl, isDefaultCreateThirdParty, t]);
 
   return (
     <Modal
@@ -163,16 +227,21 @@ function CreateForm({
       }}
     >
       <ModalLayout
-        title="applications.create"
-        subtitle={subtitleElement}
-        paywall={conditional(
-          !isPaidTenant && watch('type') === ApplicationType.MachineToMachine && latestProPlanId
-        )}
-        hasAddOnTag={
-          isPaidTenant &&
-          watch('type') === ApplicationType.MachineToMachine &&
-          hasMachineToMachineAppsReachedLimit
+        title={
+          isDefaultCreateThirdParty ? (
+            <DynamicT
+              forKey="applications.create_thrid_party_modal_title"
+              interpolation={{
+                type: t(`${applicationTypeI18nKey[applicationType]}.title`),
+              }}
+            />
+          ) : (
+            <DynamicT forKey="applications.create" />
+          )
         }
+        subtitle={subtitleElement}
+        paywall={paywall}
+        hasAddOnTag={hasAddOnTag}
         size={defaultCreateType ? 'medium' : 'large'}
         footer={
           !isCloud &&

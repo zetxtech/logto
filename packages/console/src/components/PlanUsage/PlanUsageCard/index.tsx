@@ -13,27 +13,12 @@ import IconButton from '@/ds-components/IconButton';
 import Tag from '@/ds-components/Tag';
 import TextLink from '@/ds-components/TextLink';
 import { ToggleTip } from '@/ds-components/Tip';
+import { formatQuotaNumber } from '@/utils/number';
 import { isPaidPlan } from '@/utils/subscription';
 
 import { formatNumber } from '../utils';
 
 import styles from './index.module.scss';
-
-const formatQuotaNumber = (number: number): string => {
-  if (number >= 1e6) {
-    return (number / 1e6).toFixed(1) + 'M';
-  }
-
-  if (number >= 1e3) {
-    return (number / 1e3).toFixed(1) + 'K';
-  }
-
-  if (Number.isInteger(number)) {
-    return number.toString();
-  }
-
-  return number.toFixed(2);
-};
 
 const formatNumberTypedUsageDescription = ({
   usage,
@@ -98,6 +83,7 @@ export type Props = {
   readonly usageAddOnSku?: LogtoSkuResponse;
 };
 
+// eslint-disable-next-line complexity
 function PlanUsageCard({
   usage,
   quota,
@@ -112,7 +98,7 @@ function PlanUsageCard({
 }: Props) {
   const { t } = useTranslation(undefined, { keyPrefix: 'admin_console' });
   const {
-    currentSubscription: { planId, isEnterprisePlan },
+    currentSubscription: { planId, isEnterprisePlan, quotaScope },
   } = useContext(SubscriptionDataContext);
 
   const isPaidTenant = isPaidPlan(planId, isEnterprisePlan);
@@ -132,7 +118,7 @@ function PlanUsageCard({
             content={
               <Trans
                 components={{
-                  a: <TextLink to={addOnPricingExplanationLink} />,
+                  a: <TextLink targetBlank to={addOnPricingExplanationLink} />,
                 }}
               >
                 {t(tooltipKey, {
@@ -142,6 +128,9 @@ function PlanUsageCard({
                   ...conditional(
                     typeof basicQuota === 'number' && {
                       basicQuota: formatQuotaNumber(basicQuota),
+                      // For i18n singular/plural support use only.
+                      // - tenant_members
+                      count: basicQuota,
                     }
                   ),
                   ...conditional(usageAddOnSku && formatAddOnQuota(usageAddOnSku.quota)),
@@ -172,7 +161,11 @@ function PlanUsageCard({
                   className={classNames(
                     styles.usageTip,
                     // Hide usage tip for free plan users.
-                    (!isPaidTenant || basicQuota === undefined || isQuotaNoticeHidden) &&
+                    (!isPaidTenant ||
+                      // Hide usage tip for shared enterprise subscription tenants.
+                      quotaScope === 'shared' ||
+                      basicQuota === undefined ||
+                      isQuotaNoticeHidden) &&
                       styles.hidden
                   )}
                 />
@@ -222,8 +215,8 @@ function PlanUsageCard({
               forKey={`subscription.usage.${usage ? 'status_active' : 'status_inactive'}`}
             />
           </Tag>
-          {/* Only show the quota notice for enterprise plan. */}
-          {quota !== undefined && isEnterprisePlan && (
+          {/* Only show the quota notice for enterprise plan with non-shared quota scope */}
+          {quota !== undefined && isEnterprisePlan && quotaScope !== 'shared' && (
             <div className={styles.usageTip}>
               {/* Consider the type of quota is number, null or boolean, the following statement covers all cases. */}
               {(() => {

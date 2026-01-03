@@ -18,7 +18,9 @@ const paywall = {
   scopes_per_resource_other:
     'Osiągnięto limit {{count, number}} uprawnień na zasób API w planie <planName/>. Zaktualizuj plan, aby rozszerzyć. Skontaktuj się z nami <a>tutaj</a>, jeśli potrzebujesz pomocy.',
   custom_domain:
-    'Odblokuj funkcję niestandardowej domeny, ulepszając do planu <strong>Hobby</strong> lub <strong>Pro</strong>. Nie wahaj się <a>skontaktować z nami</a>, jeśli potrzebujesz pomocy.',
+    'Osiągnięto limit {{count, number}} domeny niestandardowej dla <planName/>. Ulepsz do płatnego planu, aby dodać wiele domen niestandardowych i korzyści premium. Nie wahaj się <a>skontaktować z nami</a>, jeśli masz pytania.',
+  custom_domain_others:
+    'Osiągnięto limit {{count, number}} domen niestandardowych dla <planName/>. Ulepsz do płatnego planu, aby dodać wiele domen niestandardowych i korzyści premium. Nie wahaj się <a>skontaktować z nami</a>, jeśli masz pytania.',
   social_connectors:
     'Osiągnięto limit {{count, number}} konektorów społecznościowych w planie <planName/>. Aby sprostać potrzebom twojego zespołu, ulepsz plan, aby uzyskać dodatkowe konektory społecznościowe oraz możliwość tworzenia własnych konektorów za pomocą protokołów OIDC, OAuth 2.0 i SAML. Jeśli potrzebujesz pomocy, nie wahaj się <a>skontaktować z nami</a>.',
   social_connectors_other:
@@ -34,13 +36,7 @@ const paywall = {
   standard_connectors_pro_other:
     'Osiągnięto limit {{count, number}} standardowych konektorów w planie <planName/>. Aby sprostać potrzebom twojego zespołu, ulepsz do planu Enterprise, aby uzyskać dodatkowe konektory społecznościowe oraz możliwość tworzenia własnych konektorów za pomocą protokołów OIDC, OAuth 2.0 i SAML. Jeśli potrzebujesz pomocy, nie wahaj się <a>skontaktować z nami</a>.',
   roles:
-    'Osiągnięto limit {{count, number}} ról w planie <planName/>. Ulepsz plan, aby dodać dodatkowe role i uprawnienia. Jeśli potrzebujesz pomocy, nie wahaj się <a>skontaktować z nami</a>.',
-  roles_other:
-    'Osiągnięto limit {{count, number}} ról w planie <planName/>. Ulepsz plan, aby dodać dodatkowe role i uprawnienia. Jeśli potrzebujesz pomocy, nie wahaj się <a>skontaktować z nami</a>.',
-  machine_to_machine_roles:
-    '{{count, number}} role maszynowa przekroczyła limit w planie <planName/>. Ulepsz plan, aby dodać dodatkowe role i uprawnienia. Skontaktuj się z nami <a>tutaj</a>, jeśli potrzebujesz pomocy.',
-  machine_to_machine_roles_other:
-    '{{count, number}} role maszynowa przekroczyły limit w planie <planName/>. Ulepsz plan, aby dodać dodatkowe role i uprawnienia. Skontaktuj się z nami <a>tutaj</a>, jeśli potrzebujesz pomocy.',
+    'Zaktualizuj plan, aby dodać dodatkowe role i uprawnienia. Nie wahaj się <a>skontaktować z nami</a>, jeśli potrzebujesz pomocy.',
   scopes_per_role:
     'Osiągnięto limit {{count, number}} uprawnień na rolę w planie <planName/>. Ulepsz plan, aby dodać dodatkowe role i uprawnienia. W razie potrzeb, skontaktuj się z nami <a>tutaj</a>.',
   scopes_per_role_other:
@@ -50,6 +46,8 @@ const paywall = {
   logto_pricing_button_text: 'Cennik Logto Cloud',
   saml_applications:
     'Dodatkowa aplikacja SAML jest dostępna w planie Logto Enterprise. Skontaktuj się z nami, jeśli potrzebujesz pomocy.',
+  saml_applications_add_on:
+    'Odblokuj funkcję aplikacji SAML, ulepszając do płatnego planu. Nie wahaj się <a>skontaktować z nami</a>, jeśli potrzebujesz pomocy.',
   hooks:
     'Osiągnięto limit {{count, number}} webhooków w planie <planName/>. Ulepsz plan, aby tworzyć więcej webhooków. Jeśli potrzebujesz pomocy, nie wahaj się <a>skontaktować z nami</a>.',
   hooks_other:
@@ -70,10 +68,14 @@ const paywall = {
     description:
       'Ulepsz do płatnego planu, aby uzyskać funkcjonalność niestandardowego JWT i korzyści premium. Jeśli masz jakieś pytania, nie wahaj się <a>skontaktować z nami</a>.',
   },
+  branding_customization:
+    'Ulepsz swój plan, aby uzyskać pełną kontrolę nad brandingiem dzięki funkcjom "Ukryj branding Logto" i "Przynieś swój interfejs użytkownika".',
   bring_your_ui:
     'Ulepsz do płatnego planu, aby uzyskać funkcję własnego interfejsu użytkownika i korzyści premium.',
   security_features:
     'Odblokuj zaawansowane funkcje bezpieczeństwa, ulepszając do planu Pro. Nie wahaj się <a>skontaktować z nami</a>, jeśli masz jakieś pytania.',
+  collect_user_profile:
+    'Ulepsz do płatnego planu, aby zbierać dodatkowe informacje o profilu użytkownika podczas rejestracji. Nie wahaj się <a>skontaktować z nami</a>, jeśli masz jakieś pytania.',
 };
 
 export default Object.freeze(paywall);

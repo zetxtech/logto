@@ -5,8 +5,8 @@ const applications = {
     'Richte eine native, single-page-, Machine-to-Machine- oder herkömmliche Anwendung ein, die Logto zur Authentifizierung nutzt.',
   subtitle_with_app_type: 'Richte Logto-Authentifizierung für deine {{name}}-Anwendung ein',
   create: 'Anwendung erstellen',
-  create_subtitle_third_party:
-    'Verwende Logto als deinen Identitätsanbieter (IdP), um leicht mit Anwendungen von Drittanbietern zu integrieren',
+  create_third_party: 'Erstelle eine Drittanbieteranwendung',
+  create_thrid_party_modal_title: 'Erstelle eine Drittanbieter-App ({{type}})',
   application_name: 'Anwendungsname',
   application_name_placeholder: 'Meine App',
   application_description: 'Anwendungsbeschreibung',
@@ -60,6 +60,15 @@ const applications = {
   placeholder_title: 'Wähle einen Anwendungstyp, um fortzufahren',
   placeholder_description:
     'Logto verwendet eine Anwendungs-Entität für OIDC, um Aufgaben wie die Identifizierung deiner Apps, das Management der Anmeldung und die Erstellung von Prüfprotokollen zu erleichtern.',
+  third_party_application_placeholder_description:
+    'Verwende Logto als Identity Provider, um OAuth-Autorisierung für Drittanbieterdienste bereitzustellen. \n Beinhaltet einen vorgebauten Benutzerzustimmungsbildschirm für den Ressourcenzugriff. <a>Mehr erfahren</a>',
+  guide: {
+    third_party: {
+      title: 'Integriere eine Drittanbieteranwendung',
+      description:
+        'Verwende Logto als Identity Provider, um OAuth-Autorisierung für Drittanbieterdienste bereitzustellen. Beinhaltet einen vorgefertigten Benutzerzustimmungsbildschirm für sicheren Ressourcenzugriff. <a>Mehr erfahren</a>',
+    },
+  },
 };
 
 export default Object.freeze(applications);

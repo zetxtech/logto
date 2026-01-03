@@ -1,6 +1,6 @@
 import { useContext, useMemo } from 'react';
 
-import { type TenantUsageAddOnSkus, type NewSubscriptionPeriodicUsage } from '@/cloud/types/router';
+import { type TenantUsageAddOnSkus, type SubscriptionPeriodicUsage } from '@/cloud/types/router';
 import BillInfo from '@/components/BillInfo';
 import FormCard from '@/components/FormCard';
 import PlanDescription from '@/components/PlanDescription';
@@ -17,14 +17,14 @@ import TokenLimitExceededNotification from './TokenLimitExceededNotification';
 import styles from './index.module.scss';
 
 type Props = {
-  readonly periodicUsage?: NewSubscriptionPeriodicUsage;
+  readonly periodicUsage?: SubscriptionPeriodicUsage;
   readonly usageAddOnSkus?: TenantUsageAddOnSkus;
 };
 
 function CurrentPlan({ periodicUsage, usageAddOnSkus }: Props) {
   const {
     currentSku: { unitPrice },
-    currentSubscription: { upcomingInvoice, isEnterprisePlan, planId },
+    currentSubscription: { upcomingInvoice, isEnterprisePlan, planId, quotaScope },
   } = useContext(SubscriptionDataContext);
 
   /**
@@ -53,21 +53,29 @@ function CurrentPlan({ periodicUsage, usageAddOnSkus }: Props) {
       <FormField title="subscription.plan_usage">
         <PlanUsage periodicUsage={periodicUsage} usageAddOnSkus={usageAddOnSkus} />
       </FormField>
-      <FormField title="subscription.next_bill">
-        <BillInfo
-          cost={upcomingCost}
-          isManagePaymentVisible={isPaidPlan(planId, isEnterprisePlan)}
-        />
-      </FormField>
-      {isPaidPlan(planId, isEnterprisePlan) && !isEnterprisePlan && (
-        <AddOnUsageChangesNotification className={styles.notification} />
+      {/* Only show usageExceed and payment info if the subscription quota scope is dedicated */}
+      {quotaScope === 'dedicated' && (
+        <>
+          <FormField title="subscription.next_bill">
+            <BillInfo
+              cost={upcomingCost}
+              isManagePaymentVisible={isPaidPlan(planId, isEnterprisePlan)}
+            />
+          </FormField>
+          {isPaidPlan(planId, isEnterprisePlan) && !isEnterprisePlan && (
+            <AddOnUsageChangesNotification className={styles.notification} />
+          )}
+          <TokenLimitExceededNotification
+            periodicUsage={periodicUsage}
+            className={styles.notification}
+          />
+          <MauLimitExceedNotification
+            periodicUsage={periodicUsage}
+            className={styles.notification}
+          />
+          <PaymentOverdueNotification className={styles.notification} />
+        </>
       )}
-      <TokenLimitExceededNotification
-        periodicUsage={periodicUsage}
-        className={styles.notification}
-      />
-      <MauLimitExceedNotification periodicUsage={periodicUsage} className={styles.notification} />
-      <PaymentOverdueNotification className={styles.notification} />
     </FormCard>
   );
 }

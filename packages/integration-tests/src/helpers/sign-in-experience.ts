@@ -169,6 +169,38 @@ export const enableMandatoryMfaWithTotpAndBackupCode = async () =>
     },
   });
 
+export const enableMandatoryMfaWithEmail = async () =>
+  updateSignInExperience({
+    mfa: {
+      factors: [MfaFactor.EmailVerificationCode],
+      policy: MfaPolicy.Mandatory,
+    },
+  });
+
+export const enableMandatoryMfaWithEmailAndBackupCode = async () =>
+  updateSignInExperience({
+    mfa: {
+      factors: [MfaFactor.EmailVerificationCode, MfaFactor.BackupCode],
+      policy: MfaPolicy.Mandatory,
+    },
+  });
+
+export const enableMandatoryMfaWithPhone = async () =>
+  updateSignInExperience({
+    mfa: {
+      factors: [MfaFactor.PhoneVerificationCode],
+      policy: MfaPolicy.Mandatory,
+    },
+  });
+
+export const enableMandatoryMfaWithPhoneAndBackupCode = async () =>
+  updateSignInExperience({
+    mfa: {
+      factors: [MfaFactor.PhoneVerificationCode, MfaFactor.BackupCode],
+      policy: MfaPolicy.Mandatory,
+    },
+  });
+
 export const enableMandatoryMfaWithWebAuthnAndBackupCode = async () =>
   updateSignInExperience({
     mfa: {

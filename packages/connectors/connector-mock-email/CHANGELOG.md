@@ -1,5 +1,37 @@
 # @logto/connector-mock-email
 
+## 2.3.2
+
+### Patch Changes
+
+- 462e430445: fall back to `TemplateType.Generic` if a usage-specific template is not found
+- Updated dependencies [462e430445]
+- Updated dependencies [7c87ebc068]
+  - @logto/connector-kit@4.7.0
+
+## 2.3.1
+
+### Patch Changes
+
+- Updated dependencies [ad4f9d6abf]
+- Updated dependencies [5da6792d40]
+  - @logto/connector-kit@4.6.0
+
+## 2.3.0
+
+### Minor Changes
+
+- 52a618069: add new template type MfaVerification for verification code
+
+If you are using Email/SMS as a MFA method, you should update your connector configuration to include the new template type `MfaVerification` for verification code.
+
+## 2.2.1
+
+### Patch Changes
+
+- Updated dependencies [34964af46]
+  - @logto/connector-kit@4.4.0
+
 ## 2.2.0
 
 ### Minor Changes

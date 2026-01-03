@@ -28,10 +28,9 @@ import { type UserDetailsForm, type UserDetailsOutletContext } from '../types';
 import { userDetailsParser } from '../utils';
 
 import PersonalAccessTokens from './PersonalAccessTokens';
+import UserConnections from './UserConnections';
 import UserMfaVerifications from './UserMfaVerifications';
 import UserPassword from './UserPassword';
-import UserSocialIdentities from './UserSocialIdentities';
-import UserSsoIdentities from './UserSsoIdentities';
 
 function UserSettings() {
   const { t } = useTranslation(undefined, { keyPrefix: 'admin_console' });
@@ -160,23 +159,12 @@ function UserSettings() {
               }}
             />
           </FormField>
-          <FormField title="user_details.field_connectors">
-            <UserSocialIdentities
-              userId={user.id}
-              identities={user.identities}
-              onDelete={() => {
-                onUserUpdated();
-              }}
-            />
-          </FormField>
-          <FormField title="user_details.field_sso_connectors">
-            <UserSsoIdentities ssoIdentities={user.ssoIdentities ?? []} />
-          </FormField>
           <FormField title="user_details.mfa.field_name">
             <UserMfaVerifications userId={user.id} />
           </FormField>
           <PersonalAccessTokens userId={user.id} />
         </FormCard>
+        <UserConnections userId={user.id} />
         <FormCard title="user_details.user_profile">
           <FormField title="user_details.field_name">
             <TextInput {...register('name')} placeholder={t('users.placeholder_name')} />

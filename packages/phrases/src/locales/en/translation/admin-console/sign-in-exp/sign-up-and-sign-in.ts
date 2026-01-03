@@ -30,6 +30,12 @@ const sign_up_and_sign_in = {
     verification_code_auth: 'Verification code',
     auth_swap_tip: 'Swap the options below to determine which appears first in the flow.',
     require_auth_factor: 'You have to select at least one authentication factor.',
+    forgot_password: 'Forgot password',
+    forgot_password_description:
+      'Users can reset their password using any available verification method.',
+    add_verification_method: 'Add verification method',
+    email_verification_code: 'Email verification code',
+    phone_verification_code: 'Phone verification code',
   },
   social_sign_in: {
     title: 'SOCIAL SIGN-IN',
@@ -53,7 +59,11 @@ const sign_up_and_sign_in = {
     password_auth:
       'This is essential as you have enabled the option to set a password during the sign-up process.',
     verification_code_auth:
-      'This is essential as you have only enabled the option to provide verification code when signing up. You’re free to uncheck the box when password set-up is allowed at the sign-up process.',
+      "This is essential as you have only enabled the option to provide verification code when signing up. You're free to uncheck the box when password set-up is allowed at the sign-up process.",
+    email_mfa_enabled:
+      "Email verification code is already enabled for MFA, so it can't be reused as the primary sign-in method for security.",
+    phone_mfa_enabled:
+      "Phone verification code is already enabled for MFA, so it can't be reused as the primary sign-in method for security.",
     delete_sign_in_method:
       'This is essential as you have selected {{identifier}} as a required identifier.',
     password_disabled_notification:

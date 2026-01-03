@@ -48,7 +48,13 @@ function Guide({ connector, onClose }: Props) {
   const callbackConnectorId = useRef(generateStandardId());
   const [conflictConnectorName, setConflictConnectorName] = useState<Record<string, string>>();
   const { t } = useTranslation(undefined, { keyPrefix: 'admin_console' });
-  const { type: connectorType, formItems, isStandard, id: connectorFactoryId } = connector ?? {};
+  const {
+    type: connectorType,
+    formItems,
+    isStandard,
+    id: connectorFactoryId,
+    isTokenStorageSupported,
+  } = connector ?? {};
   const { language } = i18next;
 
   const isSocialConnector =
@@ -103,7 +109,7 @@ function Guide({ connector, onClose }: Props) {
 
       const config = configParser(data, formItems);
 
-      const { syncProfile, name, logo, logoDark, target } = data;
+      const { syncProfile, name, logo, logoDark, target, enableTokenStorage } = data;
 
       const basePayload = {
         config,
@@ -120,7 +126,11 @@ function Guide({ connector, onClose }: Props) {
       };
 
       const payload = isSocialConnector
-        ? { ...basePayload, syncProfile: syncProfile === SyncProfileMode.EachSignIn }
+        ? {
+            ...basePayload,
+            syncProfile: syncProfile === SyncProfileMode.EachSignIn,
+            enableTokenStorage,
+          }
         : basePayload;
 
       try {
@@ -196,6 +206,7 @@ function Guide({ connector, onClose }: Props) {
                       isAllowEditTarget={isStandard}
                       isStandard={isStandard}
                       conflictConnectorName={conflictConnectorName}
+                      isTokenStorageSupported={isTokenStorageSupported}
                     />
                   </div>
                 )}

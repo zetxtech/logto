@@ -171,6 +171,12 @@ const quota_item = {
     unlimited: 'Ara yüzünü getir',
     not_eligible: 'Özel UI varlıklarınızı kaldırın',
   },
+  collect_user_profile_enabled: {
+    name: 'Kullanıcı profili toplama',
+    limited: 'Kullanıcı profili toplama',
+    unlimited: 'Kullanıcı profili toplama',
+    not_eligible: 'Kullanıcı profili toplama alanlarınızı kaldırın',
+  },
   idp_initiated_sso_enabled: {
     name: 'IDP başlatılan SSO',
     limited: 'IDP başlatılan SSO',
@@ -195,6 +201,13 @@ const quota_item = {
     limited: 'Gelişmiş güvenlik',
     unlimited: 'Gelişmiş güvenlik',
     not_eligible: 'Gelişmiş güvenlik ayarlarınızı kaldırın',
+  },
+  custom_domains_limit: {
+    name: 'Özel alan adları',
+    limited: '{{count, number}} özel alan adı',
+    limited_other: '{{count, number}} özel alan adları',
+    unlimited: 'Sınırsız özel alan adları',
+    not_eligible: 'Özel alan adlarınızı kaldırın',
   },
 };
 

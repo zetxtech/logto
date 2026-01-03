@@ -35,6 +35,10 @@ const enterprise_sso = {
     },
     oidc: {
       redirect_uri_field_name: 'リダイレクトURI（コールバックURL）',
+      redirect_uri_field_description:
+        'Redirect URI は、SSO 認証の後にユーザーがリダイレクトされる場所です。この URI を IdP の設定に追加してください。',
+      redirect_uri_field_custom_domain_description:
+        'Logto で複数の<a>カスタムドメイン</a>を使用する場合は、すべての対応するコールバック URI を IdP に追加し、各ドメインで SSO が機能するようにしてください。\n\nLogto の既定ドメイン (*.logto.app) は常に有効です。そのドメインで SSO をサポートしたい場合にのみ含めてください。',
     },
   },
   attribute_mapping: {
@@ -70,6 +74,7 @@ const enterprise_sso = {
       client_secret_field_name: 'クライアントシークレット',
       issuer_field_name: '発行者',
       scope_field_name: 'スコープ',
+      scope_field_placeholder: 'スコープを入力してください（スペースで区切ってください）',
     },
   },
 };

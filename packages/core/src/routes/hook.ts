@@ -1,6 +1,7 @@
 import {
   Hooks,
   Logs,
+  ProductEvent,
   hook,
   hookConfigGuard,
   hookEventGuard,
@@ -21,6 +22,8 @@ import { koaReportSubscriptionUpdates, koaQuotaGuard } from '#src/middleware/koa
 import { type AllowedKeyPrefix } from '#src/queries/log.js';
 import assertThat from '#src/utils/assert-that.js';
 
+import { captureEvent } from '../utils/posthog.js';
+
 import type { ManagementApiRouter, RouterInitArgs } from './types.js';
 
 const nonemptyUniqueHookEventsGuard = hookEventsGuard
@@ -28,7 +31,7 @@ const nonemptyUniqueHookEventsGuard = hookEventsGuard
   .transform((events) => deduplicate(events));
 
 export default function hookRoutes<T extends ManagementApiRouter>(
-  ...[router, { queries, libraries }]: RouterInitArgs<T>
+  ...[router, { id: tenantId, queries, libraries }]: RouterInitArgs<T>
 ) {
   const {
     hooks: {
@@ -169,7 +172,6 @@ export default function hookRoutes<T extends ManagementApiRouter>(
     koaReportSubscriptionUpdates({
       key: 'hooksLimit',
       quota,
-      methods: ['POST'],
     }),
     async (ctx, next) => {
       const { event, events, enabled, ...rest } = ctx.guard.body;
@@ -186,6 +188,7 @@ export default function hookRoutes<T extends ManagementApiRouter>(
 
       ctx.status = 201;
 
+      captureEvent({ tenantId, request: ctx.req }, ProductEvent.WebhookCreated);
       return next();
     }
   );
@@ -262,13 +265,13 @@ export default function hookRoutes<T extends ManagementApiRouter>(
     koaReportSubscriptionUpdates({
       key: 'hooksLimit',
       quota,
-      methods: ['DELETE'],
     }),
     async (ctx, next) => {
       const { id } = ctx.guard.params;
       await deleteHookById(id);
       ctx.status = 204;
 
+      captureEvent({ tenantId, request: ctx.req }, ProductEvent.WebhookDeleted);
       return next();
     }
   );

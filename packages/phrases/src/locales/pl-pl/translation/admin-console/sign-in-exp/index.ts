@@ -1,14 +1,18 @@
 import content from './content.js';
+import custom_profile_fields from './custom-profile-fields.js';
 import sign_up_and_sign_in from './sign-up-and-sign-in.js';
 
 const sign_in_exp = {
   page_title: 'Doświadczenie logowania',
-  title: 'Doświadczenie logowania',
+  page_title_with_account: 'Logowanie i konto',
+  title: 'Logowanie i konto',
   description:
     'Dostosuj przepływy uwierzytelniania i interfejs użytkownika, a także podglądaj gotowe rozwiązanie w czasie rzeczywistym.',
   tabs: {
     branding: 'Marka',
     sign_up_and_sign_in: 'Rejestracja i logowanie',
+    collect_user_profile: 'Zbieraj profil użytkownika',
+    account_center: 'Centrum konta',
     content: 'Treść',
     password_policy: 'Polityka hasła',
   },
@@ -37,6 +41,10 @@ const sign_in_exp = {
     with_dark: '{{value}} (dark)',
     app_logo_and_favicon: 'Logo aplikacji i favicon',
     company_logo_and_favicon: 'Logo firmy i favicon',
+    organization_logo_and_favicon: 'Logo organizacji i favicon',
+    hide_logto_branding: 'Ukryj branding Logto',
+    hide_logto_branding_description:
+      'Usuń napis "Powered by Logto". Zaprezentuj wyłącznie swoją markę w czystym i profesjonalnym procesie logowania.',
   },
   branding_uploads: {
     app_logo: {
@@ -84,15 +92,130 @@ const sign_in_exp = {
     preview_with_bring_your_ui_description:
       'Twoje niestandardowe zasoby interfejsu użytkownika zostały pomyślnie przesłane i są teraz dostępne. W rezultacie wbudowane okno podglądu zostało wyłączone.\nAby przetestować swoje spersonalizowane UI logowania, kliknij przycisk "Podgląd na żywo", aby otworzyć go w nowej karcie przeglądarki.',
   },
+  account_center: {
+    title: 'CENTRUM KONTA',
+    description: 'Dostosuj przepływy centrum konta z wykorzystaniem interfejsów API Logto.',
+    enable_account_api: 'Włącz Account API',
+    enable_account_api_description:
+      'Włącz Account API, aby zbudować własne centrum konta i zapewnić użytkownikom końcowym bezpośredni dostęp do API bez użycia Logto Management API.',
+    field_options: {
+      off: 'Wyłączone',
+      edit: 'Edytuj',
+      read_only: 'Tylko do odczytu',
+      enabled: 'Włączone',
+      disabled: 'Nieaktywne',
+    },
+    sections: {
+      account_security: {
+        title: 'BEZPIECZEŃSTWO KONTA',
+        description:
+          'Zarządzaj dostępem do Account API, aby użytkownicy po zalogowaniu mogli przeglądać lub edytować swoje dane tożsamości oraz czynniki uwierzytelniania. Zanim wprowadzą te zmiany związane z bezpieczeństwem, użytkownicy muszą potwierdzić swoją tożsamość i uzyskać identyfikator rekordu weryfikacji ważny przez 10 minut.',
+        groups: {
+          identifiers: {
+            title: 'Identyfikatory',
+          },
+          authentication_factors: {
+            title: 'Czynniki uwierzytelniające',
+          },
+        },
+      },
+      user_profile: {
+        title: 'PROFIL UŻYTKOWNIKA',
+        description:
+          'Zarządzaj dostępem do Account API, aby użytkownicy po zalogowaniu mogli przeglądać lub edytować podstawowe albo własne dane profilu.',
+        groups: {
+          profile_data: {
+            title: 'Dane profilu',
+          },
+        },
+      },
+      secret_vault: {
+        title: 'TAJNY SEJF',
+        description:
+          'W przypadku konektorów społecznościowych i korporacyjnych bezpiecznie przechowuj tokeny dostępu stron trzecich, aby wywoływać ich interfejsy API (np. dodawać zdarzenia do Kalendarza Google).',
+        third_party_token_storage: {
+          title: 'Token strony trzeciej',
+          third_party_access_token_retrieval: 'Pobieranie tokenu dostępu strony trzeciej',
+          third_party_token_tooltip:
+            'Aby przechowywać tokeny, włącz tę opcję w ustawieniach odpowiedniego konektora społecznościowego lub korporacyjnego.',
+          third_party_token_description:
+            'Po włączeniu Account API pobieranie tokenów stron trzecich jest aktywowane automatycznie.',
+        },
+      },
+    },
+    fields: {
+      email: 'Adres e-mail',
+      phone: 'Numer telefonu',
+      social: 'Tożsamości społecznościowe',
+      password: 'Hasło',
+      mfa: 'Uwierzytelnianie wieloskładnikowe',
+      mfa_description: 'Pozwól użytkownikom zarządzać metodami MFA w centrum konta.',
+      username: 'Nazwa użytkownika',
+      name: 'Imię i nazwisko',
+      avatar: 'Awatar',
+      profile: 'Profil',
+      profile_description: 'Kontroluj dostęp do ustrukturyzowanych atrybutów profilu.',
+      custom_data: 'Dane niestandardowe',
+      custom_data_description:
+        'Kontroluj dostęp do niestandardowych danych JSON przechowywanych przy użytkowniku.',
+    },
+    webauthn_related_origins: 'Powiązane źródła WebAuthn',
+    webauthn_related_origins_description:
+      'Dodaj domeny swoich aplikacji front-end, którym pozwalasz rejestrować klucze dostępu przez Account API.',
+    webauthn_related_origins_error: 'Źródło musi zaczynać się od https:// lub http://',
+    prebuilt_ui: {
+      /** UNTRANSLATED */
+      title: 'INTEGRATE PREBUILT UI',
+      /** UNTRANSLATED */
+      description:
+        'Quickly integrate out-of-the-box verification and security setting flows with prebuilt UI.',
+      /** UNTRANSLATED */
+      flows_title: 'Integrate out-of-the-box security setting flows',
+      /** UNTRANSLATED */
+      flows_description:
+        'Combine your domain with the route to form your account setting URL (e.g., https://auth.foo.com/account/email). Optionally add a `redirect=` URL parameter to return users to your app after successfully updating.',
+      tooltips: {
+        /** UNTRANSLATED */
+        email: 'Update your primary email address',
+        /** UNTRANSLATED */
+        phone: 'Update your primary phone number',
+        /** UNTRANSLATED */
+        username: 'Update your username',
+        /** UNTRANSLATED */
+        password: 'Set a new password',
+        /** UNTRANSLATED */
+        authenticator_app: 'Set up a new authenticator app for multi-factor authentication',
+        /** UNTRANSLATED */
+        passkey_add: 'Register a new passkey',
+        /** UNTRANSLATED */
+        passkey_manage: 'Manage your existing passkeys or add new ones',
+        /** UNTRANSLATED */
+        backup_codes_generate: 'Generate a new set of 10 backup codes',
+        /** UNTRANSLATED */
+        backup_codes_manage: 'View your available backup codes or generate new ones',
+      },
+      /** UNTRANSLATED */
+      customize_note: "Don't want the out-of-the-box experience? You can fully",
+      /** UNTRANSLATED */
+      customize_link: 'customize your flows with the Account API instead.',
+    },
+  },
   sign_up_and_sign_in,
   content,
   setup_warning: {
     no_connector_sms:
-      'Nie ustawiono jeszcze łącznika SMS. Przed zakończeniem konfiguracji użytkownicy nie będą mogli się zalogować przy użyciu tej metody. <a>{{link}}</a> w sekcji „Łączniki“',
+      'Nie ustawiono jeszcze łącznika SMS. Przed zakończeniem konfiguracji użytkownicy nie będą mogli się zalogować przy użyciu tej metody. <a>{{link}}</a> w sekcji „Łączniki"',
     no_connector_email:
-      'Nie ustawiono jeszcze łącznika e-mail. Przed zakończeniem konfiguracji użytkownicy nie będą mogli się zalogować przy użyciu tej metody. <a>{{link}}</a> w sekcji „Łączniki“',
+      'Nie ustawiono jeszcze łącznika e-mail. Przed zakończeniem konfiguracji użytkownicy nie będą mogli się zalogować przy użyciu tej metody. <a>{{link}}</a> w sekcji „Łączniki"',
     no_connector_social:
       'Nie skonfigurowałeś jeszcze żadnego konektora społecznościowego. Najpierw dodaj konektory, aby zastosować metody logowania społecznościowego. <a>{{link}}</a> w "Konektory".',
+    no_connector_email_account_center:
+      'Nie ustawiono jeszcze łącznika e-mail. Skonfiguruj go w <a>„Łączniki e-mail i SMS"</a>.',
+    no_connector_sms_account_center:
+      'Nie ustawiono jeszcze łącznika SMS. Skonfiguruj go w <a>„Łączniki e-mail i SMS"</a>.',
+    no_connector_social_account_center:
+      'Nie ustawiono jeszcze łącznika społecznościowego. Skonfiguruj go w <a>„Łączniki społecznościowe"</a>.',
+    no_mfa_factor: 'Nie ustawiono jeszcze czynnika MFA. Skonfiguruj go w <a>{{link}}</a>.',
     setup_link: 'Konfiguracja',
   },
   save_alert: {
@@ -103,6 +226,8 @@ const sign_in_exp = {
     sign_up: 'Rejestracja',
     sign_in: 'Logowanie',
     social: 'Społecznościowy',
+    forgot_password_migration_notice:
+      'Zaktualizowaliśmy weryfikację zapomnianego hasła, aby wspierać niestandardowe metody. Wcześniej było to automatycznie określane przez Twoje łączniki Email i SMS. Kliknij <strong>Potwierdź</strong>, aby zakończyć aktualizację.',
   },
   preview: {
     title: 'Podgląd logowania',
@@ -114,6 +239,7 @@ const sign_in_exp = {
     desktop: 'Komputer',
     mobile: 'Telefon',
   },
+  custom_profile_fields,
 };
 
 export default Object.freeze(sign_in_exp);

@@ -1,8 +1,12 @@
 /* eslint-disable max-lines */
 import { emailRegEx, phoneRegEx, usernameRegEx } from '@logto/core-kit';
 import {
+  ProductEvent,
   UsersPasswordEncryptionMethod,
+  adminTenantId,
   jsonObjectGuard,
+  userMfaDataGuard,
+  userMfaDataKey,
   userProfileGuard,
   userProfileResponseGuard,
 } from '@logto/schemas';
@@ -16,13 +20,14 @@ import koaGuard from '#src/middleware/koa-guard.js';
 import assertThat from '#src/utils/assert-that.js';
 
 import { parseLegacyPassword } from '../../utils/password.js';
+import { captureDeveloperEvent } from '../../utils/posthog.js';
 import { transpileUserProfileResponse } from '../../utils/user.js';
 import type { ManagementApiRouter, RouterInitArgs } from '../types.js';
 
 export default function adminUserBasicsRoutes<T extends ManagementApiRouter>(
   ...args: RouterInitArgs<T>
 ) {
-  const [router, { queries, libraries }] = args;
+  const [router, { queries, libraries, id: tenantId }] = args;
   const {
     users: {
       deleteUserById,
@@ -115,6 +120,82 @@ export default function adminUserBasicsRoutes<T extends ManagementApiRouter>(
     }
   );
 
+  router.get(
+    '/users/:userId/logto-configs',
+    koaGuard({
+      params: object({ userId: string() }),
+      response: object({
+        mfa: object({
+          skipped: boolean(),
+        }),
+      }),
+      status: [200, 404],
+    }),
+    async (ctx, next) => {
+      const {
+        params: { userId },
+      } = ctx.guard;
+
+      const user = await findUserById(userId);
+      const existingMfaData = userMfaDataGuard.safeParse(user.logtoConfig[userMfaDataKey]);
+
+      ctx.body = {
+        mfa: {
+          skipped: existingMfaData.success ? Boolean(existingMfaData.data.skipped) : false,
+        },
+      };
+
+      return next();
+    }
+  );
+
+  router.patch(
+    '/users/:userId/logto-configs',
+    koaGuard({
+      params: object({ userId: string() }),
+      body: object({
+        mfa: object({
+          skipped: boolean(),
+        }),
+      }),
+      response: object({
+        mfa: object({
+          skipped: boolean(),
+        }),
+      }),
+      status: [200, 404],
+    }),
+    async (ctx, next) => {
+      const {
+        params: { userId },
+        body: {
+          mfa: { skipped },
+        },
+      } = ctx.guard;
+
+      const user = await findUserById(userId);
+      const existingMfaData = userMfaDataGuard.safeParse(user.logtoConfig[userMfaDataKey]);
+
+      const updatedUser = await updateUserById(userId, {
+        logtoConfig: {
+          ...user.logtoConfig,
+          [userMfaDataKey]: {
+            ...(existingMfaData.success ? existingMfaData.data : {}),
+            skipped,
+          },
+        },
+      });
+
+      ctx.appendDataHookContext('User.Data.Updated', { user: updatedUser });
+
+      ctx.body = {
+        mfa: { skipped },
+      };
+
+      return next();
+    }
+  );
+
   router.patch(
     '/users/:userId/profile',
     koaGuard({
@@ -201,26 +282,23 @@ export default function adminUserBasicsRoutes<T extends ManagementApiRouter>(
 
       const id = await generateUserId();
 
-      const [user] = await insertUser(
-        {
-          id,
-          primaryEmail,
-          primaryPhone,
-          username,
-          name,
-          avatar,
-          ...conditional(customData && { customData }),
-          ...conditional(password && (await encryptUserPassword(password))),
-          ...conditional(
-            passwordDigest && {
-              passwordEncrypted: passwordDigest,
-              passwordEncryptionMethod: passwordAlgorithm,
-            }
-          ),
-          ...conditional(profile && { profile }),
-        },
-        []
-      );
+      const [user] = await insertUser({
+        id,
+        primaryEmail,
+        primaryPhone,
+        username,
+        name,
+        avatar,
+        ...conditional(customData && { customData }),
+        ...conditional(password && (await encryptUserPassword(password))),
+        ...conditional(
+          passwordDigest && {
+            passwordEncrypted: passwordDigest,
+            passwordEncryptionMethod: passwordAlgorithm,
+          }
+        ),
+        ...conditional(profile && { profile }),
+      });
 
       ctx.body = transpileUserProfileResponse(user);
       return next();
@@ -379,6 +457,9 @@ export default function adminUserBasicsRoutes<T extends ManagementApiRouter>(
       await signOutUser(userId);
       await deleteUserById(userId);
 
+      if (tenantId === adminTenantId) {
+        captureDeveloperEvent(userId, ProductEvent.DeveloperDeleted);
+      }
       ctx.status = 204;
 
       // Manually trigger the `User.Deleted` hook since we need to send the user data in the payload

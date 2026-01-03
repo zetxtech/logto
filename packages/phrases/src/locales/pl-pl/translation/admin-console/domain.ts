@@ -9,14 +9,16 @@ const domain = {
   error_hint:
     'Upewnij się, że zaktualizowałeś swoje rekordy DNS. Będziemy nadal sprawdzać co {{value}} sekund.',
   custom: {
-    custom_domain: 'Niestandardowa domena',
+    custom_domain: 'Niestandardowe domeny',
     custom_domain_description:
       'Ulepsz swoją markę, wykorzystując niestandardową domenę. Ta domena będzie używana w Twoim procesie logowania.',
-    custom_domain_field: 'Niestandardowa domena',
-    custom_domain_placeholder: 'twoja.domena.com',
+    custom_domain_field: 'Niestandardowe domeny',
+    custom_domain_placeholder: 'auth.domain.com',
+    add_custom_domain_field: 'Dodaj domenę niestandardową',
+    custom_domains_field: 'Domeny niestandardowe',
     add_domain: 'Dodaj domenę',
     invalid_domain_format:
-      'Proszę podać poprawny adres URL domeny z co najmniej trzema częściami, np. "twoja.domena.com."',
+      'Proszę podać poprawny adres URL domeny z co najmniej trzema częściami, np. "auth.domain.com."',
     verify_domain: 'Zweryfikuj domenę',
     enable_ssl: 'Włącz SSL',
     checking_dns_tip:
@@ -40,6 +42,8 @@ const domain = {
         'Jeśli wcześniej skonfigurowałeś tę niestandardową domenę w dostawcy łączników społecznościowych lub zakończeniu aplikacji, musisz najpierw zmodyfikować adres URI na domyślną domenę Logto "<span>{{domain}}</span>". Jest to niezbędne do poprawnego działania przycisku logowania społecznego.',
       deleted: 'Niestandardowa domena została pomyślnie usunięta!',
     },
+    config_custom_domain_description:
+      'Skonfiguruj domeny niestandardowe, aby włączyć następujące funkcje: aplikacje, konektory społecznościowe i konektory korporacyjne.',
   },
   default: {
     default_domain: 'Domyślna domena',
@@ -53,6 +57,12 @@ const domain = {
     'Możesz dostosować nazwę domeny tego adresu URI, aby dopasować ją do punktu końcowego Twojej aplikacji. Wybierz "{{custom}}" lub "{{default}}".',
   custom_acs_url_note:
     'Możesz dostosować nazwę domeny tego URI, aby dopasować ją do adresu URL usługi konsumenta oświadczeń Twojego dostawcy tożsamości. Wybierz "{{custom}}" lub "{{default}}".',
+  switch_custom_domain_tip:
+    'Przełącz domenę, aby zobaczyć odpowiadający jej endpoint. Dodaj więcej domen przez <a>domeny niestandardowe</a>.',
+  switch_saml_app_domain_tip:
+    'Przełącz domenę, aby zobaczyć odpowiadające jej adresy URL. W protokołach SAML adresy URL metadanych mogą być hostowane na dowolnej dostępnej domenie. Jednak wybrana domena określa adres URL usługi SSO, na który dostawcy SP przekierowują użytkowników do uwierzytelnienia, co wpływa na doświadczenie logowania i widoczność adresu URL.',
+  switch_saml_connector_domain_tip:
+    'Przełącz domenę, aby zobaczyć odpowiadające adresy URL. Wybrana domena określa Twój adres ACS URL, który wpływa na to, dokąd użytkownicy są kierowani po logowaniu SSO. Wybierz domenę, która odpowiada oczekiwanemu zachowaniu przekierowań Twojej aplikacji.',
 };
 
 export default Object.freeze(domain);

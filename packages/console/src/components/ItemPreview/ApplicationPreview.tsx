@@ -20,12 +20,7 @@ function ApplicationPreview({ data: { id, name, isThirdParty, type } }: Props) {
   return (
     <ItemPreview
       title={name}
-      subtitle={
-        // We have ensured that SAML applications are always third party in DB schema, we use `||` here to make TypeScript happy.
-        isThirdParty
-          ? t(`${applicationTypeI18nKey.thirdParty}.title`)
-          : t(`${applicationTypeI18nKey[type]}.title`)
-      }
+      subtitle={t(`${applicationTypeI18nKey[type]}.title`)}
       icon={<ApplicationIcon className={styles.icon} type={type} isThirdParty={isThirdParty} />}
       to={buildDetailsPathname(id)}
     />

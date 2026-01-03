@@ -1,14 +1,16 @@
 import {
+  CustomProfileFieldType,
   InteractionEvent,
   MfaFactor,
   MissingProfile,
   SignInIdentifier,
   type SsoConnectorMetadata,
+  SupportedDateFormat,
   VerificationType,
 } from '@logto/schemas';
 import * as s from 'superstruct';
 
-import { type IdentifierInputValue } from '@/components/InputFields/SmartInputField';
+import { type IdentifierInputValue } from '@/shared/components/InputFields/SmartInputField';
 
 import { UserFlow } from '.';
 
@@ -35,6 +37,7 @@ export const missingProfileErrorDataGuard = s.object({
       s.literal(MissingProfile.phone),
       s.literal(MissingProfile.username),
       s.literal(MissingProfile.emailOrPhone),
+      s.literal(MissingProfile.extraProfile),
     ])
   ),
   registeredSocialIdentity,
@@ -61,12 +64,22 @@ const mfaFactorsGuard = s.array(
     s.literal(MfaFactor.TOTP),
     s.literal(MfaFactor.WebAuthn),
     s.literal(MfaFactor.BackupCode),
+    s.literal(MfaFactor.EmailVerificationCode),
+    s.literal(MfaFactor.PhoneVerificationCode),
   ])
 );
+
+const mfaFactorEnumValues = [
+  MfaFactor.EmailVerificationCode,
+  MfaFactor.PhoneVerificationCode,
+] as const;
 
 export const mfaErrorDataGuard = s.object({
   availableFactors: mfaFactorsGuard,
   skippable: s.optional(s.boolean()),
+  maskedIdentifiers: s.optional(s.record(s.enums(mfaFactorEnumValues), s.string())),
+  // Whether this MFA flow is an optional suggestion (e.g., add another factor after sign-up)
+  suggestion: s.optional(s.boolean()),
 });
 
 export const mfaFlowStateGuard = mfaErrorDataGuard;
@@ -156,3 +169,105 @@ export const continueFlowStateGuard = s.object({
 });
 
 export type InteractionFlowState = s.Infer<typeof continueFlowStateGuard>;
+
+export const extraProfileFieldNamesGuard = s.union([
+  s.literal('name'),
+  s.literal('avatar'),
+  s.literal('givenName'),
+  s.literal('familyName'),
+  s.literal('middleName'),
+  s.literal('nickname'),
+  s.literal('preferredUsername'),
+  s.literal('profile'),
+  s.literal('website'),
+  s.literal('gender'),
+  s.literal('birthdate'),
+  s.literal('zoneinfo'),
+  s.literal('locale'),
+  s.literal('fullname'),
+  s.literal('address.formatted'),
+  s.literal('address.streetAddress'),
+  s.literal('address.locality'),
+  s.literal('address.region'),
+  s.literal('address.postalCode'),
+  s.literal('address.country'),
+]);
+
+export const addressFieldValueGuard = s.optional(
+  s.object({
+    formatted: s.optional(s.string()),
+    streetAddress: s.optional(s.string()),
+    locality: s.optional(s.string()),
+    region: s.optional(s.string()),
+    postalCode: s.optional(s.string()),
+    country: s.optional(s.string()),
+  })
+);
+
+const profileFieldTypeGuard = s.enums(Object.values(CustomProfileFieldType));
+
+const dateFormatEnumGuard = s.enums(Object.values(SupportedDateFormat));
+
+export const dateFieldConfigGuard = s.object({
+  format: dateFormatEnumGuard,
+  placeholder: s.optional(s.string()),
+  customFormat: s.optional(s.string()),
+});
+
+const baseConfigPartGuard = s.object({
+  enabled: s.boolean(),
+  type: profileFieldTypeGuard,
+  label: s.optional(s.string()),
+  description: s.optional(s.string()),
+  required: s.boolean(),
+  config: s.optional(
+    s.object({
+      placeholder: s.optional(s.string()),
+      minLength: s.optional(s.number()),
+      maxLength: s.optional(s.number()),
+      minValue: s.optional(s.number()),
+      maxValue: s.optional(s.number()),
+      options: s.optional(s.array(s.object({ value: s.string(), label: s.optional(s.string()) }))),
+      format: s.optional(s.string()),
+      customFormat: s.optional(s.string()),
+      defaultValue: s.optional(s.string()),
+    })
+  ),
+});
+
+export const addressFieldConfigGuard = s.object({
+  parts: s.array(
+    s.assign(
+      baseConfigPartGuard,
+      s.object({
+        name: s.union([
+          s.literal('streetAddress'),
+          s.literal('locality'),
+          s.literal('region'),
+          s.literal('postalCode'),
+          s.literal('country'),
+          s.literal('formatted'),
+        ]),
+      })
+    )
+  ),
+});
+
+export const fullnameFieldValueGuard = s.optional(
+  s.object({
+    givenName: s.optional(s.string()),
+    middleName: s.optional(s.string()),
+    familyName: s.optional(s.string()),
+  })
+);
+
+export const fullnameFieldConfigGuard = s.object({
+  parts: s.array(
+    s.assign(
+      baseConfigPartGuard,
+      s.object({
+        name: s.union([s.literal('givenName'), s.literal('middleName'), s.literal('familyName')]),
+      })
+    )
+  ),
+});

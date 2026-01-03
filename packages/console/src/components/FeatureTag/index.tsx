@@ -15,11 +15,9 @@ export { default as BetaTag } from './BetaTag';
  * The display tag mapping for each plan type.
  */
 const planTagMap = {
-  [ReservedPlanId.Free]: 'free',
   [ReservedPlanId.Pro]: 'pro',
   [ReservedPlanId.Pro202411]: 'pro',
-  [ReservedPlanId.Development]: 'dev',
-  [ReservedPlanId.Admin]: 'admin',
+  [ReservedPlanId.Pro202509]: 'pro',
   enterprise: 'enterprise',
 } as const;
 
@@ -27,7 +25,10 @@ const planTagMap = {
  * The minimum plan required to use the feature.
  * Currently we only have pro plan paywall.
  */
-export type PaywallPlanId = Extract<ReservedPlanId, ReservedPlanId.Pro | ReservedPlanId.Pro202411>;
+export type PaywallPlanId = Extract<
+  ReservedPlanId,
+  ReservedPlanId.Pro | ReservedPlanId.Pro202411 | ReservedPlanId.Pro202509
+>;
 
 export type Props = {
   /**
@@ -108,7 +109,7 @@ export const addOnLabels = {
   addOnBundle: 'Add-on (bundle)',
 } as const;
 
-type CombinedAddOnAndFeatureTagProps = {
+export type CombinedAddOnAndFeatureTagProps = {
   readonly hasAddOnTag?: boolean;
   readonly className?: string;
   /** The minimum plan required to use the feature. */

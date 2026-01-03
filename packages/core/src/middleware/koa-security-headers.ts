@@ -5,7 +5,7 @@ import { conditionalArray } from '@silverhand/essentials';
 import helmet, { type HelmetOptions } from 'helmet';
 import type { MiddlewareType } from 'koa';
 
-import { EnvSet, AdminApps, getTenantEndpoint } from '#src/env-set/index.js';
+import { EnvSet, AdminApps, UserApps, getTenantEndpoint } from '#src/env-set/index.js';
 
 /**
  * Apply security headers to the response using helmet
@@ -30,8 +30,7 @@ export default function koaSecurityHeaders<StateT, ContextT, ResponseBodyT>(
   mountedApps: string[],
   tenantId: string
 ): MiddlewareType<StateT, ContextT, ResponseBodyT> {
-  const { isProduction, isDevFeaturesEnabled, isCloud, urlSet, adminUrlSet, cloudUrlSet } =
-    EnvSet.values;
+  const { isProduction, isCloud, urlSet, adminUrlSet, cloudUrlSet } = EnvSet.values;
 
   const tenantEndpointOrigin = getTenantEndpoint(tenantId, EnvSet.values).origin;
   // Logto Cloud uses cloud service to serve the admin console; while Logto OSS uses a fixed path under the admin URL set.
@@ -52,10 +51,6 @@ export default function koaSecurityHeaders<StateT, ContextT, ResponseBodyT>(
         'http://localhost:5174', // From local blog
       ];
   const logtoOrigin = 'https://*.logto.io';
-  const logtoDevOrigins = [
-    'https://*.logto.dev', // From Logto dev environment
-    'https://*.logto-docs.pages.dev', // From Logto docs CI build page
-  ];
   /** Google Sign-In (GSI) origin for Google One Tap. */
   const gsiOrigin = 'https://accounts.google.com/gsi/';
 
@@ -99,7 +94,7 @@ export default function koaSecurityHeaders<StateT, ContextT, ResponseBodyT>(
   // @ts-expect-error: helmet typings has lots of {A?: T, B?: never} | {A?: never, B?: T} options definitions. Optional settings type can not inferred correctly.
   const experienceSecurityHeaderSettings: HelmetOptions = {
     ...basicSecurityHeaderSettings,
-    // WARNING (high risk): Need to allow self-hosted terms of use page loaded in an iframe
+    // Guarded by CSP header below
     frameguard: false,
     // Allow being loaded by console preview iframe
     crossOriginResourcePolicy: {
@@ -122,8 +117,10 @@ export default function koaSecurityHeaders<StateT, ContextT, ResponseBodyT>(
           'https://challenges.cloudflare.com/turnstile/v0/api.js',
           // Google Recaptcha Enterprise
           'https://www.google.com/recaptcha/enterprise.js',
+          'https://recaptcha.net/recaptcha/enterprise.js',
           // Google Recaptcha static resources
           'https://www.gstatic.com/recaptcha/',
+          'https://www.gstatic.cn/recaptcha/',
           // Allow "unsafe-eval" for debugging purpose in non-production environment
           ...conditionalArray(!isProduction && "'unsafe-eval'"),
         ],
@@ -134,7 +131,9 @@ export default function koaSecurityHeaders<StateT, ContextT, ResponseBodyT>(
           tenantEndpointOrigin,
           // Allow reCAPTCHA API calls
           'https://www.google.com/recaptcha/',
+          'https://recaptcha.net/recaptcha/',
           'https://www.gstatic.com/recaptcha/',
+          'https://www.gstatic.cn/recaptcha/',
           ...developmentOrigins,
         ],
         // WARNING (high risk): Need to allow self-hosted terms of use page loaded in an iframe
@@ -147,9 +146,31 @@ export default function koaSecurityHeaders<StateT, ContextT, ResponseBodyT>(
   };
 
   // @ts-expect-error: helmet typings has lots of {A?: T, B?: never} | {A?: never, B?: T} options definitions. Optional settings type can not inferred correctly.
+  const accountCenterSecurityHeaderSettings: HelmetOptions = {
+    ...basicSecurityHeaderSettings,
+    // Guarded by CSP header below
+    frameguard: false,
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        'upgrade-insecure-requests': null,
+        imgSrc: ["'self'", 'data:', 'https:'],
+        scriptSrc: [
+          "'self'",
+          // Some of our users may use the Cloudflare Web Analytics service. We need to allow it to load its scripts.
+          'https://static.cloudflareinsights.com/',
+          ...conditionalArray(!isProduction && ["'unsafe-eval'"]),
+        ],
+        connectSrc: ["'self'", tenantEndpointOrigin, ...developmentOrigins],
+        frameSrc: ["'self'"],
+      },
+    },
+  };
+
+  // @ts-expect-error: helmet typings has lots of {A?: T, B?: never} | {A?: never, B?: T} options definitions. Optional settings type can not inferred correctly.
   const consoleSecurityHeaderSettings: HelmetOptions = {
     ...basicSecurityHeaderSettings,
-    // Guarded by CSP header bellow
+    // Guarded by CSP header below
     frameguard: false,
     contentSecurityPolicy: {
       useDefaults: true,
@@ -164,14 +185,6 @@ export default function koaSecurityHeaders<StateT, ContextT, ResponseBodyT>(
         ],
         connectSrc: ["'self'", logtoOrigin, ...adminOrigins, ...coreOrigins, ...developmentOrigins],
         frameSrc: ["'self'", ...adminOrigins, ...coreOrigins],
-        // Allow being loaded by iframe
-        frameAncestors: [
-          "'self'",
-          ...adminOrigins,
-          ...conditionalArray(isProduction && logtoOrigin),
-          ...developmentOrigins,
-          ...conditionalArray(isDevFeaturesEnabled && logtoDevOrigins),
-        ],
       },
     },
   };
@@ -187,18 +200,16 @@ export default function koaSecurityHeaders<StateT, ContextT, ResponseBodyT>(
     ) {
       await helmetPromise(consoleSecurityHeaderSettings, req, res);
 
-      // Special handling for AuthStatus to allow iframe storage access
-      if (requestPath.includes('/auth-status')) {
-        // Add Permissions-Policy header to allow storage access in iframe
-        res.setHeader('Permissions-Policy', 'storage-access=*');
-        // Add Document-Policy header for better iframe storage support
-        res.setHeader('Document-Policy', 'js-profiling=false');
-      }
+      return next();
+    }
+
+    if (requestPath.startsWith(`/${UserApps.AccountCenter}`)) {
+      await helmetPromise(accountCenterSecurityHeaderSettings, req, res);
 
       return next();
     }
 
-    // Route has been handled by one of mounted apps
+    // Route has been handled by one of the other mounted apps
     if (mountedApps.some((app) => app !== '' && requestPath.startsWith(`/${app}`))) {
       await helmetPromise(basicSecurityHeaderSettings, req, res);
 

@@ -3,6 +3,9 @@ import password_rejected from './password-rejected.js';
 const error = {
   general_required: `{{types, list(type: disjunction;)}} è richiesto`,
   general_invalid: `Il {{types, list(type: disjunction;)}} non è valido`,
+  invalid_min_max_input: 'Il valore inserito deve essere compreso tra {{minValue}} e {{maxValue}}',
+  invalid_min_max_length:
+    'La lunghezza del valore inserito deve essere compresa tra {{minLength}} e {{maxLength}}',
   username_required: 'Username è richiesto',
   password_required: 'La password è richiesta',
   username_exists: 'Username esiste già',
@@ -22,7 +25,11 @@ const error = {
   invalid_link: 'Link invalido',
   invalid_link_description: 'Il tuo token monouso potrebbe essere scaduto o non è più valido.',
   captcha_verification_failed: 'Errore durante la verifica del captcha.',
+  terms_acceptance_required: 'Accettazione dei termini richiesta',
+  terms_acceptance_required_description:
+    'Devi accettare i termini per continuare. Per favore riprova.',
   something_went_wrong: 'Qualcosa è andato storto.',
+  feature_not_enabled: 'Questa funzione non è abilitata.',
 };
 
 export default Object.freeze(error);

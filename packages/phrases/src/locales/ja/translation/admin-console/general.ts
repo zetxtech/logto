@@ -75,6 +75,8 @@ const general = {
   or: 'または',
   reset: 'リセット',
   generate: '生成する',
+  manage: '管理',
+  live_preview: 'ライブプレビュー',
 };
 
 export default Object.freeze(general);

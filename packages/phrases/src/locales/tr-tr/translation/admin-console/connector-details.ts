@@ -4,7 +4,9 @@ const connector_details = {
   check_readme: 'READMEye bak',
   settings: 'Genel ayarlar',
   settings_description:
-    "Bağdaştırıcılar Logto'da kritik bir rol oynar. Onların yardımıyla, Logto son kullanıcıların şifresiz kayıt veya giriş yapmasını ve sosyal hesaplarla giriş yapabilme özelliklerini sağlar.",
+    'Hızlı sosyal giriş ve sosyal hesap bağlantısı için üçüncü taraf sağlayıcılarla entegre edin',
+  setting_description_with_token_storage_supported:
+    'Hızlı sosyal giriş, sosyal hesap bağlantısı ve API erişimi için üçüncü taraf sağlayıcılarla entegre edin.',
   email_connector_settings_description:
     'E-posta ile kayıt ve giriş özelliklerini etkinleştirmek için e-posta gönderim sağlayıcınızla entegre olun.',
   parameter_configuration: 'Parametre yapılandırması',
@@ -67,6 +69,10 @@ const connector_details = {
     auto_select: 'Mümkünse kimlik bilgilerini otomatik seç',
     close_on_tap_outside: 'Kullanıcı dışarıya tıklarsa istemi iptal et',
     itp_support: "<a>ITP tarayıcılarda Yükseltilmiş One Tap UX'i</a> etkinleştir",
+  },
+  sign_in_experience: {
+    in_use: 'Oturum açma için etkin',
+    not_in_use: 'Oturum açma için devre dışı',
   },
 };
 

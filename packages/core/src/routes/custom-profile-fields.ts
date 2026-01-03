@@ -8,7 +8,15 @@ import { z } from 'zod';
 
 import koaGuard from '#src/middleware/koa-guard.js';
 
+import RequestError from '../errors/RequestError/index.js';
+import { koaQuotaGuard } from '../middleware/koa-quota-guard.js';
+import assertThat from '../utils/assert-that.js';
+
 import type { ManagementApiRouter, RouterInitArgs } from './types.js';
+
+// Maximum number of items allowed in a single batch creation request.
+// Name kept generic since the route context already implies custom profile fields.
+const batchItemsLimit = 20;
 
 export default function customProfileFieldsRoutes<T extends ManagementApiRouter>(
   ...[router, { queries, libraries }]: RouterInitArgs<T>
@@ -47,7 +55,11 @@ export default function customProfileFieldsRoutes<T extends ManagementApiRouter>
     async (ctx, next) => {
       const { params } = ctx.guard;
 
-      ctx.body = await findCustomProfileFieldByName(params.name);
+      const result = await findCustomProfileFieldByName(params.name);
+
+      assertThat(result, new RequestError({ code: 'entity.not_found', status: 404 }));
+
+      ctx.body = result;
       ctx.status = 200;
       return next();
     }
@@ -55,6 +67,7 @@ export default function customProfileFieldsRoutes<T extends ManagementApiRouter>
 
   router.post(
     '/custom-profile-fields',
+    koaQuotaGuard({ key: 'collectUserProfileEnabled', quota: libraries.quota }),
     koaGuard({
       body: customProfileFieldUnionGuard,
       response: CustomProfileFields.guard,
@@ -64,6 +77,24 @@ export default function customProfileFieldsRoutes<T extends ManagementApiRouter>
       const { body } = ctx.guard;
 
       ctx.body = await createCustomProfileField(body);
+      ctx.status = 201;
+      return next();
+    }
+  );
+
+  router.post(
+    '/custom-profile-fields/batch',
+    koaQuotaGuard({ key: 'collectUserProfileEnabled', quota: libraries.quota }),
+    koaGuard({
+      body: z.array(customProfileFieldUnionGuard).max(batchItemsLimit),
+      response: z.array(CustomProfileFields.guard),
+      status: [201, 400],
+    }),
+    async (ctx, next) => {
+      const { body } = ctx.guard;
+
+      const created = await libraries.customProfileFields.createCustomProfileFieldsBatch(body);
+      ctx.body = created;
       ctx.status = 201;
       return next();
     }
@@ -109,7 +140,7 @@ export default function customProfileFieldsRoutes<T extends ManagementApiRouter>
   );
 
   router.post(
-    '/custom-profile-fields/sie-order',
+    '/custom-profile-fields/properties/sie-order',
     koaGuard({
       body: z.object({
         order: z.array(updateCustomProfileFieldSieOrderGuard),

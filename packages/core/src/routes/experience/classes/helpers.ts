@@ -5,16 +5,11 @@
  * we have moved some of the standalone functions into this file.
  */
 
-import { defaults, parseAffiliateData } from '@logto/affiliate';
-import { adminTenantId, MfaFactor, VerificationType, type User } from '@logto/schemas';
-import { conditional, trySafe } from '@silverhand/essentials';
-import { type IRouterContext } from 'koa-router';
+import { MfaFactor, VerificationType, type User, type Mfa } from '@logto/schemas';
+import { conditional } from '@silverhand/essentials';
 
-import { EnvSet } from '#src/env-set/index.js';
 import RequestError from '#src/errors/RequestError/index.js';
-import { type CloudConnectionLibrary } from '#src/libraries/cloud-connection.js';
 import assertThat from '#src/utils/assert-that.js';
-import { getConsoleLogFromContext } from '#src/utils/console.js';
 
 import type { InteractionProfile } from '../types.js';
 
@@ -43,19 +38,45 @@ export const getNewUserProfileFromVerificationRecord = async (
         verificationRecord.toSyncedProfile(true),
       ]);
 
-      // TODO: Remove this check once enterprise SSO support getTokenSetSecret
-      const socialConnectorTokenSetSecret =
+      const tokenSetSecretProfile =
         verificationRecord.type === VerificationType.Social
-          ? await verificationRecord.getTokenSetSecret()
-          : undefined;
+          ? { socialConnectorTokenSetSecret: await verificationRecord.getTokenSetSecret() }
+          : { enterpriseSsoConnectorTokenSetSecret: verificationRecord.getTokenSetSecret() };
 
-      return { ...identityProfile, ...syncedProfile, socialConnectorTokenSetSecret };
+      return {
+        ...identityProfile,
+        ...syncedProfile,
+        ...tokenSetSecretProfile,
+      };
     }
     default: {
       // Unsupported verification type for user creation, such as MFA verification.
       throw new RequestError({ code: 'session.verification_failed', status: 400 });
     }
   }
+};
+
+const order: MfaFactor[] = [
+  MfaFactor.WebAuthn,
+  MfaFactor.TOTP,
+  MfaFactor.PhoneVerificationCode,
+  MfaFactor.EmailVerificationCode,
+  MfaFactor.BackupCode,
+];
+
+/**
+ * Sort MFA factors by display priority to keep client experience consistent.
+ * Order: WebAuthn -> TOTP -> Phone -> Email -> Backup code -> others.
+ */
+export const sortMfaFactors = (factors: MfaFactor[]): MfaFactor[] => {
+  return factors.slice().sort((factorA, factorB) => {
+    const indexA = order.indexOf(factorA);
+    const indexB = order.indexOf(factorB);
+    const normalizedIndexA = indexA === -1 ? order.length : indexA;
+    const normalizedIndexB = indexB === -1 ? order.length : indexB;
+
+    return normalizedIndexA - normalizedIndexB;
+  });
 };
 
 /**
@@ -83,6 +104,7 @@ export const identifyUserByVerificationRecord = async (
     | 'avatar'
     | 'name'
     | 'socialConnectorTokenSetSecret'
+    | 'enterpriseSsoConnectorTokenSetSecret'
   >;
 }> => {
   // Check verification record can be used to identify a user using the `identifyUser` method.
@@ -95,7 +117,9 @@ export const identifyUserByVerificationRecord = async (
   switch (verificationRecord.type) {
     case VerificationType.Password:
     case VerificationType.EmailVerificationCode:
-    case VerificationType.PhoneVerificationCode: {
+    case VerificationType.PhoneVerificationCode:
+    case VerificationType.MfaEmailVerificationCode:
+    case VerificationType.MfaPhoneVerificationCode: {
       return {
         user: await verificationRecord.identifyUser(),
       };
@@ -129,6 +153,7 @@ export const identifyUserByVerificationRecord = async (
         const syncedProfile = {
           syncedEnterpriseSsoIdentity: enterpriseSsoIdentity,
           ...(await verificationRecord.toSyncedProfile()),
+          enterpriseSsoConnectorTokenSetSecret: verificationRecord.getTokenSetSecret(),
         };
         return { user, syncedProfile };
       } catch (error: unknown) {
@@ -139,6 +164,7 @@ export const identifyUserByVerificationRecord = async (
           const syncedProfile = {
             ...verificationRecord.toUserProfile(),
             ...(await verificationRecord.toSyncedProfile()),
+            enterpriseSsoConnectorTokenSetSecret: verificationRecord.getTokenSetSecret(),
           };
           return { user, syncedProfile };
         }
@@ -166,27 +192,91 @@ export const mergeUserMfaVerifications = (
 };
 
 /**
- * Post affiliate data to the cloud service.
+ * Filter out backup codes mfa verifications that have been used
  */
-export const postAffiliateLogs = async (
-  ctx: IRouterContext,
-  cloudConnection: CloudConnectionLibrary,
-  userId: string,
-  tenantId: string
-) => {
-  if (!EnvSet.values.isCloud || tenantId !== adminTenantId) {
-    return;
-  }
+const filterOutEmptyBackupCodes = (
+  mfaVerifications: User['mfaVerifications']
+): User['mfaVerifications'] =>
+  mfaVerifications.filter((mfa) => {
+    if (mfa.type === MfaFactor.BackupCode) {
+      return mfa.codes.some((code) => !code.usedAt);
+    }
+    return true;
+  });
 
-  const affiliateData = trySafe(() =>
-    parseAffiliateData(JSON.parse(decodeURIComponent(ctx.cookies.get(defaults.cookieName) ?? '')))
-  );
+/**
+ * Get all enabled MFA verifications for a user (stored + implicit)
+ * @param mfaSettings - MFA settings from sign-in experience
+ * @param user - User object with mfaVerifications and profile data
+ * @param currentProfile - Optional profile override (for current interaction contexts), in cases of MFA verification, this is not needed
+ * @returns Array of all enabled MFA verifications
+ */
+export const getAllUserEnabledMfaVerifications = (
+  mfaSettings: Mfa,
+  user: User,
+  currentProfile?: InteractionProfile
+): MfaFactor[] => {
+  const storedVerifications = filterOutEmptyBackupCodes(user.mfaVerifications)
+    .filter((verification) => mfaSettings.factors.includes(verification.type))
+    // Filter out backup codes if all the codes are used
+    .filter((verification) => {
+      if (verification.type !== MfaFactor.BackupCode) {
+        return true;
+      }
+      return verification.codes.some((code) => !code.usedAt);
+    })
+    .slice()
+    // Sort by priority:
+    // 1) WebAuthn always first if available
+    // 2) Backup code always last
+    // 3) Otherwise by last used time (desc)
+    .sort((verificationA, verificationB) => {
+      // WebAuthn to the front whenever present
+      if (verificationA.type === MfaFactor.WebAuthn && verificationB.type !== MfaFactor.WebAuthn) {
+        return -1;
+      }
+      if (verificationB.type === MfaFactor.WebAuthn && verificationA.type !== MfaFactor.WebAuthn) {
+        return 1;
+      }
 
-  if (affiliateData) {
-    const client = await cloudConnection.getClient();
-    await client.post('/api/affiliate-logs', {
-      body: { userId, ...affiliateData },
-    });
-    getConsoleLogFromContext(ctx).info('Affiliate logs posted', userId);
-  }
+      // Backup codes to the end
+      if (verificationA.type === MfaFactor.BackupCode) {
+        return 1;
+      }
+      if (verificationB.type === MfaFactor.BackupCode) {
+        return -1;
+      }
+
+      // Recent first for the rest
+      return (
+        new Date(verificationB.lastUsedAt ?? 0).getTime() -
+        new Date(verificationA.lastUsedAt ?? 0).getTime()
+      );
+    })
+    .map(({ type }) => type);
+
+  const email = currentProfile?.primaryEmail ?? user.primaryEmail;
+  const phone = currentProfile?.primaryPhone ?? user.primaryPhone;
+
+  const implicitVerifications = [
+    // Phone MFA Factor: user has primaryPhone + Phone factor enabled in SIE
+    ...(mfaSettings.factors.includes(MfaFactor.PhoneVerificationCode) && phone
+      ? [MfaFactor.PhoneVerificationCode]
+      : []),
+    // Email MFA Factor: user has primaryEmail + Email factor enabled in SIE
+    ...(mfaSettings.factors.includes(MfaFactor.EmailVerificationCode) && email
+      ? [MfaFactor.EmailVerificationCode]
+      : []),
+  ];
+
+  return [...storedVerifications, ...implicitVerifications].slice().sort((factorA, factorB) => {
+    // Backup code always comes last
+    if (factorA === MfaFactor.BackupCode) {
+      return 1;
+    }
+    if (factorB === MfaFactor.BackupCode) {
+      return -1;
+    }
+    return 0;
+  });
 };

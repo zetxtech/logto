@@ -118,6 +118,18 @@
           }
         }
       }
+    },
+    "/api/experience/interaction": {
+      "get": {
+        "operationId": "GetInteraction",
+        "summary": "Get public interaction data",
+        "description": "Get the public interaction data.",
+        "responses": {
+          "200": {
+            "description": "The public interaction data has been successfully retrieved."
+          }
+        }
+      }
     }
   }
 }

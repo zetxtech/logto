@@ -4,11 +4,12 @@ import type {
   ConnectorMetadata,
   FullSignInExperience,
   LanguageInfo,
+  PartialColor,
   SignInExperience,
   SsoConnectorMetadata,
 } from '@logto/schemas';
-import { ConnectorType, ReservedPlanId } from '@logto/schemas';
-import { cond, conditional, deduplicate, pick, trySafe } from '@silverhand/essentials';
+import { adminTenantId, ConnectorType, ForgotPasswordMethod, TenantTag } from '@logto/schemas';
+import { deduplicate, trySafe } from '@silverhand/essentials';
 import deepmerge from 'deepmerge';
 
 import { type WellKnownCache } from '#src/caches/well-known.js';
@@ -19,27 +20,23 @@ import type { SsoConnectorLibrary } from '#src/libraries/sso-connector.js';
 import { ssoConnectorFactories } from '#src/sso/index.js';
 import type Queries from '#src/tenants/Queries.js';
 import assertThat from '#src/utils/assert-that.js';
-import { getTenantSubscription } from '#src/utils/subscription/index.js';
 import { isKeyOfI18nPhrases } from '#src/utils/translation.js';
-
-import { type CloudConnectionLibrary } from '../cloud-connection.js';
 
 export * from './sign-up.js';
 export * from './sign-in.js';
 export * from './email-blocklist-policy.js';
 
-export const developmentTenantPlanId = 'dev';
-
-export type SignInExperienceLibrary = ReturnType<typeof createSignInExperienceLibrary>;
+type SignInExperienceOverride = Partial<Omit<SignInExperience, 'color'> & { color: PartialColor }>;
 
 export const createSignInExperienceLibrary = (
+  tenantId: string,
   queries: Queries,
   { getLogtoConnectors }: ConnectorLibrary,
   { getAvailableSsoConnectors }: SsoConnectorLibrary,
-  cloudConnection: CloudConnectionLibrary,
   wellKnownCache: WellKnownCache
 ) => {
   const {
+    tenants: { findTenantMetadataById },
     customPhrases: { findAllCustomLanguageTags },
     signInExperiences: { findDefaultSignInExperience, updateDefaultSignInExperience },
     applicationSignInExperiences: { safeFindSignInExperienceByApplicationId },
@@ -116,8 +113,14 @@ export const createSignInExperienceLibrary = (
       return false;
     }
 
-    const subscription = await getTenantSubscription(cloudConnection);
-    return subscription.planId === ReservedPlanId.Development;
+    // Admin tenant has special treatment, always return false
+    if (tenantId === adminTenantId) {
+      return false;
+    }
+
+    const { tag } = await findTenantMetadataById(tenantId);
+
+    return tag === TenantTag.Development;
   }, ['is-development-tenant']);
 
   /**
@@ -126,30 +129,42 @@ export const createSignInExperienceLibrary = (
    */
   const getOrganizationOverride = async (
     organizationId?: string
-  ): Promise<Partial<SignInExperience> | undefined> => {
+  ): Promise<SignInExperienceOverride> => {
     if (!organizationId) {
-      return;
+      return {};
     }
     const organization = await trySafe(organizations.findById(organizationId));
-    if (!organization?.branding) {
-      return;
-    }
 
-    return { branding: organization.branding };
+    const { branding, color, customCss } = organization ?? {};
+
+    return {
+      ...(branding && { branding }),
+      ...(color && { color }),
+      ...(customCss && { customCss }),
+    };
   };
 
-  const findApplicationSignInExperience = async (appId?: string) => {
+  /** Get the branding and color from the app sign-in experience if it is not a third-party app. */
+  const findApplicationSignInExperience = async (
+    appId?: string
+  ): Promise<SignInExperienceOverride> => {
     if (!appId) {
-      return;
+      return {};
     }
 
     const found = await safeFindSignInExperienceByApplicationId(appId);
 
-    if (!found) {
-      return;
+    const { isThirdParty, branding, color, customCss } = found ?? {};
+
+    if (isThirdParty) {
+      return {};
     }
 
-    return pick(found, 'branding', 'color', 'type', 'isThirdParty');
+    return {
+      ...(branding && { branding }),
+      ...(color && { color }),
+      ...(customCss && { customCss }),
+    };
   };
 
   /**
@@ -170,6 +185,12 @@ export const createSignInExperienceLibrary = (
     return {
       type,
       siteKey,
+      ...(type === 'RecaptchaEnterprise' &&
+        'domain' in provider.config &&
+        provider.config.domain && { domain: provider.config.domain }),
+      ...(type === 'RecaptchaEnterprise' &&
+        'mode' in provider.config &&
+        provider.config.mode && { mode: provider.config.mode }),
     };
   };
 
@@ -195,18 +216,13 @@ export const createSignInExperienceLibrary = (
       getIsDevelopmentTenant(),
       getOrganizationOverride(organizationId),
       findApplicationSignInExperience(appId),
-      conditional(EnvSet.values.isDevFeaturesEnabled && findAllCustomProfileFields()),
+      findAllCustomProfileFields(),
     ]);
 
     // Always return empty array if single-sign-on is disabled
     const ssoConnectors = signInExperience.singleSignOnEnabled
       ? await getActiveSsoConnectors(locale)
       : [];
-
-    const forgotPassword = {
-      phone: logtoConnectors.some(({ type }) => type === ConnectorType.Sms),
-      email: logtoConnectors.some(({ type }) => type === ConnectorType.Email),
-    };
 
     const socialConnectors = signInExperience.socialSignInConnectorTargets.reduce<
       ConnectorMetadata[]
@@ -248,14 +264,6 @@ export const createSignInExperienceLibrary = (
       };
     };
 
-    /** Get the branding and color from the app sign-in experience if it is not a third-party app. */
-    const getAppSignInExperience = () => {
-      if (!appSignInExperience || appSignInExperience.isThirdParty) {
-        return {};
-      }
-      return pick(appSignInExperience, 'branding', 'color');
-    };
-
     const getCaptchaConfig = async () => {
       if (!signInExperience.captchaPolicy.enabled) {
         return;
@@ -264,18 +272,61 @@ export const createSignInExperienceLibrary = (
       return findCaptchaPublicConfig();
     };
 
+    /**
+     * Generate forgot password object based on available connectors and configured methods.
+     *
+     * This function determines which forgot password methods are available by checking:
+     * 1. Whether the required connectors (email/SMS) are configured and available
+     * 2. Whether specific methods are explicitly enabled in the sign-in experience configuration
+     *
+     * The logic handles two scenarios:
+     * - Legacy/fallback mode: When forgotPasswordMethods is null or dev features are disabled,
+     *   availability is determined solely by connector presence
+     * - Explicit configuration mode: When dev features are enabled and methods are configured,
+     *   both method inclusion and connector availability must be satisfied
+     */
+    const getForgotPassword = () => {
+      // Check availability of required connectors
+      const hasEmailConnector = logtoConnectors.some(({ type }) => type === ConnectorType.Email);
+      const hasSmsConnector = logtoConnectors.some(({ type }) => type === ConnectorType.Sms);
+
+      // If forgotPasswordMethods is null (production compatibility),
+      // fall back to connector-based availability only
+      if (!signInExperience.forgotPasswordMethods) {
+        return {
+          email: hasEmailConnector,
+          phone: hasSmsConnector,
+        };
+      }
+
+      // When methods are explicitly configured, require both method inclusion and connector availability
+      return {
+        email:
+          signInExperience.forgotPasswordMethods.includes(
+            ForgotPasswordMethod.EmailVerificationCode
+          ) && hasEmailConnector,
+        phone:
+          signInExperience.forgotPasswordMethods.includes(
+            ForgotPasswordMethod.PhoneVerificationCode
+          ) && hasSmsConnector,
+      };
+    };
+
     return {
-      ...deepmerge(
-        deepmerge(signInExperience, getAppSignInExperience()),
-        organizationOverride ?? {}
+      ...deepmerge<SignInExperience, SignInExperienceOverride>(
+        deepmerge<SignInExperience, SignInExperienceOverride>(
+          signInExperience,
+          appSignInExperience
+        ),
+        organizationOverride
       ),
       socialConnectors,
       ssoConnectors,
-      forgotPassword,
+      forgotPassword: getForgotPassword(),
       isDevelopmentTenant,
       googleOneTap: getGoogleOneTap(),
       captchaConfig: await getCaptchaConfig(),
-      ...cond(EnvSet.values.isDevFeaturesEnabled && customProfileFields && { customProfileFields }),
+      customProfileFields,
     };
   };
 

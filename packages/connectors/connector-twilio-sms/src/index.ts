@@ -13,6 +13,7 @@ import {
   validateConfig,
   ConnectorType,
   replaceSendMessageHandlebars,
+  getConfigTemplateByType,
 } from '@logto/connector-kit';
 
 import { defaultMetadata, endpoint } from './constant.js';
@@ -25,8 +26,8 @@ const sendMessage =
     const { to, type, payload } = data;
     const config = inputConfig ?? (await getConfig(defaultMetadata.id));
     validateConfig(config, twilioSmsConfigGuard);
-    const { accountSID, authToken, fromMessagingServiceSID, templates } = config;
-    const template = templates.find((template) => template.usageType === type);
+    const { accountSID, authToken, fromMessagingServiceSID, disableRiskCheck } = config;
+    const template = getConfigTemplateByType(type, config);
 
     assert(
       template,
@@ -40,6 +41,7 @@ const sendMessage =
       To: to,
       MessagingServiceSid: fromMessagingServiceSID,
       Body: replaceSendMessageHandlebars(template.content, payload),
+      RiskCheck: disableRiskCheck ? 'disable' : 'enable',
     };
 
     try {

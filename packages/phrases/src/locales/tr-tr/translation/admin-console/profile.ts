@@ -107,6 +107,51 @@ const profile = {
   unlink_confirm_text: 'Evet, bağlantıyı kes',
   unlink_reminder:
     'Bağlantıyı keserseniz, kullanıcılar <span></span> hesabıyla giriş yapamazlar. Devam etmek istediğinizden emin misiniz?',
+  fields: {
+    name: 'Ad',
+    name_description: 'Kullanıcının görüntülenebilir formdaki tam adı (örneğin, "Ahmet Yılmaz").',
+    avatar: 'Avatar',
+    avatar_description: "Kullanıcının avatar resminin URL'si.",
+    familyName: 'Soyadı',
+    familyName_description: 'Kullanıcının soyad(lar)ı (örneğin, "Yılmaz").',
+    givenName: 'Ad',
+    givenName_description: 'Kullanıcının ad(lar)ı (örneğin, "Ahmet").',
+    middleName: 'Orta ad',
+    middleName_description: 'Kullanıcının orta ad(lar)ı (örneğin, "Mehmet").',
+    nickname: 'Takma ad',
+    nickname_description: 'Kullanıcının yasal adından farklı olabilecek günlük veya tanıdık adı.',
+    preferredUsername: 'Tercih edilen kullanıcı adı',
+    preferredUsername_description: 'Kullanıcının referans alınmak istediği kısa tanımlayıcı.',
+    profile: 'Profil',
+    profile_description:
+      "Kullanıcının insan tarafından okunabilir profil sayfasının URL'si (örneğin, sosyal medya profili).",
+    website: 'Web sitesi',
+    website_description: "Kullanıcının kişisel web sitesi veya blogunun URL'si.",
+    gender: 'Cinsiyet',
+    gender_description:
+      'Kullanıcının kendini tanımladığı cinsiyet (örneğin, "Kadın", "Erkek", "İkili olmayan")',
+    birthdate: 'Doğum tarihi',
+    birthdate_description:
+      'Kullanıcının belirli bir formattaki doğum tarihi (örneğin, "GG-AA-YYYY").',
+    zoneinfo: 'Saat dilimi',
+    zoneinfo_description:
+      'Kullanıcının IANA formatındaki saat dilimi (örneğin, "Europe/Istanbul").',
+    locale: 'Dil',
+    locale_description: 'Kullanıcının IETF BCP 47 formatındaki dili (örneğin, "tr-TR").',
+    address: {
+      formatted: 'Adres',
+      streetAddress: 'Sokak adresi',
+      locality: 'Şehir',
+      region: 'Eyalet',
+      postalCode: 'Posta kodu',
+      country: 'Ülke',
+    },
+    address_description:
+      'Kullanıcının tüm adres parçalarını içeren görüntülenebilir formdaki tam adresi (örneğin, "123 Ana Cadde, İstanbul, Türkiye 34000").',
+    fullname: 'Tam ad',
+    fullname_description:
+      'Yapılandırmaya bağlı olarak soyadı, ad ve orta adı esnek bir şekilde birleştirir.',
+  },
 };
 
 export default Object.freeze(profile);

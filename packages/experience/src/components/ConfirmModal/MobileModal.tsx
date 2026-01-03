@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import ReactModal from 'react-modal';
 
-import Button from '@/components/Button';
+import Button from '@/shared/components/Button';
 
 import modalStyles from '../../scss/modal.module.scss';
 
@@ -18,12 +18,15 @@ const MobileModal = ({
   confirmText = 'action.confirm',
   cancelTextI18nProps,
   confirmTextI18nProps,
+  shouldCloseOnEsc = true,
+  shouldCloseOnOverlayClick = true,
   onConfirm,
   onClose,
 }: ModalProps) => {
   return (
     <ReactModal
-      shouldCloseOnEsc
+      shouldCloseOnEsc={shouldCloseOnEsc}
+      shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
       role="dialog"
       isOpen={isOpen}
       className={classNames(styles.modal, className)}

@@ -28,6 +28,7 @@ type SidebarItem = {
   isHidden?: boolean;
   modal?: (isOpen: boolean, onCancel: () => void) => ReactNode;
   externalLink?: string;
+  path?: string;
 };
 
 type SidebarSection = {
@@ -75,6 +76,7 @@ export const useSidebarMenuItems = (): {
         {
           Icon: Web,
           title: 'sign_in_experience',
+          path: 'sign-in-experience',
         },
         {
           Icon: SecurityLock,

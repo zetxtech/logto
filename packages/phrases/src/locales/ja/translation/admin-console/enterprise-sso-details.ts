@@ -118,6 +118,11 @@ const enterprise_sso_details = {
     'アイデンティティプロバイダーから返された未確認のメールアドレスを常に信頼する',
   trust_unverified_email_tip:
     'Entra ID (OIDC) コネクタは `email_verified` クレームを返さないため、Azure からのメールアドレスは確認済みであることは保証されません。デフォルトでは、Logto は未検証のメールアドレスをユーザープロファイルに同期しません。Entra ID ディレクトリからのすべてのメールアドレスを信頼する場合にのみ、このオプションを有効にしてください。',
+  offline_access: {
+    label: 'アクセス トークンを更新',
+    description:
+      'Googleの「オフライン」アクセスを有効にしてリフレッシュ トークンをリクエストし、ユーザーの再認証なしでアプリがアクセス トークンをリフレッシュできるようにします。',
+  },
 };
 
 export default Object.freeze(enterprise_sso_details);

@@ -5,9 +5,8 @@ import {
   mockSocialConnectorId,
   mockSocialConnectorTarget,
 } from '#src/__mocks__/connectors-mock.js';
-import { deleteUser, getUser, getUserIdentityTokenSetRecord } from '#src/api/admin-user.js';
+import { deleteUser, getUser, getUserIdentity } from '#src/api/admin-user.js';
 import { updateConnectorConfig } from '#src/api/connector.js';
-import { isDevFeaturesEnabled } from '#src/constants.js';
 import {
   clearConnectorsByTypes,
   setEmailConnector,
@@ -41,12 +40,9 @@ describe('social sign-in and sign-up', () => {
     const { id: socialConnectorId } = await setSocialConnector();
 
     // Enable token storage
-    // TODO: Remove this once we have token storage enabled
-    if (isDevFeaturesEnabled) {
-      await updateConnectorConfig(socialConnectorId, {
-        enableTokenStorage: true,
-      });
-    }
+    await updateConnectorConfig(socialConnectorId, {
+      enableTokenStorage: true,
+    });
 
     await setEmailConnector();
     connectorIdMap.set(mockSocialConnectorId, socialConnectorId);
@@ -72,15 +68,17 @@ describe('social sign-in and sign-up', () => {
     const { primaryEmail } = await getUser(userId);
     expect(primaryEmail).toBe(email);
 
-    // TODO: Remove this once we have token storage enabled
-    if (isDevFeaturesEnabled) {
-      const tokenSetRecord = await getUserIdentityTokenSetRecord(userId, mockSocialConnectorTarget);
-      expect(tokenSetRecord).not.toBeNull();
-      expect(tokenSetRecord.metadata.scope).toBe(mockTokenResponse.scope);
-    }
+    const { tokenSecret } = await getUserIdentity(userId, mockSocialConnectorTarget);
+    expect(tokenSecret?.metadata.scope).toBe(mockTokenResponse.scope);
+    expect(tokenSecret?.metadata.hasRefreshToken).toBe(false);
   });
 
   it('should successfully sign-up with social but not sync email if the email is registered by another user', async () => {
+    const connectorId = connectorIdMap.get(mockSocialConnectorId);
+    if (!connectorId) {
+      throw new Error(`Connector not found.`);
+    }
+
     const { userProfile, user } = await generateNewUser({
       primaryEmail: true,
     });
@@ -88,7 +86,7 @@ describe('social sign-in and sign-up', () => {
     const { primaryEmail } = userProfile;
 
     const userId = await signInWithSocial(
-      connectorIdMap.get(mockSocialConnectorId)!,
+      connectorId,
       {
         id: generateStandardId(),
         email: primaryEmail,
@@ -106,12 +104,18 @@ describe('social sign-in and sign-up', () => {
   });
 
   it('should successfully sign-in with social and sync name', async () => {
-    const userId = await signInWithSocial(connectorIdMap.get(mockSocialConnectorId)!, {
+    const connectorId = connectorIdMap.get(mockSocialConnectorId);
+    if (!connectorId) {
+      throw new Error(`Connector not found.`);
+    }
+
+    const userId = await signInWithSocial(connectorId, {
       id: socialUserId,
       email,
       name: 'John Doe',
       tokenResponse: {
         ...mockTokenResponse,
+        refresh_token: 'refresh_token',
         scope: 'openid profile email',
       },
     });
@@ -120,22 +124,24 @@ describe('social sign-in and sign-up', () => {
 
     expect(name).toBe('John Doe');
 
-    if (isDevFeaturesEnabled) {
-      const tokenSetRecord = await getUserIdentityTokenSetRecord(userId, mockSocialConnectorTarget);
-      expect(tokenSetRecord).not.toBeNull();
-      expect(tokenSetRecord.metadata.scope).toBe('openid profile email');
-    }
-
+    const { tokenSecret } = await getUserIdentity(userId, mockSocialConnectorTarget);
+    expect(tokenSecret?.metadata.scope).toBe('openid profile email');
+    expect(tokenSecret?.metadata.hasRefreshToken).toBe(true);
     await deleteUser(userId);
   });
 
   it('should successfully sign-in with linked email and sync name', async () => {
+    const connectorId = connectorIdMap.get(mockSocialConnectorId);
+    if (!connectorId) {
+      throw new Error(`Connector not found.`);
+    }
+
     const { userProfile, user } = await generateNewUser({
       primaryEmail: true,
     });
 
     const userId = await signInWithSocial(
-      connectorIdMap.get(mockSocialConnectorId)!,
+      connectorId,
       {
         id: socialUserId,
         email: userProfile.primaryEmail,
@@ -153,11 +159,19 @@ describe('social sign-in and sign-up', () => {
     expect(identities[mockSocialConnectorTarget]).toBeTruthy();
     expect(name).toBe('Foo Bar');
 
-    if (isDevFeaturesEnabled) {
-      const tokenSetRecord = await getUserIdentityTokenSetRecord(userId, mockSocialConnectorTarget);
-      expect(tokenSetRecord).not.toBeNull();
-      expect(tokenSetRecord.metadata.scope).toBe('openid profile phone');
-    }
+    const { tokenSecret } = await getUserIdentity(userId, mockSocialConnectorTarget);
+    expect(tokenSecret?.metadata.scope).toBe('openid profile phone');
+
+    // Should delete the token set when the connector token storage is disabled
+    await updateConnectorConfig(connectorId, {
+      enableTokenStorage: false,
+    });
+
+    const { tokenSecret: updatedTokenSecret } = await getUserIdentity(
+      userId,
+      mockSocialConnectorTarget
+    );
+    expect(updatedTokenSecret).toBeUndefined();
 
     await deleteUser(userId);
   });

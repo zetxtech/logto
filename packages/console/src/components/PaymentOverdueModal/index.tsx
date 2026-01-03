@@ -3,12 +3,12 @@ import { Trans, useTranslation } from 'react-i18next';
 import ReactModal from 'react-modal';
 
 import { contactEmailLink } from '@/consts';
-import { isCloud } from '@/consts/env';
 import { TenantsContext } from '@/contexts/TenantsProvider';
 import Button from '@/ds-components/Button';
 import FormField from '@/ds-components/FormField';
 import InlineNotification from '@/ds-components/InlineNotification';
 import ModalLayout from '@/ds-components/ModalLayout';
+import useOverdueInvoices from '@/hooks/use-overdue-invoices';
 import useSubscribe from '@/hooks/use-subscribe';
 import modalStyles from '@/scss/modal.module.scss';
 
@@ -19,17 +19,18 @@ import styles from './index.module.scss';
 function PaymentOverdueModal() {
   const { t } = useTranslation(undefined, { keyPrefix: 'admin_console' });
   const { currentTenant, currentTenantId } = useContext(TenantsContext);
-  const { openInvoices = [] } = currentTenant ?? {};
 
   const { visitManagePaymentPage } = useSubscribe();
   const [isActionLoading, setIsActionLoading] = useState(false);
-
   const [hasClosed, setHasClosed] = useState(false);
+
+  const { hasOverdueInvoices, overdueInvoices } = useOverdueInvoices(currentTenant);
+
   const handleCloseModal = () => {
     setHasClosed(true);
   };
 
-  if (!isCloud || openInvoices.length === 0 || hasClosed) {
+  if (!hasOverdueInvoices || hasClosed) {
     return null;
   }
 
@@ -71,7 +72,7 @@ function PaymentOverdueModal() {
         )}
         <FormField title="upsell.payment_overdue_modal.unpaid_bills">
           <BillInfo
-            cost={openInvoices.reduce(
+            cost={overdueInvoices.reduce(
               (total, currentInvoice) => total + currentInvoice.amountDue,
               0
             )}

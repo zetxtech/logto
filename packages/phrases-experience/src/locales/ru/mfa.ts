@@ -2,15 +2,27 @@ const mfa = {
   totp: 'Одноразовый пароль приложения для аутентификации',
   webauthn: 'Пароль',
   backup_code: 'Резервный код',
+  email_verification_code: 'Код подтверждения по электронной почте',
+  phone_verification_code: 'Код подтверждения по SMS',
   link_totp_description: 'Например, Google Authenticator и др.',
   link_webauthn_description: 'Привяжите ваше устройство или USB-ключ',
   link_backup_code_description: 'Создайте резервный код',
+  link_email_verification_code_description: 'Привяжите ваш адрес электронной почты',
+  link_email_2fa_description: 'Привяжите ваш адрес электронной почты для 2-этапной проверки',
+  link_phone_verification_code_description: 'Привяжите ваш номер телефона',
+  link_phone_2fa_description: 'Привяжите ваш номер телефона для 2-этапной проверки',
   verify_totp_description: 'Введите одноразовый код в приложении',
   verify_webauthn_description: 'Подтвердите ваше устройство или USB-ключ',
   verify_backup_code_description: 'Вставьте резервный код, который вы сохранили',
+  verify_email_verification_code_description: 'Введите код, отправленный на вашу электронную почту',
+  verify_phone_verification_code_description: 'Введите код, отправленный на ваш телефон',
+  send_to_email: 'Отправить на {{identifier}}',
+  send_to_phone: 'Отправить на {{identifier}}',
   add_mfa_factors: 'Добавить двухфакторную аутентификацию',
   add_mfa_description:
-    'Включена двухфакторная аутентификация. Выберите второй метод для безопасного входа.',
+    'Двухфакторная проверка включена. Выберите второй метод проверки для безопасного входа в систему.',
+  add_another_mfa_factor: 'Добавить еще одну двухэтапную проверку',
+  add_another_mfa_description: 'Выберите другой способ подтверждения вашей личности при входе.',
   verify_mfa_factors: 'Двухфакторная аутентификация',
   verify_mfa_description:
     'Двухфакторная аутентификация включена для этого аккаунта. Выберите второй способ подтверждения вашей личности.',
@@ -29,6 +41,12 @@ const mfa = {
     'Введите 6-значный код, сгенерированный приложением для аутентификации.',
   enter_one_time_code_description:
     'Для этого аккаунта включена двухэтапная аутентификация. Введите одноразовый код, отображаемый в вашем связанном приложении для аутентификации.',
+  enter_email_verification_code: 'Введите код подтверждения по электронной почте',
+  enter_email_verification_code_description:
+    'Для этой учетной записи включена двухэтапная аутентификация. Пожалуйста, введите код подтверждения, отправленный на {{identifier}}.',
+  enter_phone_verification_code: 'Введите SMS‑код подтверждения',
+  enter_phone_verification_code_description:
+    'Для этой учетной записи включена двухэтапная аутентификация. Пожалуйста, введите SMS‑код подтверждения, отправленный на {{identifier}}.',
   link_another_mfa_factor: 'Переключиться на другой метод',
   save_backup_code: 'Сохраните ваш резервный код',
   save_backup_code_description:

@@ -7,6 +7,7 @@ create table sign_in_experiences (
   id varchar(21) not null,
   color jsonb /* @use Color */ not null,
   branding jsonb /* @use Branding */ not null,
+  hide_logto_branding boolean not null default false,
   language_info jsonb /* @use LanguageInfo */ not null,
   terms_of_use_url varchar(2048),
   privacy_policy_url varchar(2048),
@@ -29,5 +30,6 @@ create table sign_in_experiences (
   captcha_policy jsonb /* @use CaptchaPolicy */ not null default '{}'::jsonb,
   sentinel_policy jsonb /* @use SentinelPolicy */ not null default '{}'::jsonb,
   email_blocklist_policy jsonb /* @use EmailBlocklistPolicy */ not null default '{}'::jsonb,
+  forgot_password_methods jsonb /* @use ForgotPasswordMethods */ default '[]'::jsonb,
   primary key (tenant_id, id)
 );

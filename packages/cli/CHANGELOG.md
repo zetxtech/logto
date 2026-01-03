@@ -1,5 +1,69 @@
 # Change Log
 
+## 1.35.0
+
+### Patch Changes
+
+- Updated dependencies [a6858e76cf]
+- Updated dependencies [116dcf5e7d]
+- Updated dependencies [462e430445]
+- Updated dependencies [7c87ebc068]
+- Updated dependencies [116dcf5e7d]
+  - @logto/schemas@1.35.0
+  - @logto/connector-kit@4.7.0
+
+## 1.34.0
+
+### Patch Changes
+
+- Updated dependencies [900201a48c]
+- Updated dependencies [c3266a917a]
+  - @logto/schemas@1.34.0
+
+## 1.33.0
+
+### Patch Changes
+
+- @logto/schemas@1.33.0
+
+## 1.32.0
+
+### Patch Changes
+
+- Updated dependencies [ad4f9d6abf]
+- Updated dependencies [5da6792d40]
+- Updated dependencies [1fb8593659]
+- Updated dependencies [0ef4260e34]
+  - @logto/schemas@1.32.0
+  - @logto/connector-kit@4.6.0
+
+## 1.31.0
+
+### Patch Changes
+
+- Updated dependencies [bb385eb15d]
+  - @logto/schemas@1.31.0
+
+## 1.30.1
+
+### Patch Changes
+
+- Updated dependencies [4cc321dbb]
+  - @logto/core-kit@2.6.1
+  - @logto/schemas@1.30.1
+
+## 1.30.0
+
+### Patch Changes
+
+- Updated dependencies [9a4e11cf8]
+- Updated dependencies [34964af46]
+- Updated dependencies [34964af46]
+- Updated dependencies [0343699d7]
+- Updated dependencies [3f5533080]
+  - @logto/schemas@1.30.0
+  - @logto/connector-kit@4.4.0
+
 ## 1.29.0
 
 ### Patch Changes

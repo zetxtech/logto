@@ -130,6 +130,20 @@ const user_details = {
       edited: 'トークン {{name}} が正常に編集されました。',
     },
   },
+  connections: {
+    title: '接続',
+    description:
+      'ユーザーは、ソーシャルサインイン、エンタープライズ SSO、またはリソースアクセスのためにサードパーティアカウントをリンクします。',
+    token_status_column: 'トークンの状態',
+    token_status: {
+      active: '有効',
+      expired: '期限切れ',
+      inactive: '無効',
+      not_applicable: '該当なし',
+      available: '利用可能',
+      not_available: '利用不可',
+    },
+  },
 };
 
 export default Object.freeze(user_details);

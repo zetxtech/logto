@@ -7,8 +7,6 @@ import {
   freePlanAuditLogsRetentionDays,
   freePlanM2mLimit,
   freePlanMauLimit,
-  freePlanPermissionsLimit,
-  freePlanRoleLimit,
   proPlanAuditLogsRetentionDays,
   // eslint-disable-next-line unused-imports/no-unused-imports -- for jsdoc usage
   featuredPlanIds,
@@ -47,7 +45,7 @@ const useFeaturedSkuContent = (skuId: string) => {
         isAvailable: true,
       },
       {
-        title: t('third_party_apps'),
+        title: t('saml_and_third_party_apps'),
         isAvailable: !isFreePlan,
       },
       {
@@ -59,15 +57,8 @@ const useFeaturedSkuContent = (skuId: string) => {
         isAvailable: !isFreePlan,
       },
       {
-        title: t(`role_and_permissions.${planPhraseKey}`, {
-          ...cond(
-            isFreePlan && {
-              roleCount: freePlanRoleLimit,
-              permissionCount: freePlanPermissionsLimit,
-            }
-          ),
-        }),
-        isAvailable: true,
+        title: t('rbac'),
+        isAvailable: !isFreePlan,
       },
       {
         title: t('organizations'),

@@ -18,7 +18,9 @@ const paywall = {
   scopes_per_resource_other:
     'Has alcanzado el límite de {{count, number}} permisos por recurso de API de <planName/>. Actualiza ahora para expandirlo. <a>Contáctanos</a> si necesitas asistencia.',
   custom_domain:
-    'Desbloquea la funcionalidad de dominio personalizado al actualizar al plan <strong>Hobby</strong> o <strong>Pro</strong>. No dudes en <a>contactarnos</a> si necesitas ayuda.',
+    'Se ha alcanzado el límite de {{count, number}} dominio personalizado de <planName/>. Actualiza a un plan de pago para agregar múltiples dominios personalizados y beneficios premium. No dudes en <a>contactarnos</a> si tienes alguna pregunta.',
+  custom_domain_others:
+    'Se ha alcanzado el límite de {{count, number}} dominios personalizados de <planName/>. Actualiza a un plan de pago para agregar múltiples dominios personalizados y beneficios premium. No dudes en <a>contactarnos</a> si tienes alguna pregunta.',
   social_connectors:
     'Has alcanzado el límite de {{count, number}} conectores sociales de <planName/>. Actualiza el plan para obtener conectores sociales adicionales y la capacidad de crear tus propios conectores usando los protocolos OIDC, OAuth 2.0 y SAML. Si necesitas ayuda, no dudes en <a>contactarnos</a>.',
   social_connectors_other:
@@ -34,13 +36,7 @@ const paywall = {
   standard_connectors_pro_other:
     'Has alcanzado el límite de {{count, number}} conectores estándar de <planName/>. Actualiza al plan Enterprise para obtener conectores sociales adicionales y la capacidad de crear tus propios conectores usando los protocolos OIDC, OAuth 2.0 y SAML. Si necesitas ayuda, no dudes en <a>contactarnos</a>.',
   roles:
-    'Has alcanzado el límite de {{count, number}} roles de <planName/>. Actualiza el plan para agregar roles y permisos adicionales. Si necesitas ayuda, no dudes en <a>contactarnos</a>.',
-  roles_other:
-    'Has alcanzado el límite de {{count, number}} roles de <planName/>. Actualiza el plan para agregar roles y permisos adicionales. Si necesitas ayuda, no dudes en <a>contactarnos</a>.',
-  machine_to_machine_roles:
-    '{{count, number}} roles de máquina a máquina de <planName/> alcanzaron el límite. Actualiza el plan para agregar roles y permisos adicionales. Si necesitas ayuda, no dudes en <a>contactarnos</a>.',
-  machine_to_machine_roles_other:
-    '{{count, number}} roles de máquina a máquina de <planName/> alcanzaron el límite. Actualiza el plan para agregar roles y permisos adicionales. Si necesitas ayuda, no dudes en <a>contactarnos</a>.',
+    'Actualiza el plan para agregar roles y permisos adicionales. No dudes en <a>contactarnos</a> si necesitas ayuda.',
   scopes_per_role:
     'Has alcanzado el límite de {{count, number}} permisos por rol de <planName/>. Actualiza el plan para agregar roles y permisos adicionales. Si necesitas ayuda, no dudes en <a>contactarnos</a>.',
   scopes_per_role_other:
@@ -50,6 +46,8 @@ const paywall = {
   logto_pricing_button_text: 'Precios de Logto Cloud',
   saml_applications:
     'La aplicación SAML adicional está disponible con el plan Logto Enterprise. Contáctanos si necesitas asistencia.',
+  saml_applications_add_on:
+    'Desbloquea la función de la aplicación SAML al actualizar a un plan pago. Para cualquier asistencia, no dudes en <a>contactarnos</a>.',
   hooks:
     'Has alcanzado el límite de {{count, number}} webhooks de <planName/>. Actualiza el plan para crear más webhooks. Si necesitas ayuda, no dudes en <a>contactarnos</a>.',
   hooks_other:
@@ -70,10 +68,14 @@ const paywall = {
     description:
       'Actualiza a un plan de pago para obtener funcionalidades personalizadas de JWT y beneficios premium. No dudes en <a>contactarnos</a> si tienes alguna pregunta.',
   },
+  branding_customization:
+    'Desbloquea el control total de la marca con las funciones "Ocultar la marca Logto" y "Trae tu interfaz de usuario" al actualizar tu plan.',
   bring_your_ui:
     'Actualiza a un plan de pago para traer tu funcionalidad UI personalizada y beneficios premium.',
   security_features:
     'Desbloquea funciones de seguridad avanzadas al actualizar al plan Pro. No dudes en <a>contactarnos</a> si tienes alguna pregunta.',
+  collect_user_profile:
+    'Actualiza a un plan de pago para recopilar información adicional del perfil de usuario durante el registro. No dudes en <a>contactarnos</a> si tienes alguna pregunta.',
 };
 
 export default Object.freeze(paywall);

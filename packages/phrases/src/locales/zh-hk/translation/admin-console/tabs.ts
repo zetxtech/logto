@@ -3,7 +3,7 @@ const tabs = {
   dashboard: '儀表板',
   applications: '全部應用',
   api_resources: 'API 資源',
-  sign_in_experience: '登錄體驗',
+  sign_in_experience: '登錄與帳戶',
   connectors: '連接器',
   enterprise_sso: '企業SSO',
   security: '安全',

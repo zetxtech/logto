@@ -4,7 +4,9 @@ const connector_details = {
   check_readme: 'Visualize o README',
   settings: 'Configurações gerais',
   settings_description:
-    'Os conectores desempenham um papel crítico no Logto. Com a ajuda deles, a Logto permite que os usuários finais usem o registro ou login sem senha e os recursos de login com contas sociais.',
+    'Integre provedores de terceiros para login social rápido e vinculação de contas sociais',
+  setting_description_with_token_storage_supported:
+    'Integre provedores de terceiros para login social rápido, vinculação de contas sociais e acesso à API.',
   email_connector_settings_description:
     'Integre com o seu provedor de entrega de e-mail para permitir o registro e login sem senha por e-mail para os usuários finais.',
   parameter_configuration: 'Configuração de parâmetros',
@@ -67,6 +69,10 @@ const connector_details = {
     auto_select: 'Selecionar credencial automaticamente se possível',
     close_on_tap_outside: 'Cancelar o prompt se o usuário clicar/tocar fora',
     itp_support: 'Ativar <a>UX Melhorado do One Tap em navegadores ITP</a>',
+  },
+  sign_in_experience: {
+    in_use: 'Habilitado para login',
+    not_in_use: 'Desabilitado para login',
   },
 };
 

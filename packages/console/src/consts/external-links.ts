@@ -9,6 +9,7 @@ export const reservationLink = 'https://cal.com/logto/30min';
 export const trustAndSecurityLink = 'https://logto.io/trust-and-security';
 export const pricingLink = 'https://logto.io/pricing';
 export const officialWebsiteContactPageLink = 'https://logto.io/contact';
+export const entityPolicyLink = 'https://docs.logto.io/logto-cloud/system-limit';
 
 /** Docs link */
 export const organizationsFeatureLink = '/organizations';
@@ -20,6 +21,8 @@ export const logtoThirdPartyAppPermissionsLink =
 export const logtoThirdPartyAppBrandingLink = '/docs/recipes/logto-as-idp/branding-customization/';
 export const appSpecificBrandingLink =
   '/docs/recipes/customize-sie/match-your-brand/#app-specific-branding';
+export const organizationBrandingLink =
+  '/customization/match-your-brand#organization-specific-branding';
 export const organizationLogosForExperienceLink =
   '/docs/recipes/customize-sie/match-your-brand/#organization-specific-logos';
 export const signingKeysLink = '/docs/references/openid-connect/signing-keys-rotation/';
@@ -45,6 +48,7 @@ export const backchannelLogout = '/end-user-flows/sign-out#federated-sign-out-ba
 export const authFlows = '/end-user-flows#authentication-flows';
 export const termsAndPrivacy = '/end-user-flows/sign-up-and-sign-in/terms-and-privacy';
 export const mfa = '/end-user-flows/mfa';
+export const collectUserProfile = '/end-user-flows/collect-user-profile';
 export const connectors = '/connectors';
 export const socialConnectors = '/connectors/social-connectors';
 export const emailConnectors = '/connectors/email-connectors';
@@ -55,7 +59,7 @@ export const sentinel = '/security/identifier-lockout';
 export const emailBlocklist = '/security/blocklist';
 export const passwordPolicy = '/security/password-policy';
 export const spInitiatedSsoFlow = '/end-user-flows/enterprise-sso/sp-initiated-sso';
-export const apiResources = '/authorization/api-resources';
+export const apiResources = '/authorization/global-api-resources';
 export const rbac = '/authorization/role-based-access-control';
 export const manageRolePermissions =
   '/authorization/role-based-access-control/configure-permissions#manage-role-permissions';
@@ -68,6 +72,9 @@ export const auditLogs = '/developers/audit-logs';
 export const logtoCloud = '/logto-cloud';
 export const logtoCloudTenantSettings = '/logto-cloud/tenant-settings';
 export const customDomain = '/logto-cloud/custom-domain#use-custom-domain';
+export const customDomainFeatureLink = '/logto-cloud/custom-domain';
+export const retrieveTokenStorage = '/secret-vault/federated-token-set#token-retrieval';
 
-export const addOnPricingExplanationLink =
-  'https://blog.logto.io/pricing-add-on-a-simple-explanation/';
+export const addOnPricingExplanationLink = 'https://docs.logto.io/logto-cloud/billing-and-pricing';
+
+export const dateFnsDocumentationLink = 'https://date-fns.org/v2.30.0/docs/format';

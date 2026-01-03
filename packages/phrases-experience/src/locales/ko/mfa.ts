@@ -2,15 +2,27 @@ const mfa = {
   totp: '인증 앱 OTP',
   webauthn: '패스키',
   backup_code: '백업 코드',
+  email_verification_code: '이메일 인증 코드',
+  phone_verification_code: 'SMS 인증 코드',
   link_totp_description: '예: Google Authenticator 등',
   link_webauthn_description: '기기 또는 USB 하드웨어 연결',
   link_backup_code_description: '백업 코드 생성',
+  link_email_verification_code_description: '이메일 주소 연결',
+  link_email_2fa_description: '2단계 인증을 위한 이메일 주소 연결',
+  link_phone_verification_code_description: '전화번호 연결',
+  link_phone_2fa_description: '2단계 인증을 위한 전화번호 연결',
   verify_totp_description: '앱에 일회용 코드 입력',
   verify_webauthn_description: '기기 또는 USB 하드웨어 확인',
   verify_backup_code_description: '저장한 백업 코드 붙여넣기',
+  verify_email_verification_code_description: '이메일로 전송된 코드 입력',
+  verify_phone_verification_code_description: '휴대폰으로 전송된 코드 입력',
+  send_to_email: '{{identifier}}로 전송',
+  send_to_phone: '{{identifier}}로 전송',
   add_mfa_factors: '2단계 인증 추가',
   add_mfa_description:
     '2단계 인증이 활성화되었습니다. 안전한 로그인을 위해 두 번째 인증 방법을 선택하세요.',
+  add_another_mfa_factor: '다른 2단계 인증 추가',
+  add_another_mfa_description: '로그인 시 신원을 확인하기 위한 다른 방법을 선택하세요.',
   verify_mfa_factors: '2단계 인증 확인',
   verify_mfa_description:
     '이 계정에 대해 2단계 인증이 활성화되었습니다. 신원을 확인하는 두 번째 방법을 선택하세요.',
@@ -28,6 +40,12 @@ const mfa = {
   enter_one_time_code_link_description: '인증 앱에서 생성된 6자리 확인 코드를 입력하세요.',
   enter_one_time_code_description:
     '이 계정에서는 2단계 인증이 활성화되었습니다. 연결된 인증 앱에 표시된 일회용 코드를 입력하세요.',
+  enter_email_verification_code: '이메일 인증 코드 입력',
+  enter_email_verification_code_description:
+    '이 계정에는 2단계 인증이 활성화되어 있습니다. {{identifier}}로 전송된 인증 코드를 입력하세요.',
+  enter_phone_verification_code: 'SMS 인증 코드 입력',
+  enter_phone_verification_code_description:
+    '이 계정에는 2단계 인증이 활성화되어 있습니다. {{identifier}}로 전송된 SMS 인증 코드를 입력하세요.',
   link_another_mfa_factor: '다른 방법으로 전환',
   save_backup_code: '백업 코드 저장',
   save_backup_code_description:

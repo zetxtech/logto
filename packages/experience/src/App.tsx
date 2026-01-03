@@ -1,6 +1,8 @@
 import { MfaFactor, experience } from '@logto/schemas';
 import { Route, Routes, BrowserRouter } from 'react-router-dom';
 
+import { handleSearchParametersData } from '@/shared/utils/search-parameters';
+
 import AppLayout from './Layout/AppLayout';
 import AppBoundary from './Providers/AppBoundary';
 import CaptchaContextProvider from './Providers/CaptchaContextProvider';
@@ -19,13 +21,18 @@ import IdentifierRegister from './pages/IdentifierRegister';
 import IdentifierSignIn from './pages/IdentifierSignIn';
 import MfaBinding from './pages/MfaBinding';
 import BackupCodeBinding from './pages/MfaBinding/BackupCodeBinding';
+import EmailMfaBinding from './pages/MfaBinding/EmailMfaBinding';
+import PhoneMfaBinding from './pages/MfaBinding/PhoneMfaBinding';
 import TotpBinding from './pages/MfaBinding/TotpBinding';
 import WebAuthnBinding from './pages/MfaBinding/WebAuthnBinding';
 import MfaVerification from './pages/MfaVerification';
 import BackupCodeVerification from './pages/MfaVerification/BackupCodeVerification';
+import EmailVerificationCode from './pages/MfaVerification/EmailVerificationCode';
+import PhoneVerificationCode from './pages/MfaVerification/PhoneVerificationCode';
 import TotpVerification from './pages/MfaVerification/TotpVerification';
 import WebAuthnVerification from './pages/MfaVerification/WebAuthnVerification';
 import OneTimeToken from './pages/OneTimeToken';
+import OneTimeTokenErrorPage from './pages/OneTimeToken/Error';
 import Register from './pages/Register';
 import RegisterPassword from './pages/RegisterPassword';
 import ResetPassword from './pages/ResetPassword';
@@ -42,8 +49,9 @@ import Springboard from './pages/Springboard';
 import SwitchAccount from './pages/SwitchAccount';
 import VerificationCode from './pages/VerificationCode';
 import { UserMfaFlow } from './types';
-import { handleSearchParametersData } from './utils/search-parameters';
-import './scss/normalized.scss';
+import 'overlayscrollbars/overlayscrollbars.css';
+import './shared/scss/normalized.scss';
+import './scss/overlayscrollbars.scss';
 
 handleSearchParametersData();
 
@@ -65,8 +73,12 @@ const App = () => {
                       element={<SocialSignInWebCallback />}
                     />
                     <Route path="direct/:method/:target?" element={<DirectSignIn />} />
+                    <Route path={experience.routes.oneTimeToken} element={<OneTimeToken />} />
                     <Route element={<AppLayout />}>
-                      <Route path={experience.routes.oneTimeToken} element={<OneTimeToken />} />
+                      <Route
+                        path={`${experience.routes.oneTimeToken}/error`}
+                        element={<OneTimeTokenErrorPage />}
+                      />
                       <Route path={experience.routes.switchAccount} element={<SwitchAccount />} />
                       <Route
                         path="unknown-session"
@@ -100,6 +112,14 @@ const App = () => {
                         <Route path={MfaFactor.TOTP} element={<TotpBinding />} />
                         <Route path={MfaFactor.WebAuthn} element={<WebAuthnBinding />} />
                         <Route path={MfaFactor.BackupCode} element={<BackupCodeBinding />} />
+                        <Route
+                          path={MfaFactor.EmailVerificationCode}
+                          element={<EmailMfaBinding />}
+                        />
+                        <Route
+                          path={MfaFactor.PhoneVerificationCode}
+                          element={<PhoneMfaBinding />}
+                        />
                       </Route>
 
                       {/* Mfa verification */}
@@ -108,6 +128,14 @@ const App = () => {
                         <Route path={MfaFactor.TOTP} element={<TotpVerification />} />
                         <Route path={MfaFactor.WebAuthn} element={<WebAuthnVerification />} />
                         <Route path={MfaFactor.BackupCode} element={<BackupCodeVerification />} />
+                        <Route
+                          path={MfaFactor.EmailVerificationCode}
+                          element={<EmailVerificationCode />}
+                        />
+                        <Route
+                          path={MfaFactor.PhoneVerificationCode}
+                          element={<PhoneVerificationCode />}
+                        />
                       </Route>
 
                       {/* Continue set up missing profile */}

@@ -3,8 +3,9 @@ const connector_details = {
   back_to_connectors: '연동으로 돌아가기',
   check_readme: 'README 확인',
   settings: '일반 설정',
-  settings_description:
-    'Logto에서 연동은 중요한 역할을 해요. 연동 시스템을 통하여, 사용자들에게 비밀번호 없이 회원 가입을 하고 로그인을 할 수 있게 하거나, 소셜 계정을 통하여 로그인을 할 수 있게 도와줘요.',
+  settings_description: '빠른 소셜 로그인 및 소셜 계정 연결을 위해 타사 제공업체와 통합합니다',
+  setting_description_with_token_storage_supported:
+    '빠른 소셜 로그인, 소셜 계정 연결 및 API 액세스를 위해 타사 제공업체와 통합합니다.',
   email_connector_settings_description:
     '이메일 전송 제공업체와 통합하여 최종 사용자에게 비밀번호가 필요 없는 이메일 등록 및 로그인을 활성화합니다.',
   parameter_configuration: '매개변수 설정',
@@ -67,6 +68,10 @@ const connector_details = {
     auto_select: '가능한 경우 자격 증명 자동 선택',
     close_on_tap_outside: '사용자가 외부 클릭/탭 시 프롬프트 취소',
     itp_support: '<a>ITP 브라우저에서 업그레이드된 원탭 UX</a> 활성화',
+  },
+  sign_in_experience: {
+    in_use: '로그인에 사용 가능 ',
+    not_in_use: '로그인에 사용 안 함 ',
   },
 };
 

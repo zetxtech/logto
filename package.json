@@ -44,12 +44,14 @@
   "pnpm": {
     "overrides": {
       "micromatch@<4.0.8": "^4.0.8",
-      "nanoid@>=4.0.0 <5.0.9": "^5.0.9",
-      "esbuild@<=0.24.2": "^0.25.0",
+      "esbuild": "^0.25.0",
       "cross-spawn@<6.0.6": "^6.0.6",
       "prismjs@<1.30.0": "^1.30.0",
       "dompurify@<3.2.4": "^3.2.4",
-      "formidable@<3.5.4": "^3.5.4"
+      "formidable@<3.5.4": "^3.5.4",
+      "playwright@<1.55.1": "^1.55.1",
+      "tmp@<0.2.4": "^0.2.4",
+      "nanoid@^4.0.0 <5.0.9": "^5.0.9"
     },
     "peerDependencyRules": {
       "allowedVersions": {

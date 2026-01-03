@@ -9,7 +9,6 @@ import { z } from 'zod';
 
 import { EnvSet } from '#src/env-set/index.js';
 import { type DeepPartial } from '#src/test-utils/tenant.js';
-import { devConsole } from '#src/utils/console.js';
 
 import { isKoaAuthMiddleware } from '../../../middleware/koa-auth/index.js';
 
@@ -38,11 +37,11 @@ const tagMap = new Map([
   ['saml-applications', 'SAML applications'],
   ['saml', 'SAML applications auth flow'],
   ['one-time-tokens', 'One-time tokens'],
-  ...(EnvSet.values.isDevFeaturesEnabled ? ([['google-one-tap', 'Google One Tap']] as const) : []),
+  ['custom-profile-fields', 'Custom profile fields'],
 ]);
 
 if (EnvSet.values.isDevFeaturesEnabled) {
-  tagMap.set('custom-profile-fields', 'Custom profile fields');
+  // TagMap.set('foo-bar', 'Foo bar');
 }
 
 /**
@@ -201,11 +200,6 @@ export const validateSwaggerDocument = (document: OpenAPIV3.Document) => {
   const operationIdSet = new Set<string>();
 
   for (const [path, operations] of Object.entries(document.paths)) {
-    if (path.startsWith('/api/interaction')) {
-      devConsole.warn(`Path \`${path}\` is not documented. Do something!`);
-      continue;
-    }
-
     // This path is for admin tenant only, skip it.
     if (path === '/api/.well-known/endpoints/{tenantId}') {
       continue;

@@ -28,7 +28,7 @@ describe('application APIs', () => {
 
   it('should throw error when creating an OIDC third party application with invalid type', async () => {
     await expectRejects(
-      createApplication('test-create-app', ApplicationType.Native, {
+      createApplication('test-create-app', ApplicationType.MachineToMachine, {
         isThirdParty: true,
       }),
       { code: 'application.invalid_third_party_application_type', status: 400 }
@@ -53,6 +53,34 @@ describe('application APIs', () => {
 
     expect(application.name).toBe(applicationName);
     expect(application.type).toBe(ApplicationType.Traditional);
+    expect(application.isThirdParty).toBe(true);
+
+    await deleteApplication(application.id);
+  });
+
+  it('should create OIDC third party SPA application successfully', async () => {
+    const applicationName = 'test-third-party-spa';
+
+    const application = await createApplication(applicationName, ApplicationType.SPA, {
+      isThirdParty: true,
+    });
+
+    expect(application.name).toBe(applicationName);
+    expect(application.type).toBe(ApplicationType.SPA);
+    expect(application.isThirdParty).toBe(true);
+
+    await deleteApplication(application.id);
+  });
+
+  it('should create OIDC third party Native application successfully', async () => {
+    const applicationName = 'test-third-party-native';
+
+    const application = await createApplication(applicationName, ApplicationType.Native, {
+      isThirdParty: true,
+    });
+
+    expect(application.name).toBe(applicationName);
+    expect(application.type).toBe(ApplicationType.Native);
     expect(application.isThirdParty).toBe(true);
 
     await deleteApplication(application.id);

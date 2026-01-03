@@ -3,7 +3,7 @@ const tabs = {
   dashboard: 'لوحة القيادة',
   applications: 'التطبيقات',
   api_resources: 'موارد API',
-  sign_in_experience: 'تجربة تسجيل الدخول',
+  sign_in_experience: 'تسجيل الدخول والحساب',
   connectors: 'الموصلات',
   enterprise_sso: 'SSO المؤسسات',
   security: 'الأمان',

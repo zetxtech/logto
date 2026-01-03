@@ -25,7 +25,7 @@ import { createVerificationStatusLibrary } from '#src/libraries/verification-sta
 import type Queries from './Queries.js';
 
 export default class Libraries {
-  users = createUserLibrary(this.queries);
+  users = createUserLibrary(this.tenantId, this.queries);
   phrases = createPhraseLibrary(this.queries);
   hooks = createHookLibrary(this.queries);
   scopes = createScopeLibrary(this.queries);
@@ -57,10 +57,10 @@ export default class Libraries {
   ssoConnectors = createSsoConnectorLibrary(this.queries);
   oneTimeTokens = createOneTimeTokenLibrary(this.queries);
   signInExperiences = createSignInExperienceLibrary(
+    this.tenantId,
     this.queries,
     this.connectors,
     this.ssoConnectors,
-    this.cloudConnection,
     this.queries.wellKnownCache
   );
 

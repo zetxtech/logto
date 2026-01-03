@@ -14,7 +14,6 @@ import { z } from 'zod';
 
 import koaGuard from '#src/middleware/koa-guard.js';
 
-import { EnvSet, getTenantEndpoint } from '../../env-set/index.js';
 import {
   buildVerificationRecordByIdAndType,
   insertVerificationRecord,
@@ -39,7 +38,7 @@ export default function verificationRoutes<T extends UserRouter>(
     koaGuard({
       body: z.object({ password: z.string().min(1) }),
       response: z.object({ verificationRecordId: z.string(), expiresAt: z.string() }),
-      status: [201, 422],
+      status: [201, 400, 422],
     }),
     async (ctx, next) => {
       const { id: userId } = ctx.auth;
@@ -82,24 +81,35 @@ export default function verificationRoutes<T extends UserRouter>(
     koaGuard({
       body: z.object({
         identifier: verificationCodeIdentifierGuard,
+        // Optional: explicitly specify the template type to use (limited set)
+        templateType: z
+          .union([
+            z.literal(TemplateType.BindMfa),
+            z.literal(TemplateType.UserPermissionValidation),
+          ])
+          .optional(),
       }),
       response: z.object({ verificationRecordId: z.string(), expiresAt: z.string() }),
       status: [201, 501],
     }),
     async (ctx, next) => {
       const { id: userId, clientId: applicationId } = ctx.auth;
-      const { identifier } = ctx.guard.body;
+      const { identifier, templateType: inputTemplateType } = ctx.guard.body;
 
       const user = await queries.users.findUserById(userId);
       const isNewIdentifier =
         (identifier.type === SignInIdentifier.Email && identifier.value !== user.primaryEmail) ||
         (identifier.type === SignInIdentifier.Phone && identifier.value !== user.primaryPhone);
 
+      const templateType = isNewIdentifier
+        ? TemplateType.BindNewIdentifier
+        : (inputTemplateType ?? TemplateType.UserPermissionValidation);
+
       const codeVerification = createNewCodeVerificationRecord(
         libraries,
         queries,
         identifier,
-        isNewIdentifier ? TemplateType.BindNewIdentifier : TemplateType.UserPermissionValidation
+        templateType
       );
 
       // Build the user context information for the verification code email template.
@@ -109,7 +119,7 @@ export default function verificationRoutes<T extends UserRouter>(
           : undefined;
 
       await codeVerification.sendVerificationCode({
-        locale: ctx.locale,
+        ...ctx.emailI18n,
         ...emailContextPayload,
       });
 
@@ -180,6 +190,7 @@ export default function verificationRoutes<T extends UserRouter>(
     koaGuard({
       body: socialAuthorizationUrlPayloadGuard.extend({
         connectorId: z.string(),
+        scope: z.string().optional(),
       }),
       response: z.object({
         verificationRecordId: z.string(),
@@ -250,6 +261,13 @@ export default function verificationRoutes<T extends UserRouter>(
     }
   );
 
+  /**
+   * WebAuthn registration (passkey binding)
+   *
+   * The rpId must be exactly the domain from which this API is accessed.
+   * This keeps behavior aligned with the experience flow.
+   *
+   */
   router.post(
     `${verificationApiPrefix}/web-authn/registration`,
     koaGuard({
@@ -261,21 +279,16 @@ export default function verificationRoutes<T extends UserRouter>(
       status: [200],
     }),
     async (ctx, next) => {
-      const { id: userId } = ctx.auth;
-
-      // If custom domain is enabled, use the custom domain as the RP ID.
-      // Otherwise, use the default tenant hostname as the RP ID.
-      // The background is that a passkey must be registered with a specific RP ID, which is a domain.
-      // In the future, we will support specifying the RP ID.
-      const domain = await queries.domains.findActiveDomain(tenantContext.id);
-      const rpId = domain
-        ? domain.domain
-        : getTenantEndpoint(tenantContext.id, EnvSet.values).hostname;
+      const {
+        auth: { id: userId },
+        URL: { hostname },
+      } = ctx;
 
       const webAuthnVerification = WebAuthnVerification.create(libraries, queries, userId);
 
-      const registrationOptions =
-        await webAuthnVerification.generateWebAuthnRegistrationOptions(rpId);
+      const registrationOptions = await webAuthnVerification.generateWebAuthnRegistrationOptions(
+        hostname // RP ID: Use the domain of the current API request (custom domain supported)
+      );
 
       const { expiresAt } = await insertVerificationRecord(webAuthnVerification, queries, userId);
 

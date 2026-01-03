@@ -133,6 +133,20 @@ const user_details = {
       edited: 'Токен {{name}} был успешно отредактирован.',
     },
   },
+  connections: {
+    title: 'Подключение',
+    description:
+      'Пользователь связывает сторонние аккаунты для входа через социальные сети, корпоративный SSO или доступ к ресурсам.',
+    token_status_column: 'Статус токена',
+    token_status: {
+      active: 'Активен',
+      expired: 'Истек',
+      inactive: 'Неактивен',
+      not_applicable: 'Неприменимо',
+      available: 'Доступен',
+      not_available: 'Недоступен',
+    },
+  },
 };
 
 export default Object.freeze(user_details);

@@ -17,9 +17,9 @@ const description = {
   passcode_sent: '验证码已经发送',
   resend_after_seconds: '还没收到？ <span>{{seconds}}</span> 秒后重发',
   resend_passcode: '还没收到？ <a>重发验证码</a>',
-  create_account_id_exists: '{{type}}为 {{value}} 的帐号已存在，你要登录吗？',
+  create_account_id_exists: '账号 {{value}} 已存在，继续登录。',
   link_account_id_exists: ' {{type}}为 {{value}} 的账号已注册，你要绑定至这个账号吗？',
-  sign_in_id_does_not_exist: '{{type}}为 {{value}} 的帐号不存在，你要创建一个新帐号吗？',
+  sign_in_id_does_not_exist: '未找到账号 {{value}}，创建一个新账号？',
   sign_in_id_does_not_exist_alert: '{{type}}为 {{value}} 的帐号不存在。',
   create_account_id_exists_alert: '{{type}} {{value}} 已绑定其他账号。请尝试其他{{type}}。',
   social_identity_exist: ' {{type}} {{value}} 已绑定其他账号。请尝试其他{{type}}',
@@ -93,6 +93,7 @@ const description = {
   support_website: '支持网站：<link></link>',
   switch_account_title: '你当前登录的账号是 {{account}}',
   switch_account_description: '要继续，你将退出当前账户，并自动切换到新账户。',
+  about_yourself: '介绍一下你自己',
 };
 
 export default Object.freeze(description);

@@ -124,12 +124,6 @@ function ConnectorDetails() {
             icon={<ConnectorLogo data={data} size="large" />}
             title={<UnnamedTrans resource={data.name} />}
             primaryTag={<ConnectorTypeName type={data.type} />}
-            statusTag={{
-              status: inUse ? 'success' : 'info',
-              text: inUse
-                ? 'connectors.connector_status_in_use'
-                : 'connectors.connector_status_not_in_use',
-            }}
             identifier={{ name: 'ID', value: data.id }}
             additionalActionButton={conditional(
               data.connectorId !== ServiceConnector.Email && {
@@ -216,8 +210,6 @@ function ConnectorDetails() {
             }}
           />
           <DeleteConnectorConfirmModal
-            data={data}
-            isInUse={inUse}
             isOpen={isDeleteAlertOpen}
             isLoading={isDeleting}
             onCancel={() => {

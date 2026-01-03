@@ -1,7 +1,9 @@
 import {
   AlternativeSignUpIdentifier,
+  ForgotPasswordMethod,
   SignInIdentifier,
   type SignUpIdentifier,
+  type SignInExperience,
 } from '@logto/schemas';
 import { t } from 'i18next';
 import { useCallback, useMemo } from 'react';
@@ -29,7 +31,11 @@ const emailOrPhoneOption = {
 
 const signUpIdentifierOptions = [...signInIdentifierOptions, emailOrPhoneOption];
 
-function SignUpIdentifiersEditBox() {
+type Props = {
+  readonly signInExperience: SignInExperience;
+};
+
+function SignUpIdentifiersEditBox({ signInExperience }: Props) {
   const {
     control,
     getValues,
@@ -60,6 +66,42 @@ function SignUpIdentifiersEditBox() {
   }, [submitCount, trigger]);
 
   /**
+   * Append the forgot password methods based on the selected sign-up identifier.
+   */
+  const appendForgotPasswordMethods = useCallback(
+    (identifier: SignUpIdentifier) => {
+      const forgotPasswordMethods = getValues('forgotPasswordMethods');
+      const forgotPasswordMethodsSet = new Set(forgotPasswordMethods);
+
+      const newForgotPasswordMethods = [
+        // Add email verification code if email-related identifier is added
+        ...((identifier === SignInIdentifier.Email ||
+          identifier === AlternativeSignUpIdentifier.EmailOrPhone) &&
+        !forgotPasswordMethodsSet.has(ForgotPasswordMethod.EmailVerificationCode)
+          ? [ForgotPasswordMethod.EmailVerificationCode]
+          : []),
+        // Add phone verification code if phone-related identifier is added
+        ...((identifier === SignInIdentifier.Phone ||
+          identifier === AlternativeSignUpIdentifier.EmailOrPhone) &&
+        !forgotPasswordMethodsSet.has(ForgotPasswordMethod.PhoneVerificationCode)
+          ? [ForgotPasswordMethod.PhoneVerificationCode]
+          : []),
+      ];
+
+      if (newForgotPasswordMethods.length > 0) {
+        setValue(
+          'forgotPasswordMethods',
+          [...(forgotPasswordMethods ?? []), ...newForgotPasswordMethods],
+          {
+            shouldDirty: true,
+          }
+        );
+      }
+    },
+    [getValues, setValue]
+  );
+
+  /**
    * Append the sign-in methods based on the selected sign-up identifier.
    */
   const appendSignInMethods = useCallback(
@@ -82,18 +124,23 @@ function SignUpIdentifiersEditBox() {
 
       setValue(
         'signIn.methods',
-        signInMethods.concat(newSignInMethods.map((identifier) => createSignInMethod(identifier))),
+        signInMethods.concat(
+          newSignInMethods.map((identifier) =>
+            createSignInMethod(identifier, signInExperience.mfa.factors)
+          )
+        ),
         {
           shouldDirty: true,
         }
       );
     },
-    [getValues, setValue]
+    [getValues, setValue, signInExperience.mfa.factors]
   );
 
   const onAppendSignUpIdentifier = useCallback(
     (identifier: SignUpIdentifier) => {
       appendSignInMethods(identifier);
+      appendForgotPasswordMethods(identifier);
 
       /**
        * If username is added as a sign-up identifier, we should check "Create your password" checkbox.
@@ -108,7 +155,7 @@ function SignUpIdentifiersEditBox() {
         });
       }
     },
-    [appendSignInMethods, setValue]
+    [appendSignInMethods, appendForgotPasswordMethods, setValue]
   );
 
   const options = useMemo<

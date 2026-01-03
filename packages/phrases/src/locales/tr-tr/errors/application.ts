@@ -3,7 +3,7 @@ const application = {
   role_exists: 'Bu uygulamaya zaten {{roleId}} kimlikli bir rol eklenmiş.',
   invalid_role_type: 'Kullanıcı tipi rolü makine ile makine uygulamasına atayamaz.',
   invalid_third_party_application_type:
-    'Sadece geleneksel web uygulamaları üçüncü taraf uygulaması olarak işaretlenebilir.',
+    'Sadece geleneksel web, tek sayfalı ve yerel uygulamalar üçüncü taraf uygulaması olarak işaretlenebilir.',
   third_party_application_only: 'Bu özellik sadece üçüncü taraf uygulamalar için geçerlidir.',
   user_consent_scopes_not_found: 'Geçersiz kullanıcı onay kapsamları.',
   consent_management_api_scopes_not_allowed: 'Yönetim API kapsamları izin verilmiyor.',

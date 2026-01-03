@@ -17,10 +17,9 @@ const description = {
   passcode_sent: 'Код підтвердження було повторно надіслано',
   resend_after_seconds: 'Не отримали код? Повторна відправка через <span>{{seconds}}</span> секунд',
   resend_passcode: 'Не отримали код? <a>Надіслати повторно</a>',
-  create_account_id_exists: 'Обліковий запис з {{type}} {{value}} вже існує, бажаєте увійти?',
-  link_account_id_exists: 'Обліковий запис з {{type}} {{value}} вже існує. Бажаєте зв’язати?',
-  sign_in_id_does_not_exist:
-    'Обліковий запис з {{type}} {{value}} не існує, бажаєте створити новий?',
+  create_account_id_exists: 'Обліковий запис {{value}} вже існує. Продовжити вхід.',
+  link_account_id_exists: "Обліковий запис з {{type}} {{value}} вже існує. Бажаєте зв'язати?",
+  sign_in_id_does_not_exist: 'Обліковий запис для {{value}} не знайдено. Створити новий?',
   sign_in_id_does_not_exist_alert: 'Обліковий запис з {{type}} {{value}} не існує.',
   create_account_id_exists_alert:
     'Обліковий запис з {{type}} {{value}} пов’язаний з іншим обліковим записом. Будь ласка, спробуйте інший {{type}}.',
@@ -111,6 +110,7 @@ const description = {
   switch_account_title: 'Ви ввійшли як {{account}}',
   switch_account_description:
     'Щоб продовжити, ви будете вийдені з поточного облікового запису та автоматично переключені на новий.',
+  about_yourself: 'Розкажіть про себе',
 };
 
 export default Object.freeze(description);

@@ -4,10 +4,11 @@ import type { Role, Application } from '@logto/schemas';
 import {
   Applications,
   ApplicationType,
-  buildDemoAppDataForTenant,
-  demoAppApplicationId,
+  buildBuiltInApplicationDataForTenant,
   hasSecrets,
   InternalRole,
+  ProductEvent,
+  isBuiltInApplicationId,
 } from '@logto/schemas';
 import { generateStandardId, generateStandardSecret } from '@logto/shared';
 import { conditional } from '@silverhand/essentials';
@@ -20,6 +21,7 @@ import { buildOidcClientMetadata } from '#src/oidc/utils.js';
 import assertThat from '#src/utils/assert-that.js';
 import { parseSearchParamsForSearch } from '#src/utils/search.js';
 
+import { captureEvent } from '../../utils/posthog.js';
 import type { ManagementApiRouter, RouterInitArgs } from '../types.js';
 
 import applicationCustomDataRoutes from './application-custom-data.js';
@@ -161,7 +163,7 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
     koaGuard({
       body: applicationCreateGuard,
       response: Applications.guard,
-      status: [200, 400, 422, 500],
+      status: [200, 400, 422, 403, 500],
     }),
     // eslint-disable-next-line complexity
     async (ctx, next) => {
@@ -185,7 +187,9 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
 
       if (rest.isThirdParty) {
         assertThat(
-          rest.type === ApplicationType.Traditional,
+          [ApplicationType.Traditional, ApplicationType.SPA, ApplicationType.Native].includes(
+            rest.type
+          ),
           'application.invalid_third_party_application_type'
         );
       }
@@ -226,6 +230,14 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
         void quota.reportSubscriptionUpdatesUsage('machineToMachineLimit');
       }
 
+      if (rest.isThirdParty) {
+        void quota.reportSubscriptionUpdatesUsage('thirdPartyApplicationsLimit');
+      }
+
+      captureEvent({ tenantId, request: ctx.req }, ProductEvent.AppCreated, {
+        type: rest.type,
+        isThirdParty: rest.isThirdParty ?? false,
+      });
       return next();
     }
   );
@@ -242,9 +254,11 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
         params: { id },
       } = ctx.guard;
 
-      // Somethings console needs to display demo app info. Build a fixed one for it.
-      if (id === demoAppApplicationId) {
-        ctx.body = { ...buildDemoAppDataForTenant(tenantId), isAdmin: false };
+      const builtInApplication = isBuiltInApplicationId(id)
+        ? buildBuiltInApplicationDataForTenant(tenantId, id)
+        : undefined;
+      if (builtInApplication) {
+        ctx.body = { ...builtInApplication, isAdmin: false };
 
         return next();
       }
@@ -361,7 +375,8 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
     }),
     async (ctx, next) => {
       const { id } = ctx.guard.params;
-      const { type, protectedAppMetadata } = await queries.applications.findApplicationById(id);
+      const { type, protectedAppMetadata, isThirdParty } =
+        await queries.applications.findApplicationById(id);
 
       if (type === ApplicationType.SAML) {
         throw new RequestError('application.saml.use_saml_app_api');
@@ -382,6 +397,15 @@ export default function applicationRoutes<T extends ManagementApiRouter>(
       if (type === ApplicationType.MachineToMachine) {
         void quota.reportSubscriptionUpdatesUsage('machineToMachineLimit');
       }
+
+      if (isThirdParty) {
+        void quota.reportSubscriptionUpdatesUsage('thirdPartyApplicationsLimit');
+      }
+
+      captureEvent({ tenantId, request: ctx.req }, ProductEvent.AppDeleted, {
+        type,
+        isThirdParty,
+      });
 
       return next();
     }

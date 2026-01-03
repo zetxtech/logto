@@ -4,7 +4,9 @@ const connector_details = {
   check_readme: 'Zur README',
   settings: 'Allgemeine Einstellungen',
   settings_description:
-    'Connectoren spielen eine wichtige Rolle in Logto. Mit ihrer Hilfe ermöglicht Logto Endbenutzern eine passwortlose Registrierung oder Anmeldung sowie die Möglichkeit, sich mit Social Accounts anzumelden.',
+    'Integrieren Sie Drittanbieter für schnelles Sozialeinloggen und Verknüpfen von sozialen Konten',
+  setting_description_with_token_storage_supported:
+    'Integrieren Sie Drittanbieter für schnelles Sozialeinloggen, Verknüpfen von sozialen Konten und API-Zugriff.',
   email_connector_settings_description:
     'Integriere deinen E-Mail-Anbieter, um eine passwortlose E-Mail-Registrierung und -Anmeldung für Endbenutzer zu ermöglichen.',
   parameter_configuration: 'Parameter-Konfiguration',
@@ -67,6 +69,10 @@ const connector_details = {
     auto_select: 'Anmeldeinformationen automatisch auswählen, wenn möglich',
     close_on_tap_outside: 'Aufforderung abbrechen, wenn Benutzer außerhalb klicken/tippen',
     itp_support: '<a>Erweiterten One Tap UX auf ITP-Browsern</a> aktivieren',
+  },
+  sign_in_experience: {
+    in_use: 'Aktiviert für die Anmeldung',
+    not_in_use: 'Deaktiviert für die Anmeldung',
   },
 };
 

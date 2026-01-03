@@ -1,6 +1,8 @@
 /* eslint-disable max-lines */
-import { InteractionEvent, VerificationType, type User } from '@logto/schemas';
-import { conditional } from '@silverhand/essentials';
+import { appInsights } from '@logto/app-insights/node';
+import { InteractionEvent, MfaFactor, VerificationType, type User } from '@logto/schemas';
+import { maskEmail, maskPhone } from '@logto/shared';
+import { conditional, trySafe } from '@silverhand/essentials';
 
 import RequestError from '#src/errors/RequestError/index.js';
 import { type LogEntry } from '#src/middleware/koa-audit-log.js';
@@ -13,6 +15,7 @@ import {
   type Interaction,
   type InteractionContext,
   type WithHooksAndLogsContext,
+  type SanitizedInteractionStorageData,
 } from '../types.js';
 
 import {
@@ -91,6 +94,7 @@ export default class ExperienceInteraction {
       getVerificationRecordByTypeAndId: (type, verificationId) =>
         this.getVerificationRecordByTypeAndId(type, verificationId),
       getVerificationRecordById: (verificationId) => this.getVerificationRecordById(verificationId),
+      getCurrentProfile: () => this.profile.data,
     };
 
     if (typeof interactionData === 'string') {
@@ -336,11 +340,29 @@ export default class ExperienceInteraction {
     const mfaValidator = new MfaValidator(mfaSettings, user);
     const isVerified = mfaValidator.isMfaVerified(this.verificationRecordsArray);
 
+    const { primaryEmail, primaryPhone } = user;
+    // Build masked identifiers for UX hints when applicable
+    const maskedIdentifiers: Record<string, string> = {
+      ...(mfaValidator.availableUserMfaVerificationTypes.includes(
+        MfaFactor.EmailVerificationCode
+      ) && primaryEmail
+        ? { [MfaFactor.EmailVerificationCode]: maskEmail(primaryEmail) }
+        : {}),
+      ...(mfaValidator.availableUserMfaVerificationTypes.includes(
+        MfaFactor.PhoneVerificationCode
+      ) && primaryPhone
+        ? { [MfaFactor.PhoneVerificationCode]: maskPhone(primaryPhone) }
+        : {}),
+    };
+
     assertThat(
       isVerified,
       new RequestError(
         { code: 'session.mfa.require_mfa_verification', status: 403 },
-        { availableFactors: mfaValidator.availableUserMfaVerificationTypes }
+        {
+          availableFactors: mfaValidator.availableUserMfaVerificationTypes,
+          maskedIdentifiers,
+        }
       )
     );
   }
@@ -409,6 +431,7 @@ export default class ExperienceInteraction {
       queries: { users: userQueries, userSsoIdentities: userSsoIdentityQueries },
       libraries: {
         socials: { upsertSocialTokenSetSecret },
+        ssoConnectors: { upsertEnterpriseSsoTokenSetSecret },
       },
     } = this.tenant;
 
@@ -439,8 +462,10 @@ export default class ExperienceInteraction {
       return;
     }
 
-    // Verified
-    await this.guardMfaVerificationStatus();
+    // Verified, only SignIn requires MFA verification, for register, it does not make sense to verify MFA
+    if (this.#interactionEvent === InteractionEvent.SignIn) {
+      await this.guardMfaVerificationStatus();
+    }
 
     // Revalidate the new profile data if any
     await this.profile.validateAvailability();
@@ -464,6 +489,7 @@ export default class ExperienceInteraction {
       syncedEnterpriseSsoIdentity,
       jitOrganizationIds,
       socialConnectorTokenSetSecret,
+      enterpriseSsoConnectorTokenSetSecret,
       ...rest
     } = this.profile.data;
     const { mfaSkipped, mfaVerifications } = this.mfa.toUserMfaVerifications();
@@ -513,7 +539,18 @@ export default class ExperienceInteraction {
 
     // Sync social token set secret
     if (socialConnectorTokenSetSecret) {
-      await upsertSocialTokenSetSecret(user.id, socialConnectorTokenSetSecret);
+      // Upsert token set secret should not break the normal social authentication and link flow
+      await trySafe(
+        async () => upsertSocialTokenSetSecret(user.id, socialConnectorTokenSetSecret),
+        (error) => {
+          void appInsights.trackException(error);
+        }
+      );
+    }
+
+    // Sync enterprise sso token set secret
+    if (enterpriseSsoConnectorTokenSetSecret) {
+      await upsertEnterpriseSsoTokenSetSecret(user.id, enterpriseSsoConnectorTokenSetSecret);
     }
 
     // Provision organizations for one-time token that carries organization IDs in the context.
@@ -559,6 +596,19 @@ export default class ExperienceInteraction {
       profile: this.profile.data,
       mfa: this.mfa.data,
       verificationRecords: this.verificationRecordsArray.map((record) => record.toJson()),
+      captcha,
+    };
+  }
+
+  public toSanitizedJson(): SanitizedInteractionStorageData {
+    const { interactionEvent, userId, captcha } = this;
+
+    return {
+      interactionEvent,
+      userId,
+      profile: this.profile.sanitizedData,
+      mfa: this.mfa.sanitizedData,
+      verificationRecords: this.verificationRecordsArray.map((record) => record.toSanitizedJson()),
       captcha,
     };
   }

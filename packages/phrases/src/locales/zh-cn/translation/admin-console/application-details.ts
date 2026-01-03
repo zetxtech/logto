@@ -4,7 +4,7 @@ const application_details = {
   check_guide: '查看指南',
   settings: '设置',
   settings_description:
-    '"应用"是指已注册的、可以访问用户信息或代表用户执行操作的软件或服务。应用帮助 Logto 识别请求来源，并处理登录和权限管理。请填写认证所需的必填字段。',
+    '“应用”是注册的软件或服务，可以访问用户信息或代表用户执行操作。应用可以帮助 Logto 识别是谁在请求什么，并负责处理登录和授权。请填写认证所需的必填字段。',
   integration: '集成',
   integration_description:
     '使用由 Cloudflare 边缘网络提供动力的 Logto 安全工作者部署，实现世界各地的一流性能和 0ms 冷启动。',
@@ -145,6 +145,17 @@ const application_details = {
     organization_title: '组织',
     organization_description: '选择第三方应用程序需要访问特定组织数据的权限。',
     grant_organization_level_permissions: '授予组织数据权限',
+    oidc_title: 'OIDC',
+    oidc_description:
+      '核心 OIDC 权限会自动为你的应用配置。这些 scope 对认证至关重要，并且不会显示在用户授权屏幕上。',
+    default_oidc_permissions: '默认 OIDC 权限',
+    permission_column: '权限',
+    guide_column: '指南',
+    openid_permission: 'openid',
+    openid_permission_guide:
+      "用于访问 OAuth 资源时可选。\n用于 OIDC 认证时必需。授予访问 ID Token 的权限，并允许访问 'userinfo_endpoint'。",
+    offline_access_permission: 'offline_access',
+    offline_access_permission_guide: '可选。获取刷新令牌，用于长时访问或后台任务。',
   },
   roles: {
     assign_button: '分配机器对机器角色',

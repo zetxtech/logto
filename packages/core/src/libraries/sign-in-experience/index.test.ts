@@ -4,6 +4,8 @@ import { CaptchaType, type CreateSignInExperience, type SignInExperience } from 
 import { TtlCache } from '@logto/shared';
 
 import {
+  mockAliyunDmConnector,
+  mockAliyunSmsConnector,
   mockCaptchaProvider,
   mockCustomProfileFields,
   mockGithubConnector,
@@ -17,12 +19,8 @@ import {
 import { WellKnownCache } from '#src/caches/well-known.js';
 import RequestError from '#src/errors/RequestError/index.js';
 import { ssoConnectorFactories } from '#src/sso/index.js';
-import {
-  mockLogtoConfigsLibrary,
-  mockSsoConnectorLibrary,
-} from '#src/test-utils/mock-libraries.js';
+import { mockSsoConnectorLibrary } from '#src/test-utils/mock-libraries.js';
 
-import { createCloudConnectionLibrary } from '../cloud-connection.js';
 import { createConnectorLibrary } from '../connector.js';
 
 const { jest } = import.meta;
@@ -66,14 +64,6 @@ const queries = new MockQueries({
 const connectorLibrary = createConnectorLibrary(queries, {
   getClient: jest.fn(),
 });
-const cloudConnection = createCloudConnectionLibrary({
-  ...mockLogtoConfigsLibrary,
-  getCloudConnectionData: jest.fn().mockResolvedValue({
-    appId: 'appId',
-    appSecret: 'appSecret',
-    resource: 'resource',
-  }),
-});
 
 const getLogtoConnectors = jest.spyOn(connectorLibrary, 'getLogtoConnectors');
 
@@ -84,10 +74,10 @@ const {
   getFullSignInExperience,
   findCaptchaPublicConfig,
 } = createSignInExperienceLibrary(
+  'tenant_foo',
   queries,
   connectorLibrary,
   mockSsoConnectorLibrary,
-  cloudConnection,
   new WellKnownCache('foo', new TtlCache())
 );
 
@@ -180,10 +170,6 @@ describe('getFullSignInExperience()', () => {
       ...mockSignInExperience,
       socialConnectors: [],
       socialSignInConnectorTargets: ['github', 'facebook', 'wechat'],
-      forgotPassword: {
-        email: false,
-        phone: false,
-      },
       ssoConnectors: [
         {
           id: wellConfiguredSsoConnector.id,
@@ -196,6 +182,10 @@ describe('getFullSignInExperience()', () => {
       googleOneTap: undefined,
       captchaConfig: undefined,
       customProfileFields: mockCustomProfileFields,
+      forgotPassword: {
+        email: false,
+        phone: false,
+      },
     });
   });
 
@@ -205,6 +195,7 @@ describe('getFullSignInExperience()', () => {
       socialSignInConnectorTargets: ['github', 'facebook', 'google'],
     });
     getLogtoConnectors.mockResolvedValueOnce([mockGoogleConnector, mockGithubConnector]);
+    findAllCustomProfileFields.mockResolvedValueOnce(mockCustomProfileFields);
     mockSsoConnectorLibrary.getAvailableSsoConnectors.mockResolvedValueOnce([
       wellConfiguredSsoConnector,
     ]);
@@ -219,10 +210,6 @@ describe('getFullSignInExperience()', () => {
         { ...mockGoogleConnector.metadata, id: mockGoogleConnector.dbEntry.id },
       ],
       socialSignInConnectorTargets: ['github', 'facebook', 'google'],
-      forgotPassword: {
-        email: false,
-        phone: false,
-      },
       ssoConnectors: [
         {
           id: wellConfiguredSsoConnector.id,
@@ -239,6 +226,11 @@ describe('getFullSignInExperience()', () => {
         connectorId: 'google',
       },
       captchaConfig: undefined,
+      customProfileFields: mockCustomProfileFields,
+      forgotPassword: {
+        email: false,
+        phone: false,
+      },
     });
   });
 });
@@ -329,5 +321,39 @@ describe('findCaptchaPublicConfig', () => {
     const captchaPublicConfig = await findCaptchaPublicConfig();
 
     expect(captchaPublicConfig).toBeUndefined();
+  });
+});
+
+describe('forgot password methods', () => {
+  it('should return connector-based methods when forgotPasswordMethods is null', async () => {
+    findDefaultSignInExperience.mockResolvedValueOnce({
+      ...mockSignInExperience,
+      forgotPasswordMethods: null, // Test null case
+    });
+    getLogtoConnectors.mockResolvedValueOnce([mockAliyunDmConnector, mockAliyunSmsConnector]);
+    mockSsoConnectorLibrary.getAvailableSsoConnectors.mockResolvedValueOnce([]);
+
+    const fullSignInExperience = await getFullSignInExperience({ locale: 'en' });
+
+    expect(fullSignInExperience.forgotPassword).toEqual({
+      email: true,
+      phone: true,
+    });
+  });
+
+  it('should return false values when forgotPasswordMethods is null and no connectors available', async () => {
+    findDefaultSignInExperience.mockResolvedValueOnce({
+      ...mockSignInExperience,
+      forgotPasswordMethods: null,
+    });
+    getLogtoConnectors.mockResolvedValueOnce([]); // No connectors
+    mockSsoConnectorLibrary.getAvailableSsoConnectors.mockResolvedValueOnce([]);
+
+    const fullSignInExperience = await getFullSignInExperience({ locale: 'en' });
+
+    expect(fullSignInExperience.forgotPassword).toEqual({
+      email: false,
+      phone: false,
+    });
   });
 });

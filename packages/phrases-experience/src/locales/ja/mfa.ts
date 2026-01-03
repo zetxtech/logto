@@ -2,15 +2,27 @@ const mfa = {
   totp: '認証アプリOTP',
   webauthn: 'パスキー',
   backup_code: 'バックアップコード',
+  email_verification_code: 'メール確認コード',
+  phone_verification_code: 'SMS確認コード',
   link_totp_description: '例：Google Authenticator など',
   link_webauthn_description: 'デバイスまたはUSBハードウェアをリンク',
   link_backup_code_description: 'バックアップコードを生成',
+  link_email_verification_code_description: 'メールアドレスをリンク',
+  link_email_2fa_description: '2段階認証のためのメールアドレスをリンク',
+  link_phone_verification_code_description: '電話番号をリンク',
+  link_phone_2fa_description: '2段階認証のための電話番号をリンク',
   verify_totp_description: 'アプリに表示されるワンタイムコードを入力',
   verify_webauthn_description: 'デバイスまたはUSBハードウェアを確認',
   verify_backup_code_description: '保存したバックアップコードを貼り付け',
+  verify_email_verification_code_description: 'メールに送信されたコードを入力',
+  verify_phone_verification_code_description: '電話に送信されたコードを入力',
+  send_to_email: '{{identifier}} に送信',
+  send_to_phone: '{{identifier}} に送信',
   add_mfa_factors: '2段階認証を追加',
   add_mfa_description:
     '2段階認証が有効になっています。安全なサインインのために第二の認証方法を選択してください。',
+  add_another_mfa_factor: 'もう一つの2段階認証を追加',
+  add_another_mfa_description: 'サインイン時に身元を確認するための別の方法を選択してください。',
   verify_mfa_factors: '2段階認証',
   verify_mfa_description:
     'このアカウントでは2段階認証が有効になっています。アイデンティティを確認するための第二の方法を選択してください。',
@@ -28,6 +40,12 @@ const mfa = {
   enter_one_time_code_link_description: '認証アプリで生成された6桁の確認コードを入力してください。',
   enter_one_time_code_description:
     'このアカウントでは2段階認証が有効になっています。リンクされた認証アプリに表示されるワンタイムコードを入力してください。',
+  enter_email_verification_code: 'メールの確認コードを入力',
+  enter_email_verification_code_description:
+    'このアカウントでは二段階認証が有効です。{{identifier}} に送信された確認コードを入力してください。',
+  enter_phone_verification_code: 'SMSの確認コードを入力',
+  enter_phone_verification_code_description:
+    'このアカウントでは二段階認証が有効です。{{identifier}} に送信されたSMS確認コードを入力してください。',
   link_another_mfa_factor: '別の方法に切り替える',
   save_backup_code: 'バックアップコードを保存',
   save_backup_code_description:

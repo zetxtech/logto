@@ -3,7 +3,7 @@ const application = {
   role_exists: 'The role id {{roleId}} is already been added to this application.',
   invalid_role_type: 'Can not assign user type role to machine to machine application.',
   invalid_third_party_application_type:
-    'Only traditional web applications can be marked as a third-party app.',
+    'Only traditional web, single-page, and native applications can be marked as third-party apps.',
   third_party_application_only: 'The feature is only available for third-party applications.',
   user_consent_scopes_not_found: 'Invalid user consent scopes.',
   consent_management_api_scopes_not_allowed: 'Management API scopes are not allowed.',

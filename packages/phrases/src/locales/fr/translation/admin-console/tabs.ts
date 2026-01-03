@@ -3,7 +3,7 @@ const tabs = {
   dashboard: 'Tableau de bord',
   applications: 'Applications',
   api_resources: 'Ressources API',
-  sign_in_experience: 'Expérience de connexion',
+  sign_in_experience: 'Connexion et compte',
   connectors: 'Connecteurs',
   enterprise_sso: "SSO d'entreprise",
   security: 'Sécurité',

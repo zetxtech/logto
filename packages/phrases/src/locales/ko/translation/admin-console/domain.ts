@@ -12,10 +12,12 @@ const domain = {
     custom_domain_description:
       '브랜딩을 개선하고 사용자 지정 도메인을 활용하세요. 이 도메인은 로그인 경험에서 사용됩니다.',
     custom_domain_field: '사용자 지정 도메인',
-    custom_domain_placeholder: 'your.domain.com',
+    custom_domain_placeholder: 'auth.domain.com',
+    add_custom_domain_field: '사용자 지정 도메인 추가',
+    custom_domains_field: '사용자 지정 도메인',
     add_domain: '도메인 추가',
     invalid_domain_format:
-      '유효한 도메인 URL을 제공해야합니다. 최소 세 부분으로 구성되어야 하며 예를 들어 "your.domain.com."이어야 합니다.',
+      '유효한 도메인 URL을 제공해야합니다. 최소 세 부분으로 구성되어야 하며 예를 들어 "auth.domain.com."이어야 합니다.',
     verify_domain: '도메인 확인',
     enable_ssl: 'SSL 사용',
     checking_dns_tip:
@@ -39,6 +41,8 @@ const domain = {
         '이전에 소셜 커넥터 공급자나 애플리케이션 엔드포인트에 이 사용자 지정 도메인을 설정한 경우 로그인 버튼이 작동하도록 먼저 Logto 기본 도메인의 "<span>{{domain}}</span>" URI를 수정해야합니다.',
       deleted: '사용자 지정 도메인을 성공적으로 삭제했습니다!',
     },
+    config_custom_domain_description:
+      '다음 기능을 설정하려면 사용자 지정 도메인을 구성하세요: 애플리케이션, 소셜 커넥터, 엔터프라이즈 커넥터.',
   },
   default: {
     default_domain: '기본 도메인',
@@ -52,6 +56,12 @@ const domain = {
     '이 URI의 도메인 이름을 애플리케이션 엔드포인트와 일치하도록 사용자 정의할 수 있습니다. "{{custom}}" 또는 "{{default}}" 중 하나를 선택하세요.',
   custom_acs_url_note:
     '이 URI의 도메인명을 사용자의 ID 공급자 Assertion Consumer 서비스 URL과 일치하도록 사용자 정의할 수 있습니다. "{{custom}}" 또는 "{{default}}" 중 하나를 선택하세요.',
+  switch_custom_domain_tip:
+    '해당 엔드포인트를 보려면 도메인을 전환하세요. <a>사용자 지정 도메인</a>을 통해 더 많은 도메인을 추가할 수 있습니다.',
+  switch_saml_app_domain_tip:
+    '해당 URL을 보려면 도메인을 전환하세요. SAML 프로토콜에서는 메타데이터 URL을 접근 가능한 어떤 도메인에서도 호스팅할 수 있습니다. 하지만 선택한 도메인이 SP가 사용자를 인증을 위해 리디렉션하는 SSO 서비스 URL을 결정하며, 이는 로그인 경험과 URL 노출에 영향을 줍니다.',
+  switch_saml_connector_domain_tip:
+    '해당 URL을 보려면 도메인을 전환하세요. 선택한 도메인은 ACS URL을 결정하며, 이는 SSO 로그인 후 사용자가 리디렉션되는 위치에 영향을 줍니다. 애플리케이션이 기대하는 리디렉션 동작과 일치하는 도메인을 선택하세요.',
 };
 
 export default Object.freeze(domain);

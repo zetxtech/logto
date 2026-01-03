@@ -18,7 +18,9 @@ const paywall = {
   scopes_per_resource_other:
     'Atingiu o limite de {{count, number}} permissões por recurso de API de <planName/>. Atualize agora para expandir. <a>Entre em contato conosco</a> se precisar de assistência.',
   custom_domain:
-    'Desbloqueie a funcionalidade de domínio personalizado ao atualizar para o plano <strong>Hobby</strong> ou <strong>Pro</strong>. Não hesite em <a>entrar em contato conosco</a> se precisar de alguma ajuda.',
+    'Limite de {{count, number}} domínio personalizado do <planName/> atingido. Atualize para um plano pago para adicionar vários domínios personalizados e benefícios premium. Não hesite em <a>entrar em contato conosco</a> se tiver alguma dúvida.',
+  custom_domain_others:
+    'Limite de {{count, number}} domínios personalizados do <planName/> atingido. Atualize para um plano pago para adicionar vários domínios personalizados e benefícios premium. Não hesite em <a>entrar em contato conosco</a> se tiver alguma dúvida.',
   social_connectors:
     'Atingiu o limite de {{count, number}} conectores sociais de <planName/>. Atualize o plano para obter conectores sociais adicionais e a capacidade de criar os seus próprios conectores usando os protocolos OIDC, OAuth 2.0 e SAML. Não hesite em <a>Entre em contato conosco</a> se precisar de ajuda.',
   social_connectors_other:
@@ -34,13 +36,7 @@ const paywall = {
   standard_connectors_pro_other:
     'Atingiu o limite de {{count, number}} conectores padrão de <planName/>. Atualize para o plano Empresarial para obter conectores sociais adicionais e a capacidade de criar os seus próprios conectores usando os protocolos OIDC, OAuth 2.0 e SAML. Não hesite em <a>Entre em contato conosco</a> se precisar de ajuda.',
   roles:
-    'Atingiu o limite de {{count, number}} funções de <planName/>. Atualize o plano para adicionar funções e permissões adicionais. Não hesite em <a>Entre em contato conosco</a> se precisar de ajuda.',
-  roles_other:
-    'Atingiu o limite de {{count, number}} funções de <planName/>. Atualize o plano para adicionar funções e permissões adicionais. Não hesite em <a>Entre em contato conosco</a> se precisar de ajuda.',
-  machine_to_machine_roles:
-    '{{count, number}} funções de máquina para máquina do <planName/> atingiram o limite. Atualize o plano para adicionar funções e permissões adicionais. Sinta-se à vontade para <a>entrar em contato conosco</a> se precisar de alguma ajuda.',
-  machine_to_machine_roles_other:
-    '{{count, number}} funções de máquina para máquina do <planName/> atingiram o limite. Atualize o plano para adicionar funções e permissões adicionais. Sinta-se à vontade para <a>entrar em contato conosco</a> se precisar de alguma ajuda.',
+    'Atualize o plano para adicionar funções e permissões adicionais. Sinta-se à vontade para <a>entrar em contato conosco</a> se precisar de qualquer assistência.',
   scopes_per_role:
     'Atingiu o limite de {{count, number}} permissões por função de <planName/>. Atualize o plano para adicionar funções e permissões adicionais. Não hesite em <a>Entre em contato conosco</a> se precisar de ajuda.',
   scopes_per_role_other:
@@ -50,6 +46,8 @@ const paywall = {
   logto_pricing_button_text: 'Preços do Logto Cloud',
   saml_applications:
     'O aplicativo SAML adicional está disponível com o plano Logto Enterprise. Entre em contato conosco se precisar de assistência.',
+  saml_applications_add_on:
+    'Desbloqueie a funcionalidade do app SAML ao atualizar para um plano pago. Para qualquer assistência, não hesite em <a>entrar em contato conosco</a>.',
   hooks:
     'Atingiu o limite de {{count, number}} webhooks de <planName/>. Atualize o plano para criar mais webhooks. Não hesite em <a>Entre em contato conosco</a> se precisar de ajuda.',
   hooks_other:
@@ -70,10 +68,14 @@ const paywall = {
     description:
       'Atualize para um plano pago para funcionalidades de JWT personalizadas e benefícios premium. Não hesite em <a>entrar em contato conosco</a> se tiver alguma dúvida.',
   },
+  branding_customization:
+    'Atualize seu plano para desbloquear controle total da marca com os recursos "Ocultar a marca Logto" e "Traga sua UI".',
   bring_your_ui:
     'Atualize para um plano pago para trazer sua funcionalidade de UI personalizada e benefícios premium.',
   security_features:
     'Desbloqueie recursos de segurança avançados ao atualizar para o plano Pro. Não hesite em <a>entrar em contato conosco</a> se você tiver alguma pergunta.',
+  collect_user_profile:
+    'Atualize para um plano pago para coletar informações adicionais do perfil do usuário durante o cadastro. Não hesite em <a>entrar em contato conosco</a> se tiver alguma dúvida.',
 };
 
 export default Object.freeze(paywall);

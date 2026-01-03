@@ -35,7 +35,7 @@ import { generateCodeVerifier, generateCodeChallenge } from './utils.js';
 
 const getAuthorizationUri =
   (getConfig: GetConnectorConfig): GetAuthorizationUri =>
-  async ({ state, redirectUri }, setSession) => {
+  async ({ state, redirectUri, scope }, setSession) => {
     const config = await getConfig(defaultMetadata.id);
     validateConfig(config, xConfigGuard);
 
@@ -48,7 +48,7 @@ const getAuthorizationUri =
       response_type: 'code',
       client_id: config.clientId,
       redirect_uri: redirectUri,
-      scope: config.scope ?? defaultScope,
+      scope: scope ?? config.scope ?? defaultScope,
       state,
       code_challenge: codeChallenge,
       code_challenge_method: 'S256',
@@ -113,8 +113,10 @@ const getUserInfo =
         redirectUri
       );
 
+      const hasEmailScope = (config.scope ?? defaultScope).split(' ').includes('users.email');
+
       const userInfo = await ky
-        .get(userInfoEndpoint, {
+        .get(`${userInfoEndpoint}${hasEmailScope ? '?user.fields=confirmed_email' : ''}`, {
           headers: {
             Authorization: `${token_type} ${access_token}`,
           },
@@ -128,12 +130,13 @@ const getUserInfo =
       }
 
       const {
-        data: { id, name },
+        data: { id, name, confirmed_email: email },
       } = userInfoResult.data;
 
       return {
         id,
         name: conditional(name),
+        email: conditional(email),
         rawData: jsonGuard.parse(userInfo),
       };
     } catch (error: unknown) {

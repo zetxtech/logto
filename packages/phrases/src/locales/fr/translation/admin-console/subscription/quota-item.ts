@@ -171,6 +171,12 @@ const quota_item = {
     unlimited: 'Apportez votre UI',
     not_eligible: 'Supprimez vos ressources UI personnalisées',
   },
+  collect_user_profile_enabled: {
+    name: 'Collecter le profil utilisateur',
+    limited: 'Collecter le profil utilisateur',
+    unlimited: 'Collecter le profil utilisateur',
+    not_eligible: 'Supprimez vos champs de collecte de profil utilisateur',
+  },
   idp_initiated_sso_enabled: {
     name: 'SSO initié par IDP',
     limited: 'SSO initié par IDP',
@@ -195,6 +201,13 @@ const quota_item = {
     limited: 'Sécurité avancée',
     unlimited: 'Sécurité avancée',
     not_eligible: 'Supprimez vos paramètres de sécurité avancés',
+  },
+  custom_domains_limit: {
+    name: 'Domaines personnalisés',
+    limited: '{{count, number}} domaine personnalisé',
+    limited_other: '{{count, number}} domaines personnalisés',
+    unlimited: 'Domaines personnalisés illimités',
+    not_eligible: 'Supprimez vos domaines personnalisés',
   },
 };
 

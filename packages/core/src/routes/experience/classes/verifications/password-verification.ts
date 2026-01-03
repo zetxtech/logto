@@ -65,6 +65,7 @@ export class PasswordVerification
    * Verifies if the password matches the record in database with the current identifier.
    * `userId` will be set if the password can be verified.
    *
+   * @throws RequestError with 400 status if sentinel policy blocks the action (failed too many times).
    * @throws RequestError with 401 status if user id suspended.
    * @throws RequestError with 422 status if the user is not found or the password is incorrect.
    */
@@ -110,5 +111,9 @@ export class PasswordVerification
       identifier,
       verified,
     };
+  }
+
+  toSanitizedJson(): PasswordVerificationRecordData {
+    return this.toJson();
   }
 }

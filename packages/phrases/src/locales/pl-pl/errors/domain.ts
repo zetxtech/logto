@@ -7,6 +7,8 @@ const domain = {
   hostname_already_exists: 'Ta domena już istnieje na naszym serwerze.',
   cloudflare_not_found: 'Nie można znaleźć nazwy hosta w Cloudflare',
   domain_is_not_allowed: 'Ta domena nie jest dozwolona.',
+  domain_in_use: 'Domena {{domain}} jest już używana.',
+  exceed_domain_limit: 'Możesz mieć maksymalnie {{limit}} własnych domen.',
 };
 
 export default Object.freeze(domain);

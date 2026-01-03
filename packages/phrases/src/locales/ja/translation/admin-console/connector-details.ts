@@ -4,7 +4,9 @@ const connector_details = {
   check_readme: 'READMEを確認する',
   settings: '一般設定',
   settings_description:
-    'コネクタは Logto に不可欠です。Logto はコネクタのおかげでエンドユーザーがパスワードレス登録またはサインインを利用し、ソーシャルアカウントでサインインすることができる機能を提供することができます。',
+    'サードパーティプロバイダーを統合して、迅速なソーシャルサインインとソーシャルアカウントのリンクを行います',
+  setting_description_with_token_storage_supported:
+    'サードパーティプロバイダーを統合して、迅速なソーシャルサインイン、ソーシャルアカウントのリンク、APIアクセスを行います。',
   email_connector_settings_description:
     'メール配信プロバイダーと統合して、エンドユーザー向けにパスワードレスメール登録とサインインを有効にします。',
   parameter_configuration: 'パラメーター設定',
@@ -67,6 +69,10 @@ const connector_details = {
     auto_select: '可能であれば資格情報を自動選択',
     close_on_tap_outside: '外側をクリック／タップした場合にプロンプトをキャンセル',
     itp_support: '<a>ITP ブラウザでアップグレードされたワンタップ UX</a> を有効にする',
+  },
+  sign_in_experience: {
+    in_use: 'サインインに有効',
+    not_in_use: 'サインインに無効',
   },
 };
 

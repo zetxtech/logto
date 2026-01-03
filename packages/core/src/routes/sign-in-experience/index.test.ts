@@ -169,7 +169,12 @@ describe('PATCH /sign-in-exp', () => {
 
     expect(validateLanguageInfo).toHaveBeenCalledWith(mockLanguageInfo);
     expect(validateSignUp).toHaveBeenCalledWith(mockSignUp, logtoConnectors);
-    expect(validateSignIn).toHaveBeenCalledWith(mockSignIn, mockSignUp, logtoConnectors);
+    expect(validateSignIn).toHaveBeenCalledWith(
+      mockSignIn,
+      mockSignUp,
+      logtoConnectors,
+      mockSignInExperience.mfa
+    );
 
     expect(response).toMatchObject({
       status: 200,
@@ -253,6 +258,20 @@ describe('PATCH /sign-in-exp', () => {
       body: {
         ...mockSignInExperience,
         unknownSessionRedirectUrl,
+      },
+    });
+  });
+
+  it('should accept empty forgotPasswordMethods array', async () => {
+    const response = await signInExperienceRequester.patch('/sign-in-exp').send({
+      forgotPasswordMethods: [],
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      body: {
+        ...mockSignInExperience,
+        forgotPasswordMethods: [],
       },
     });
   });

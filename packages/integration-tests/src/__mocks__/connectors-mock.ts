@@ -115,16 +115,24 @@ export const mockSmsConnectorConfig = {
       content: 'This is for Management API call only. Your passcode is {{code}}.',
     },
     {
-      usageType: 'Test',
-      content: 'This is for testing purposes only. Your passcode is {{code}}.',
-    },
-    {
       usageType: 'UserPermissionValidation',
       content: 'This is for user permission validation purposes only. Your passcode is {{code}}.',
     },
     {
       usageType: 'BindNewIdentifier',
       content: 'This is for binding new identifier purposes only. Your passcode is {{code}}.',
+    },
+    {
+      usageType: 'MfaVerification',
+      content: 'This is for MFA verification purposes only. Your passcode is {{code}}.',
+    },
+    {
+      usageType: 'BindMfa',
+      content: 'This is for binding MFA purposes only. Your passcode is {{code}}.',
+    },
+    {
+      usageType: 'OrganizationInvitation',
+      content: 'This is for organization invitation purposes only. Your link is {{link}}.',
     },
   ],
 };
@@ -160,12 +168,6 @@ export const mockEmailConnectorConfig = {
       content: 'This is for Management API call only. Your passcode is {{code}}.',
     },
     {
-      usageType: 'Test',
-      type: 'text/plain',
-      subject: 'Logto Test Template',
-      content: 'This is for testing purposes only. Your passcode is {{code}}.',
-    },
-    {
       usageType: 'OrganizationInvitation',
       type: 'text/plain',
       subject: 'Logto Organization Invitation Template',
@@ -182,6 +184,18 @@ export const mockEmailConnectorConfig = {
       type: 'text/plain',
       subject: 'Logto Bind New Identifier Template',
       content: 'This is for binding new identifier purposes only. Your passcode is {{code}}.',
+    },
+    {
+      usageType: 'MfaVerification',
+      type: 'text/plain',
+      subject: 'Logto MFA Verification Template',
+      content: 'This is for MFA verification purposes only. Your passcode is {{code}}.',
+    },
+    {
+      usageType: 'BindMfa',
+      type: 'text/plain',
+      subject: 'Logto Bind MFA Template',
+      content: 'This is for binding MFA purposes only. Your passcode is {{code}}.',
     },
   ],
 };
@@ -211,16 +225,10 @@ export const mockAlternativeEmailConnectorConfig = {
       content: 'This is for forgot-password purposes only. Your passcode is {{code}}.',
     },
     {
-      usageType: 'Continue',
+      usageType: 'Generic',
       type: 'text/plain',
-      subject: 'Logto Continue Template',
-      content: 'This is for completing user profile purposes only. Your passcode is {{code}}.',
-    },
-    {
-      usageType: 'Test',
-      type: 'text/plain',
-      subject: 'Logto Test Template',
-      content: 'This is for testing purposes only. Your passcode is {{code}}.',
+      subject: 'Logto Generic Template',
+      content: 'This is for generic purposes only. Your passcode is {{code}}.',
     },
   ],
 };

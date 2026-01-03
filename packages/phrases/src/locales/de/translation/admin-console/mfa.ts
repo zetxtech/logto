@@ -21,6 +21,12 @@ const mfa = {
     'Wenn Benutzer die obigen MFA-Faktoren nicht überprüfen können, verwenden Sie die Backup-Option.',
   backup_code_error_hint:
     'Um einen Backup-Code zu verwenden, benötigen Sie mindestens eine weitere MFA-Methode für eine erfolgreiche Benutzerauthentifizierung.',
+  email_verification_code: 'E-Mail-Verifizierungscode',
+  email_verification_code_description:
+    'Verknüpfen Sie die E-Mail-Adresse, um Verifizierungscodes zu erhalten und zu überprüfen.',
+  phone_verification_code: 'SMS-Verifizierungscode',
+  phone_verification_code_description:
+    'Verknüpfen Sie die Telefonnummer, um SMS-Verifizierungscodes zu erhalten und zu überprüfen.',
   policy: 'Richtlinie',
   policy_description: 'Legen Sie die MFA-Richtlinie für Anmelde- und Anmeldevorgänge fest.',
   two_step_sign_in_policy: 'Zwei-Schritt-Verifizierungspolitik bei der Anmeldung',
@@ -43,6 +49,19 @@ const mfa = {
     'MFA-Einrichtungsaufforderung für Benutzer, nachdem die Organisation MFA aktiviert hat',
   prompt_at_sign_in_no_skip:
     'Benutzer bei der nächsten Anmeldung zur MFA-Einrichtung auffordern (keine Möglichkeit zum Überspringen)',
+  email_primary_method_tip:
+    'E-Mail-Verifizierungscode ist bereits Ihre primäre Anmeldemethode. Um die Sicherheit zu gewährleisten, kann er nicht erneut für MFA verwendet werden.',
+  phone_primary_method_tip:
+    'SMS-Verifizierungscode ist bereits Ihre primäre Anmeldemethode. Um die Sicherheit zu gewährleisten, kann er nicht erneut für MFA verwendet werden.',
+  no_email_connector_warning:
+    'Es wurde noch kein E-Mail-Connector eingerichtet. Bevor die Konfiguration abgeschlossen ist, können Benutzer keine E-Mail-Verifizierungscodes für MFA verwenden. <a>{{link}}</a> in "Connectors".',
+  no_sms_connector_warning:
+    'Es wurde noch kein SMS-Connector eingerichtet. Bevor die Konfiguration abgeschlossen ist, können Benutzer keine SMS-Verifizierungscodes für MFA verwenden. <a>{{link}}</a> in "Connectors".',
+  no_email_connector_error:
+    'E-Mail-Verifizierungscode MFA kann nicht ohne einen E-Mail-Connector aktiviert werden. Bitte konfigurieren Sie zuerst einen E-Mail-Connector.',
+  no_sms_connector_error:
+    'SMS-Verifizierungscode MFA kann nicht ohne einen SMS-Connector aktiviert werden. Bitte konfigurieren Sie zuerst einen SMS-Connector.',
+  setup_link: 'Einrichten',
 };
 
 export default Object.freeze(mfa);

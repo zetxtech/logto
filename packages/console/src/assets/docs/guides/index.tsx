@@ -21,6 +21,8 @@ import spaVanilla from './spa-vanilla/index';
 import spaVue from './spa-vue/index';
 import spaWebflow from './spa-webflow/index';
 import thirdPartyOidc from './third-party-oidc/index';
+import thirdPartyOidcNative from './third-party-oidc-native/index';
+import thirdPartyOidcSpa from './third-party-oidc-spa/index';
 import { type Guide } from './types';
 import webDotnetCore from './web-dotnet-core/index';
 import webDotnetCoreBlazorServer from './web-dotnet-core-blazor-server/index';
@@ -352,10 +354,26 @@ export const guides: Readonly<Guide[]> = Object.freeze([
   {
     order: Number.POSITIVE_INFINITY,
     id: 'third-party-oidc',
-    Logo: safeLazy(async () => import('./third-party-oidc/logo.svg?react')),
-    DarkLogo: undefined,
+    Logo: safeLazy(async () => import('@/assets/icons/traditional-web-app.svg?react')),
+    DarkLogo: safeLazy(async () => import('@/assets/icons/traditional-web-app-dark.svg?react')),
     Component: safeLazy(async () => import('./third-party-oidc/README.mdx')),
     metadata: thirdPartyOidc,
+  },
+  {
+    order: Number.POSITIVE_INFINITY,
+    id: 'third-party-oidc-spa',
+    Logo: safeLazy(async () => import('@/assets/icons/single-page-app.svg?react')),
+    DarkLogo: safeLazy(async () => import('@/assets/icons/single-page-app-dark.svg?react')),
+    Component: safeLazy(async () => import('./third-party-oidc-spa/README.mdx')),
+    metadata: thirdPartyOidcSpa,
+  },
+  {
+    order: Number.POSITIVE_INFINITY,
+    id: 'third-party-oidc-native',
+    Logo: safeLazy(async () => import('@/assets/icons/native-app.svg?react')),
+    DarkLogo: safeLazy(async () => import('@/assets/icons/native-app-dark.svg?react')),
+    Component: safeLazy(async () => import('./third-party-oidc-native/README.mdx')),
+    metadata: thirdPartyOidcNative,
   },
 ]);
 /* eslint-enable max-lines */

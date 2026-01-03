@@ -19,6 +19,12 @@ const mfa = {
   backup_code_setup_hint: "When users can't verify the above MFA factors, use the backup option.",
   backup_code_error_hint:
     'To use a backup code, you need at least one more MFA method for successful user authentication.',
+  email_verification_code: 'Email verification code',
+  email_verification_code_description:
+    'Link email address to receive and verify verification codes.',
+  phone_verification_code: 'SMS verification code',
+  phone_verification_code_description:
+    'Link phone number to receive and verify SMS verification codes.',
   policy: 'Policy',
   policy_description: 'Set the MFA policy for sign-in and sign-up flows.',
   two_step_sign_in_policy: '2-step verification policy at sign-in',
@@ -40,6 +46,19 @@ const mfa = {
   set_up_organization_required_mfa_prompt:
     'MFA setup prompt for users after organization enables MFA',
   prompt_at_sign_in_no_skip: 'Ask users to set up MFA on next sign-in (no skipping)',
+  email_primary_method_tip:
+    "Email verification code is already your primary sign-in method. To maintain security, it can't be reused for MFA.",
+  phone_primary_method_tip:
+    "SMS verification code is already your primary sign-in method. To maintain security, it can't be reused for MFA.",
+  no_email_connector_warning:
+    'No email connector set-up yet. Before completing the configuration, users will not be able to use email verification codes for MFA. <a>{{link}}</a> in "Connectors".',
+  no_sms_connector_warning:
+    'No SMS connector set-up yet. Before completing the configuration, users will not be able to use SMS verification codes for MFA. <a>{{link}}</a> in "Connectors".',
+  no_email_connector_error:
+    'Cannot enable email verification code MFA without an email connector. Please configure an email connector first.',
+  no_sms_connector_error:
+    'Cannot enable SMS verification code MFA without an SMS connector. Please configure an SMS connector first.',
+  setup_link: 'Set up',
 };
 
 export default Object.freeze(mfa);

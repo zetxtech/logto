@@ -171,6 +171,12 @@ const quota_item = {
     unlimited: '맞춤 UI 사용',
     not_eligible: '맞춤 UI 자산을 제거하십시오',
   },
+  collect_user_profile_enabled: {
+    name: '사용자 프로필 수집',
+    limited: '사용자 프로필 수집',
+    unlimited: '사용자 프로필 수집',
+    not_eligible: '사용자 프로필 수집 필드를 제거하십시오',
+  },
   idp_initiated_sso_enabled: {
     name: 'IDP 시작 SSO',
     limited: 'IDP 시작 SSO',
@@ -195,6 +201,13 @@ const quota_item = {
     limited: '고급 보안',
     unlimited: '고급 보안',
     not_eligible: '고급 보안 설정을 제거하십시오',
+  },
+  custom_domains_limit: {
+    name: '사용자 정의 도메인',
+    limited: '{{count, number}} 사용자 정의 도메인',
+    limited_other: '{{count, number}} 사용자 정의 도메인',
+    unlimited: '제한 없는 사용자 정의 도메인',
+    not_eligible: '사용자 정의 도메인을 제거하십시오',
   },
 };
 

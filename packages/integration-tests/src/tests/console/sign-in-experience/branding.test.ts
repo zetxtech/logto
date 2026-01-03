@@ -24,7 +24,7 @@ describe('sign-in experience: branding', () => {
     await expect(page).toMatchElement(
       'div[class$=main] div[class$=container] div[class$=cardTitle] div[class$=titleEllipsis]',
       {
-        text: 'Sign-in experience',
+        text: 'Sign-in & account',
       }
     );
 

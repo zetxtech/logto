@@ -4,7 +4,9 @@ const connector_details = {
   check_readme: 'Check README',
   settings: 'General settings',
   settings_description:
-    'Connectors play a critical role in Logto. With their help, Logto enables end-users to use passwordless registration or sign-in and the capabilities of signing in with social accounts.',
+    'Integrate third-party providers for quick social sign-in and social account linking',
+  setting_description_with_token_storage_supported:
+    'Integrate third-party providers for quick social sign-in, social account linking, and API access.',
   email_connector_settings_description:
     'Integrate with your email delivery provider to enable passwordless email registration and sign-in for end-users.',
   parameter_configuration: 'Parameter configuration',
@@ -66,6 +68,10 @@ const connector_details = {
     auto_select: 'Auto-select credential if possible',
     close_on_tap_outside: 'Cancel the prompt if user click/tap outside',
     itp_support: 'Enable <a>Upgraded One Tap UX on ITP browsers</a>',
+  },
+  sign_in_experience: {
+    in_use: 'Enabled for sign-in ',
+    not_in_use: 'Disabled for sign-in ',
   },
 };
 

@@ -3,6 +3,9 @@ import password_rejected from './password-rejected.js';
 const error = {
   general_required: '{{types, list(type: disjunction;)}} gerekli',
   general_invalid: '{{types, list(type: disjunction;)}} geçersiz',
+  invalid_min_max_input: 'Girdi değeri {{minValue}} ile {{maxValue}} arasında olmalı',
+  invalid_min_max_length:
+    'Girdi değerinin uzunluğu {{minLength}} ile {{maxLength}} arasında olmalı',
   username_required: 'Kullanıcı adı gerekli.',
   password_required: 'Şifre gerekli.',
   username_exists: 'Kullanıcı adı mevcut.',
@@ -22,8 +25,12 @@ const error = {
   invalid_link: 'Geçersiz bağlantı',
   invalid_link_description:
     'Tek kullanımlık belirtecin süresi dolmuş olabilir veya artık geçerli değil.',
-  something_went_wrong: 'Bir şeyler yanlış gitti.',
   captcha_verification_failed: 'Captcha doğrulama hatası.',
+  terms_acceptance_required: 'Şartların kabulü gerekli',
+  terms_acceptance_required_description:
+    'Devam etmek için şartları kabul etmelisiniz. Lütfen tekrar deneyin.',
+  something_went_wrong: 'Bir şeyler yanlış gitti.',
+  feature_not_enabled: 'Bu özellik etkinleştirilmedi.',
 };
 
 export default Object.freeze(error);

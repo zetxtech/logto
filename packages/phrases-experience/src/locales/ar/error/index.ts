@@ -3,6 +3,8 @@ import password_rejected from './password-rejected.js';
 const error = {
   general_required: `{{types, list(type: disjunction;)}} مطلوب`,
   general_invalid: `{{types, list(type: disjunction;)}} غير صالح`,
+  invalid_min_max_input: 'يجب أن تكون قيمة الإدخال بين {{minValue}} و {{maxValue}}',
+  invalid_min_max_length: 'يجب أن يكون طول قيمة الإدخال بين {{minLength}} و {{maxLength}}',
   username_required: 'اسم المستخدم مطلوب',
   password_required: 'كلمة المرور مطلوبة',
   username_exists: 'اسم المستخدم موجود بالفعل',
@@ -22,7 +24,11 @@ const error = {
   invalid_link: 'رابط غير صالح',
   invalid_link_description: 'ربما يكون رمز الدخول المؤقت قد انتهى أو لم يعد صالحًا.',
   captcha_verification_failed: 'فشل التحقق من رمز التحقق.',
+  terms_acceptance_required: 'مطلوب قبول الشروط',
+  terms_acceptance_required_description:
+    'يجب أن توافق على الشروط للمتابعة. يرجى المحاولة مرة أخرى.',
   something_went_wrong: 'حدث خطأ ما.',
+  feature_not_enabled: 'هذه الميزة غير مفعلة.',
 };
 
 export default Object.freeze(error);

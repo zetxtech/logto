@@ -12,10 +12,12 @@ const domain = {
     custom_domain_description:
       'ブランディングを向上させるために、カスタムドメインを利用してください。このドメインは、サインインエクスペリエンスで使用されます。',
     custom_domain_field: 'カスタムドメイン',
-    custom_domain_placeholder: 'your.domain.com',
+    custom_domain_placeholder: 'auth.domain.com',
+    add_custom_domain_field: 'カスタムドメインを追加',
+    custom_domains_field: 'カスタムドメイン',
     add_domain: 'ドメインを追加',
     invalid_domain_format:
-      '有効なドメインURLを指定してください。最低3つの部分を含め、例："your.domain.com."',
+      '有効なドメインURLを指定してください。最低3つの部分を含め、例："auth.domain.com."',
     verify_domain: 'ドメインを検証',
     enable_ssl: 'SSLを有効にする',
     checking_dns_tip:
@@ -39,6 +41,8 @@ const domain = {
         '以前にソーシャルコネクタプロバイダまたはアプリ終了ポイントでこのカスタムドメインを使用して設定した場合、それらのURIをLogtoデフォルトドメイン「<span>{{domain}}</span>」に変更する必要があります。これは、ソーシャルサインインボタンを機能させるために必要です。',
       deleted: 'カスタムドメインを正常に削除しました！',
     },
+    config_custom_domain_description:
+      'アプリケーション、ソーシャルコネクタ、エンタープライズコネクタを設定するために、カスタムドメインを構成します。',
   },
   default: {
     default_domain: 'デフォルトドメイン',
@@ -52,6 +56,12 @@ const domain = {
     'このURIのドメイン名をアプリケーションのエンドポイントに合わせてカスタマイズできます。 "{{custom}}" または "{{default}}" のいずれかを選択してください。',
   custom_acs_url_note:
     'このURIのドメイン名をアイデンティティプロバイダのアサーションコンシューマーサービスURLに合わせてカスタマイズできます。 "{{custom}}" または "{{default}}" のいずれかを選択してください。',
+  switch_custom_domain_tip:
+    '対応するエンドポイントを表示するにはドメインを切り替えてください。<a>カスタムドメイン</a> からさらに追加できます。',
+  switch_saml_app_domain_tip:
+    '対応する URL を表示するにはドメインを切り替えてください。SAML プロトコルではメタデータ URL はアクセス可能な任意のドメインでホストできますが、選択したドメインが SP がエンドユーザーを認証にリダイレクトする SSO サービス URL を決定し、ログイン体験と URL の表示に影響します。',
+  switch_saml_connector_domain_tip:
+    '対応する URL を表示するにはドメインを切り替えてください。選択したドメインは ACS URL を決定し、SSO ログイン後のリダイレクト先に影響します。アプリの期待するリダイレクト動作に合うドメインを選択してください。',
 };
 
 export default Object.freeze(domain);

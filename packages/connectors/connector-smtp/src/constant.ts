@@ -90,9 +90,44 @@ export const defaultMetadata: ConnectorMetadata = {
         {
           contentType: 'text/plain',
           content:
+            'Your Logto organization invitation code is {{code}}. The code will remain active for 10 minutes.',
+          subject: 'Logto OrganizationInvitation with SMTP',
+          usageType: 'OrganizationInvitation',
+        },
+        {
+          contentType: 'text/plain',
+          content:
             'Your Logto verification code is {{code}}. The code will remain active for 10 minutes.',
           subject: 'Logto Generic with SMTP',
           usageType: 'Generic',
+        },
+        {
+          contentType: 'text/plain',
+          content:
+            'Your Logto permission validation code is {{code}}. The code will remain active for 10 minutes.',
+          subject: 'Logto UserPermissionValidation with SMTP',
+          usageType: 'UserPermissionValidation',
+        },
+        {
+          contentType: 'text/plain',
+          content:
+            'Your Logto new identifier binding code is {{code}}. The code will remain active for 10 minutes.',
+          subject: 'Logto BindNewIdentifier with SMTP',
+          usageType: 'BindNewIdentifier',
+        },
+        {
+          contentType: 'text/plain',
+          content:
+            'Your Logto MFA verification code is {{code}}. The code will remain active for 10 minutes.',
+          subject: 'Logto MfaVerification with SMTP',
+          usageType: 'MfaVerification',
+        },
+        {
+          contentType: 'text/plain',
+          content:
+            'Your Logto 2-step verification setup code is {{code}}. The code will remain active for 10 minutes.',
+          subject: 'Logto BindMfa with SMTP',
+          usageType: 'BindMfa',
         },
       ],
     },
@@ -100,6 +135,7 @@ export const defaultMetadata: ConnectorMetadata = {
       key: 'logger',
       label: 'Logger',
       type: ConnectorConfigFormItemType.Switch,
+      description: 'Enable logger to log SMTP operations.',
       required: false,
       defaultValue: false,
     },
@@ -107,6 +143,7 @@ export const defaultMetadata: ConnectorMetadata = {
       key: 'debug',
       label: 'Debug',
       type: ConnectorConfigFormItemType.Switch,
+      description: 'Enable debug mode to log SMTP operations in detail.',
       required: false,
       defaultValue: false,
     },
@@ -114,6 +151,7 @@ export const defaultMetadata: ConnectorMetadata = {
       key: 'disableFileAccess',
       label: 'Disable File Access',
       type: ConnectorConfigFormItemType.Switch,
+      description: 'Disable file access for security reasons.',
       required: false,
       defaultValue: false,
     },
@@ -121,6 +159,7 @@ export const defaultMetadata: ConnectorMetadata = {
       key: 'disableUrlAccess',
       label: 'Disable URL Access',
       type: ConnectorConfigFormItemType.Switch,
+      description: 'Disable URL access for security reasons.',
       required: false,
       defaultValue: false,
     },

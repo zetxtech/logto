@@ -18,7 +18,9 @@ const paywall = {
   scopes_per_resource_other:
     '{{count, number}} <planName/> API kaynağı başına izin sınırına ulaşıldı. Genişletmek için şimdi yükseltin. Yardıma ihtiyacınız olursa, <a>iletişime geçin</a>.',
   custom_domain:
-    'Özel alan işlevselliğini kilidini açmak için <strong>Hobiyi</strong> veya <strong>Pro’yu</strong> yükseltin. Yardım için <a>bizimle iletişime geçin</a> ihtiyacınız varsa.',
+    '<planName/> için {{count, number}} özel alan sınırına ulaşıldı. Birden fazla özel alan ve premium avantajlar eklemek için ücretli bir plana yükseltin. Sorularınız varsa <a>bizimle iletişime geçmekten</a> çekinmeyin.',
+  custom_domain_others:
+    '<planName/> için {{count, number}} özel alan sınırına ulaşıldı. Birden fazla özel alan ve premium avantajlar eklemek için ücretli bir plana yükseltin. Sorularınız varsa <a>bizimle iletişime geçmekten</a> çekinmeyin.',
   social_connectors:
     '{{count, number}} <planName/> sosyal bağlayıcı sınırına ulaşıldı. Ekibinizin ihtiyaçlarını karşılamak için planı yükseltin ve OIDC, OAuth 2.0 ve SAML protokolleri kullanarak kendi bağlayıcılarınızı oluşturma yeteneğine sahip olun. Yardım için ihtiyacınız olursa, <a>iletişime geçin</a>.',
   social_connectors_other:
@@ -34,13 +36,7 @@ const paywall = {
   standard_connectors_pro_other:
     '{{count, number}} <planName/> standart bağlayıcı sınırına ulaşıldı. Ekibinizin ihtiyaçlarını karşılamak için Kurumsal plana yükseltin ve OIDC, OAuth 2.0 ve SAML protokolleri kullanarak kendi bağlayıcılarınızı oluşturma yeteneğine sahip olun. Yardım için ihtiyacınız olursa, <a>iletişime geçin</a>.',
   roles:
-    '{{count, number}} <planName/> rol sınırına ulaşıldı. İlave roller ve izinler eklemek için planı yükseltin. Yardım için ihtiyacınız olursa, <a>iletişime geçin</a>.',
-  roles_other:
-    '{{count, number}} <planName/> rol sınırına ulaşıldı. İlave roller ve izinler eklemek için planı yükseltin. Yardım için ihtiyacınız olursa, <a>iletişime geçin</a>.',
-  machine_to_machine_roles:
-    '{{count, number}} <planName/> makine-makine rol sınırına ulaşıldı. İlave roller ve izinler eklemek için planı yükseltin. Yardım için ihtiyacınız olursa, <a>iletişime geçin</a>.',
-  machine_to_machine_roles_other:
-    '{{count, number}} <planName/> makine-makine rol sınırına ulaşıldı. İlave roller ve izinler eklemek için planı yükseltin. Yardım için ihtiyacınız olursa, <a>iletişime geçin</a>.',
+    'Ek roller ve izinler eklemek için planı yükseltin. Yardımcı olabileceğimiz bir şey varsa, <a>bizimle iletişime geçmekten</a> çekinmeyin.',
   scopes_per_role:
     '{{count, number}} <planName/> rol başına izin sınırına ulaşıldı. İlave roller ve izinler eklemek için planı yükseltin. Yardım için ihtiyacınız olursa, <a>iletişime geçin</a>.',
   scopes_per_role_other:
@@ -50,6 +46,8 @@ const paywall = {
   logto_pricing_button_text: 'Logto Bulut Fiyatlandırması',
   saml_applications:
     'Ek SAML uygulaması, Logto Enterprise planı ile mevcuttur. Yardım için bize ulaşın.',
+  saml_applications_add_on:
+    'SAML uygulama özelliğini ücretli bir plana yükselterek etkinleştirin. Herhangi bir konuda yardıma ihtiyacınız olursa, <a>bizimle iletişime geçmekten</a> çekinmeyin.',
   hooks:
     '{{count, number}} <planName/> webhook sınırına ulaşıldı. Daha fazla webhook oluşturmak için planı yükseltin. Yardım için ihtiyacınız olursa, <a>iletişime geçin</a>.',
   hooks_other:
@@ -70,10 +68,14 @@ const paywall = {
     description:
       'Özel JWT işlevselliği ve prim avantajları için ücretli bir plana yükseltin. Sorularınız varsa, çekinmeden <a>iletişime geçin</a>.',
   },
+  branding_customization:
+    'Planınızı yükselterek "Logto markasını gizle" ve "UI\'nizi Getirin" özellikleriyle markalama üzerinde tam kontrol sağlayın.',
   bring_your_ui:
     'Özel kullanıcı arayüzü işlevselliği ve prim avantajları için ücretli bir plana geçin.',
   security_features:
     'Gelişmiş güvenlik özelliklerinin kilidini açmak için Pro planına yükseltin. Sorularınız varsa, <a>bizimle iletişime geçmekten</a> çekinmeyin.',
+  collect_user_profile:
+    'Kayıt sırasında ek kullanıcı profil bilgilerini toplamak için ücretli bir plana yükseltin. Sorularınız varsa, <a>bizimle iletişime geçmekten</a> çekinmeyin.',
 };
 
 export default Object.freeze(paywall);

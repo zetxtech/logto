@@ -1,5 +1,11 @@
 import type { RoleResponse } from '@logto/schemas';
-import { RoleType, Roles, featuredApplicationGuard, featuredUserGuard } from '@logto/schemas';
+import {
+  ProductEvent,
+  RoleType,
+  Roles,
+  featuredApplicationGuard,
+  featuredUserGuard,
+} from '@logto/schemas';
 import { generateStandardId } from '@logto/shared';
 import { pickState, trySafe, tryThat } from '@silverhand/essentials';
 import { number, object, string, z } from 'zod';
@@ -11,6 +17,8 @@ import koaPagination from '#src/middleware/koa-pagination.js';
 import koaRoleRlsErrorHandler from '#src/middleware/koa-role-rls-error-handler.js';
 import assertThat from '#src/utils/assert-that.js';
 import { parseSearchParamsForSearch } from '#src/utils/search.js';
+
+import { captureEvent } from '../utils/posthog.js';
 
 import roleApplicationRoutes from './role.application.js';
 import roleUserRoutes from './role.user.js';
@@ -140,7 +148,7 @@ export default function roleRoutes<T extends ManagementApiRouter>(
       body: Roles.createGuard
         .omit({ id: true })
         .extend({ scopeIds: z.string().min(1).array().optional() }),
-      status: [200, 400, 404, 422], // Throws 404 when invalid `scopeId(s)` are provided.
+      status: [200, 400, 404, 422, 403], // Throws 404 when invalid `scopeId(s)` are provided.
       response: Roles.guard,
     }),
     async (ctx, next) => {
@@ -179,6 +187,10 @@ export default function roleRoutes<T extends ManagementApiRouter>(
         );
       }
 
+      void quota.reportSubscriptionUpdatesUsage(
+        role.type === RoleType.MachineToMachine ? 'machineToMachineRolesLimit' : 'userRolesLimit'
+      );
+
       ctx.body = role;
 
       // Hook context must be triggered after the response is set.
@@ -196,6 +208,9 @@ export default function roleRoutes<T extends ManagementApiRouter>(
         });
       }
 
+      captureEvent({ tenantId: tenant.id, request: ctx.req }, ProductEvent.RoleCreated, {
+        type: role.type,
+      });
       return next();
     }
   );
@@ -258,9 +273,21 @@ export default function roleRoutes<T extends ManagementApiRouter>(
       const {
         params: { id },
       } = ctx.guard;
+
+      // Check if role is available, and get role type before deleting the role
+      const role = await findRoleById(id);
+
       await deleteRoleById(id);
+
+      void quota.reportSubscriptionUpdatesUsage(
+        role.type === RoleType.MachineToMachine ? 'machineToMachineRolesLimit' : 'userRolesLimit'
+      );
+
       ctx.status = 204;
 
+      captureEvent({ tenantId: tenant.id, request: ctx.req }, ProductEvent.RoleDeleted, {
+        type: role.type,
+      });
       return next();
     }
   );

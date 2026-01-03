@@ -4,7 +4,7 @@ const application_details = {
   check_guide: 'Consulter le guide',
   settings: 'Paramètres',
   settings_description:
-    'Une "Application" est un logiciel ou un service enregistré qui peut accéder aux infos utilisateur ou agir pour un utilisateur. Les applications aident à reconnaître qui demande quoi à Logto et à gérer la connexion et les autorisations. Remplissez les champs requis pour l\'authentification.',
+    "Une application est un logiciel ou un service enregistré pouvant accéder aux informations utilisateur ou agir pour un utilisateur. Les applications aident Logto à identifier qui demande quoi et gèrent la connexion ainsi que les autorisations. Remplissez les champs obligatoires pour l'authentification.",
   integration: 'Intégration',
   integration_description:
     'Déployez avec les travailleurs sécurisés de Logto, alimentés par le réseau Edge de Cloudflare pour des performances de premier plan et des démarrages à froid de 0ms dans le monde entier.',
@@ -159,6 +159,18 @@ const application_details = {
     organization_description:
       "Sélectionnez les permissions demandées par l'application tierce pour accéder à des données d'organisation spécifiques.",
     grant_organization_level_permissions: "Accorder des permissions des données d'organisation",
+    oidc_title: 'OIDC',
+    oidc_description:
+      'Les permissions OIDC de base sont configurées automatiquement pour votre application. Ces scopes sont essentiels à l’authentification et ne sont pas affichés sur l’écran de consentement de l’utilisateur.',
+    default_oidc_permissions: 'Permissions OIDC par défaut',
+    permission_column: 'Permission',
+    guide_column: 'Guide',
+    openid_permission: 'openid',
+    openid_permission_guide:
+      "Optionnel pour l’accès aux ressources OAuth.\nRequis pour l’authentification OIDC. Donne accès à un jeton d’identification (ID token) et permet d’accéder à 'userinfo_endpoint'.",
+    offline_access_permission: 'offline_access',
+    offline_access_permission_guide:
+      'Optionnel. Récupère des jetons d’actualisation (refresh tokens) pour un accès de longue durée ou des tâches en arrière-plan.',
   },
   roles: {
     assign_button: 'Attribuer des rôles de machine à machine',

@@ -123,6 +123,7 @@ export default class Tenant implements TenantContext {
 
     // Mount OIDC
     const provider = initOidc(
+      id,
       envSet,
       queries,
       libraries,
@@ -198,6 +199,22 @@ export default class Tenant implements TenantContext {
           })
         )
       );
+
+      if (EnvSet.values.isDevFeaturesEnabled) {
+        // Mount account center
+        app.use(
+          mount(
+            '/' + UserApps.AccountCenter,
+            koaSpaProxy({
+              mountedApps,
+              queries,
+              packagePath: UserApps.AccountCenter,
+              port: 5004,
+              prefix: UserApps.AccountCenter,
+            })
+          )
+        );
+      }
     }
 
     // Mount experience app

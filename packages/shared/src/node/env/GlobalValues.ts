@@ -90,6 +90,16 @@ export default class GlobalValues {
   /** If the env explicitly indicates it's in the cloud environment. */
   public readonly isCloud = yes(getEnv('IS_CLOUD'));
 
+  /**
+   * Indicates whether this Logto instance supports multiple custom domains.
+   *
+   * **NOTE: Only available to enterprise customers running private instances that need this feature.**
+   *
+   * Controlled by the `MULTIPLE_CUSTOM_DOMAINS_ENABLED` environment variable. When enabled, the instance
+   * can operate with multiple custom domains across both development and production tenants.
+   */
+  public readonly isMultipleCustomDomainsEnabled = yes(getEnv('MULTIPLE_CUSTOM_DOMAINS_ENABLED'));
+
   // eslint-disable-next-line unicorn/consistent-function-scoping
   public readonly databaseUrl = tryThat(() => assertEnv('DB_URL'), throwErrorWithDsnMessage);
   public readonly developmentTenantId = getEnv('DEVELOPMENT_TENANT_ID');
@@ -106,8 +116,21 @@ export default class GlobalValues {
 
   public readonly databaseConnectionTimeout = Number(getEnv('DATABASE_CONNECTION_TIMEOUT', '5000'));
 
-  /** Case insensitive username */
+  /** Global switch for enabling/disabling case-sensitive usernames. */
   public readonly isCaseSensitiveUsername = yes(getEnv('CASE_SENSITIVE_USERNAME', 'true'));
+
+  /**
+   * The API key for status endpoint protection. If it's set, requests to the status endpoint may
+   * supply the key in the header for receiving response with additional details.
+   *
+   * @optional
+   */
+  public readonly statusApiKey = getEnv('STATUS_API_KEY');
+
+  /** The write-only key for PostHog integration. */
+  public readonly posthogPublicKey = process.env.POSTHOG_PUBLIC_KEY;
+  /** The PostHog host URL for SDK to send events to. */
+  public readonly posthogPublicHost = process.env.POSTHOG_PUBLIC_HOST;
 
   /**
    * The Redis endpoint (optional). If it's set, the central cache mechanism will be automatically enabled.

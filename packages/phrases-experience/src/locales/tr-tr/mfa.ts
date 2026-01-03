@@ -2,15 +2,27 @@ const mfa = {
   totp: 'Authenticator uygulaması OTP',
   webauthn: 'Anahtar',
   backup_code: 'Yedek kod',
+  email_verification_code: 'E-posta doğrulama kodu',
+  phone_verification_code: 'SMS doğrulama kodu',
   link_totp_description: 'Örn., Google Authenticator, vb.',
   link_webauthn_description: 'Cihazınızı veya USB donanımınızı bağlayın',
   link_backup_code_description: 'Yedek kod oluşturun',
+  link_email_verification_code_description: 'E-posta adresinizi bağlayın',
+  link_email_2fa_description: '2 adımlı doğrulama için e-posta adresinizi bağlayın',
+  link_phone_verification_code_description: 'Telefon numaranızı bağlayın',
+  link_phone_2fa_description: '2 adımlı doğrulama için telefon numaranızı bağlayın',
   verify_totp_description: 'Uygulamadaki tek kullanımlık kodu girin',
   verify_webauthn_description: 'Cihazınızı veya USB donanımınızı doğrulayın',
   verify_backup_code_description: 'Kaydettiğiniz yedek kodu yapıştırın',
+  verify_email_verification_code_description: 'E-postanıza gönderilen kodu girin',
+  verify_phone_verification_code_description: 'Telefonunuza gönderilen kodu girin',
+  send_to_email: '{{identifier}} adresine gönder',
+  send_to_phone: '{{identifier}} adresine gönder',
   add_mfa_factors: '2 aşamalı doğrulamayı ekle',
   add_mfa_description:
-    'İki faktörlü doğrulama etkin. Güvenli giriş için ikinci doğrulama yönteminizi seçin.',
+    'İki faktörlü doğrulama etkinleştirildi. Güvenli oturum açmak için ikinci doğrulama yönteminizi seçin.',
+  add_another_mfa_factor: 'Başka bir 2 adımlı doğrulama ekle',
+  add_another_mfa_description: 'Oturum açarken kimliğinizi doğrulamak için başka bir yol seçin.',
   verify_mfa_factors: '2 aşamalı doğrulama',
   verify_mfa_description:
     'Bu hesap için 2 aşamalı doğrulama etkinleştirildi. Lütfen kimliğinizi doğrulamak için ikinci yolu seçin.',
@@ -29,6 +41,12 @@ const mfa = {
     'Authenticator uygulaması tarafından oluşturulan 6 haneli doğrulama kodunu girin.',
   enter_one_time_code_description:
     'Bu hesap için iki aşamalı doğrulama etkinleştirildi. Lütfen bağlı kimlik doğrulama uygulamanızda gösterilen tek kullanımlık kodu girin.',
+  enter_email_verification_code: 'E‑posta doğrulama kodunu girin',
+  enter_email_verification_code_description:
+    'Bu hesapta iki adımlı kimlik doğrulama etkin. Lütfen {{identifier}} adresine gönderilen doğrulama kodunu girin.',
+  enter_phone_verification_code: 'SMS doğrulama kodunu girin',
+  enter_phone_verification_code_description:
+    'Bu hesapta iki adımlı kimlik doğrulama etkin. Lütfen {{identifier}} numarasına gönderilen SMS doğrulama kodunu girin.',
   link_another_mfa_factor: 'Başka bir yönteme geçin',
   save_backup_code: 'Yedek kodunuzu kaydedin',
   save_backup_code_description:

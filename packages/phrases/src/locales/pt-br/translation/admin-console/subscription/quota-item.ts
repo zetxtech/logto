@@ -171,6 +171,12 @@ const quota_item = {
     unlimited: 'Traga sua IU',
     not_eligible: 'Remova seus ativos de IU personalizados',
   },
+  collect_user_profile_enabled: {
+    name: 'Coletar perfil do usuário',
+    limited: 'Coletar perfil do usuário',
+    unlimited: 'Coletar perfil do usuário',
+    not_eligible: 'Remova seus campos de coleta de perfil do usuário',
+  },
   idp_initiated_sso_enabled: {
     name: 'SSO iniciado por IDP',
     limited: 'SSO iniciado por IDP',
@@ -195,6 +201,13 @@ const quota_item = {
     limited: 'Segurança avançada',
     unlimited: 'Segurança avançada',
     not_eligible: 'Remova suas configurações avançadas de segurança',
+  },
+  custom_domains_limit: {
+    name: 'Domínios personalizados',
+    limited: '{{count, number}} domínio personalizado',
+    limited_other: '{{count, number}} domínios personalizados',
+    unlimited: 'Domínios personalizados ilimitados',
+    not_eligible: 'Remova seus domínios personalizados',
   },
 };
 

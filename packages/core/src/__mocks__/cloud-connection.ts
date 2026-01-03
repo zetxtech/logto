@@ -3,6 +3,26 @@ import { ReservedPlanId } from '@logto/schemas';
 import { type CloudConnectionLibrary } from '#src/libraries/cloud-connection.js';
 import { type Subscription } from '#src/utils/subscription/types.js';
 
+const defaultSystemLimit: Subscription['systemLimit'] = {
+  applicationsLimit: 100,
+  machineToMachineLimit: 20,
+  thirdPartyApplicationsLimit: 20,
+  samlApplicationsLimit: 20,
+  resourcesLimit: 100,
+  scopesPerResourceLimit: 100,
+  socialConnectorsLimit: 20,
+  enterpriseSsoLimit: 100,
+  userRolesLimit: 1000,
+  machineToMachineRolesLimit: 100,
+  organizationsLimit: 100_000,
+  hooksLimit: 10,
+  tenantMembersLimit: 100,
+  usersPerOrganizationLimit: 1000,
+  organizationUserRolesLimit: 1000,
+  organizationMachineToMachineRolesLimit: 500,
+  organizationScopesLimit: 1000,
+};
+
 export const mockGetCloudConnectionData: CloudConnectionLibrary['getCloudConnectionData'] =
   async () => ({
     resource: 'https://logto.dev',
@@ -35,10 +55,11 @@ export const mockQuota = {
   customJwtEnabled: false,
   subjectTokenEnabled: false,
   bringYourUiEnabled: false,
+  collectUserProfileEnabled: false,
   idpInitiatedSsoEnabled: false,
   samlApplicationsLimit: 0,
   securityFeaturesEnabled: false,
-  captchaEnabled: false,
+  customDomainsLimit: 1,
 };
 
 export const mockSubscriptionData: Subscription = {
@@ -49,4 +70,5 @@ export const mockSubscriptionData: Subscription = {
   isEnterprisePlan: false,
   quota: mockQuota,
   status: 'active',
+  systemLimit: defaultSystemLimit,
 };

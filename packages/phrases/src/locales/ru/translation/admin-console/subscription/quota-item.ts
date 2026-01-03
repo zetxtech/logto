@@ -171,6 +171,12 @@ const quota_item = {
     unlimited: 'Принесите свой UI',
     not_eligible: 'Удалите свои пользовательские элементы UI',
   },
+  collect_user_profile_enabled: {
+    name: 'Сбор профиля пользователя',
+    limited: 'Сбор профиля пользователя',
+    unlimited: 'Сбор профиля пользователя',
+    not_eligible: 'Удалите поля сбора профиля пользователя',
+  },
   idp_initiated_sso_enabled: {
     name: 'Инициированное IDP SSO',
     limited: 'Инициированное IDP SSO',
@@ -195,6 +201,13 @@ const quota_item = {
     limited: 'Расширенная безопасность',
     unlimited: 'Расширенная безопасность',
     not_eligible: 'Удалите свои настройки расширенной безопасности',
+  },
+  custom_domains_limit: {
+    name: 'Пользовательские домены',
+    limited: '{{count, number}} пользовательский домен',
+    limited_other: '{{count, number}} пользовательских доменов',
+    unlimited: 'Неограниченное количество пользовательских доменов',
+    not_eligible: 'Удалите свои пользовательские домены',
   },
 };
 

@@ -132,6 +132,20 @@ const user_details = {
       edited: 'Token {{name}} został pomyślnie edytowany.',
     },
   },
+  connections: {
+    title: 'Połączenie',
+    description:
+      'Użytkownik łączy konta zewnętrzne w celu logowania społecznościowego, logowania jednokrotnego przedsiębiorstwa lub dostępu do zasobów.',
+    token_status_column: 'Status tokenu',
+    token_status: {
+      active: 'Aktywny',
+      expired: 'Wygasły',
+      inactive: 'Nieaktywny',
+      not_applicable: 'Nie dotyczy',
+      available: 'Dostępny',
+      not_available: 'Niedostępny',
+    },
+  },
 };
 
 export default Object.freeze(user_details);

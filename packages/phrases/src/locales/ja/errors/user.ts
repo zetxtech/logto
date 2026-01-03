@@ -43,6 +43,10 @@ const user = {
     'メールアドレスまたは電話番号は必須の識別子であり、少なくとも1つが必要です。',
   email_required: 'メールアドレスは必須の識別子ですので、null に設定することはできません。',
   phone_required: '電話番号は必須の識別子ですので、null に設定することはできません。',
+  enterprise_sso_identity_not_exists:
+    'ユーザーは、指定された SSO コネクタ ID: {{ ssoConnectorId }} にリンクされたエンタープライズ ID を持っていません。',
+  identity_not_exists_in_current_user:
+    '指定されたアイデンティティは現在のユーザーアカウントに存在しません。続行する前にアイデンティティをリンクしてください。',
 };
 
 export default Object.freeze(user);

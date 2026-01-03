@@ -17,11 +17,9 @@ const description = {
   passcode_sent: 'Le code a été renvoyé',
   resend_after_seconds: 'Pas encore reçu ? Renvoyer après <span>{{seconds}}</span> secondes',
   resend_passcode: 'Pas encore reçu ? <a>Renvoyer le code de vérification</a>',
-  create_account_id_exists:
-    'Le compte avec {{type}} {{value}} existe déjà, voulez-vous vous connecter?',
+  create_account_id_exists: 'Un compte avec {{value}} existe déjà. Continuer à se connecter.',
   link_account_id_exists: 'Le compte avec {{type}} {{value}} existe déjà, voulez-vous le lier?',
-  sign_in_id_does_not_exist:
-    "Le compte avec {{type}} {{value}} n'existe pas, voulez-vous créer un nouveau compte?",
+  sign_in_id_does_not_exist: 'Aucun compte trouvé pour {{value}}. Créer un nouveau?',
   sign_in_id_does_not_exist_alert: 'Nous ne trouvons aucun compte associé à {{type}} {{value}}.',
   create_account_id_exists_alert:
     'Le compte avec {{type}} {{value}} est lié à un autre compte. Veuillez essayer un autre {{type}}.',
@@ -60,7 +58,7 @@ const description = {
   continue_with_more_information:
     'Pour une sécurité accrue, veuillez compléter les détails du compte ci-dessous.',
   create_your_account: 'Créer votre compte',
-  sign_in_to_your_account: 'Connecte-toi à ton compte',
+  sign_in_to_your_account: 'Connectez-vous à votre compte',
   no_region_code_found: 'Aucun code de région trouvé',
   verify_email: 'Vérifiez votre e-mail',
   verify_phone: 'Vérifiez votre numéro de téléphone',
@@ -112,6 +110,7 @@ const description = {
   switch_account_title: 'Vous êtes actuellement connecté en tant que {{account}}',
   switch_account_description:
     'Pour continuer, vous serez déconnecté du compte actuel, et le passage au nouveau compte se fera automatiquement.',
+  about_yourself: 'Parlez-nous de vous',
 };
 
 export default Object.freeze(description);

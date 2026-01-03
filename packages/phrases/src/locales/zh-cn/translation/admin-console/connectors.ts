@@ -11,13 +11,6 @@ const connectors = {
   demo_tip: '演示连接器仅用于演示且最多只能发送 100 条消息，不建议在生产环境中部署。',
   social_demo_tip: '演示连接器仅用于演示目的，不建议在生产环境中部署。',
   connector_type: '类型',
-  connector_status: '登录体验',
-  connector_status_in_use: '使用中',
-  connector_status_not_in_use: '未使用',
-  not_in_use_tip: {
-    content: '未使用意味着你的登录体验并没有使用这个登录方式。<a>{{link}}</a>去添加。',
-    go_to_sie: '前往登录体验',
-  },
   placeholder_title: '社交连接器',
   placeholder_description:
     'Logto 提供了许多广泛使用的社交登录连接器，同时你还可以使用标准协议创建自己的连接器。',
@@ -59,9 +52,16 @@ const connectors = {
     sync_profile_only_at_sign_up: '首次注册时同步',
     sync_profile_each_sign_in: '每次登录时同步',
     sync_profile_tip: '同步用户的用户名、头像等个人资料信息',
-    callback_uri: 'Callback URI',
+    enable_token_storage: {
+      title: '存储令牌以进行持久的 API 访问',
+      description:
+        '将访问令牌和刷新令牌存储在 Secret Vault 中。允许在不反复获得用户同意的情况下自动调用 API。例如：让你的 AI 代理在持久授权下添加事件到 Google 日历。<a>了解如何调用第三方 API</a>',
+    },
+    callback_uri: '重定向 URI（回调 URI）',
     callback_uri_description:
-      '也称为重定向 URI，在社交授权后，用户将被发送回 Logto 的 URI，复制并粘贴到社交提供者的配置页面中。',
+      'Redirect URI 是在社交授权后用户被重定向到的地址。请将此 URI 添加到 IdP 的配置中。',
+    callback_uri_custom_domain_description:
+      '如果你在 Logto 中使用多个<a>自定义域名</a>，务必将所有对应的回调 URI 都添加到 IdP 中，以确保社交登录在每个域名上都能正常工作。\n\n默认的 Logto 域名 (*.logto.app) 始终有效，只有在你也希望支持该域名下的登录时才需要包含它。',
     acs_url: '断言消费服务 URL',
   },
   platform: {
@@ -74,6 +74,11 @@ const connectors = {
   drawer_subtitle: '参考以下步骤完善或修改你的连接器设置',
   unknown: '未知连接器',
   standard_connectors: '标准连接器',
+  create_form: {
+    third_party_connectors:
+      '集成第三方提供商以实现快速社交登录、社交账户绑定和 API 访问。 <a>了解更多</a>',
+    standard_connectors: '或者你可以通过标准协议定制你的社交连接器。',
+  },
 };
 
 export default Object.freeze(connectors);

@@ -4,17 +4,17 @@ import {
   identityGuard,
   identitiesGuard,
   userProfileResponseGuard,
-  desensitizedSocialTokenSetSecretGuard,
+  getUserSocialIdentityResponseGuard,
 } from '@logto/schemas';
-import { has } from '@silverhand/essentials';
+import { conditional, has, yes } from '@silverhand/essentials';
 import { object, record, string, unknown } from 'zod';
 
 import RequestError from '#src/errors/RequestError/index.js';
 import koaGuard from '#src/middleware/koa-guard.js';
 import assertThat from '#src/utils/assert-that.js';
+import { desensitizeTokenSetSecret } from '#src/utils/secret-encryption.js';
+import { transpileUserProfileResponse } from '#src/utils/user.js';
 
-import { EnvSet } from '../../env-set/index.js';
-import { transpileUserProfileResponse } from '../../utils/user.js';
 import type { ManagementApiRouter, RouterInitArgs } from '../types.js';
 
 export default function adminUserSocialRoutes<T extends ManagementApiRouter>(
@@ -158,39 +158,47 @@ export default function adminUserSocialRoutes<T extends ManagementApiRouter>(
     }
   );
 
-  if (EnvSet.values.isDevFeaturesEnabled) {
-    router.get(
-      '/users/:userId/identities/:target/secret',
-      koaGuard({
-        params: object({ userId: string(), target: string() }),
-        response: desensitizedSocialTokenSetSecretGuard,
-        status: [200, 404],
+  router.get(
+    '/users/:userId/identities/:target',
+    koaGuard({
+      params: object({ userId: string(), target: string() }),
+      query: object({
+        includeTokenSecret: string().optional(),
       }),
-      async (ctx, next) => {
-        const {
-          params: { userId, target },
-        } = ctx.guard;
+      response: getUserSocialIdentityResponseGuard,
+      status: [200, 404],
+    }),
+    async (ctx, next) => {
+      const {
+        params: { userId, target },
+        query: { includeTokenSecret },
+      } = ctx.guard;
 
-        const { identities } = await findUserById(userId);
-        if (!has(identities, target)) {
-          throw new RequestError({ code: 'user.identity_not_exist', status: 404 });
-        }
+      const { identities } = await findUserById(userId);
 
-        const secret = await secretQueries.findSocialTokenSetSecretByUserIdAndTarget(
-          userId,
-          target
-        );
+      if (!has(identities, target)) {
+        throw new RequestError({ code: 'user.identity_not_exist', status: 404 });
+      }
 
-        if (!secret) {
-          throw new RequestError({ code: 'entity.not_found', status: 404 });
-        }
-
-        const { encryptedDek, iv, authTag, ciphertext, ...rest } = secret;
-
-        ctx.body = rest;
-
+      if (!yes(includeTokenSecret)) {
+        ctx.body = {
+          identity: identities[target],
+        };
         return next();
       }
-    );
-  }
+
+      const secret = await secretQueries.findSocialTokenSetSecretByUserIdAndTarget(userId, target);
+
+      ctx.body = {
+        identity: identities[target],
+        ...conditional(
+          secret && {
+            tokenSecret: desensitizeTokenSetSecret(secret),
+          }
+        ),
+      };
+
+      return next();
+    }
+  );
 }

@@ -1,4 +1,8 @@
-import { CustomProfileFieldType, type FullnameProfileField } from '@logto/schemas';
+import {
+  CustomProfileFieldType,
+  type CustomProfileFieldUnion,
+  type FullnameProfileField,
+} from '@logto/schemas';
 
 import {
   nameData,
@@ -15,11 +19,9 @@ import {
   findAllCustomProfileFields,
   updateCustomProfileFieldByName,
   updateCustomProfileFieldsSieOrder,
+  batchCreateCustomProfileFields,
 } from '#src/api/index.js';
 import { expectRejects } from '#src/helpers/index.js';
-import { devFeatureTest } from '#src/utils.js';
-
-const { describe, it } = devFeatureTest;
 
 describe('custom profile fields API', () => {
   it('should create custom profile field and find it by name', async () => {
@@ -42,6 +44,7 @@ describe('custom profile fields API', () => {
         name: '',
         type: CustomProfileFieldType.Text,
         label: 'Email address',
+        required: true,
       }),
       {
         code: 'custom_profile_fields.invalid_name',
@@ -65,6 +68,96 @@ describe('custom profile fields API', () => {
     );
   });
 
+  it('should fail to create if address field contains invalid sub-component type', async () => {
+    await expectRejects(
+      createCustomProfileField({
+        name: 'address',
+        type: CustomProfileFieldType.Address,
+        required: true,
+        config: {
+          parts: [
+            {
+              name: 'formatted',
+              type: CustomProfileFieldType.Address,
+              enabled: true,
+              required: true,
+            },
+          ],
+        },
+      }),
+      {
+        code: 'custom_profile_fields.invalid_sub_component_type',
+        status: 400,
+      }
+    );
+    await expectRejects(
+      createCustomProfileField({
+        name: 'address',
+        type: CustomProfileFieldType.Address,
+        required: true,
+        config: {
+          parts: [
+            {
+              name: 'formatted',
+              type: CustomProfileFieldType.Fullname,
+              enabled: true,
+              required: true,
+            },
+          ],
+        },
+      }),
+      {
+        code: 'custom_profile_fields.invalid_sub_component_type',
+        status: 400,
+      }
+    );
+  });
+
+  it('should fail to create if fullname field contains invalid sub-component type', async () => {
+    await expectRejects(
+      createCustomProfileField({
+        name: 'fullname',
+        type: CustomProfileFieldType.Fullname,
+        required: true,
+        config: {
+          parts: [
+            {
+              name: 'givenName',
+              type: CustomProfileFieldType.Fullname,
+              enabled: true,
+              required: true,
+            },
+          ],
+        },
+      }),
+      {
+        code: 'custom_profile_fields.invalid_sub_component_type',
+        status: 400,
+      }
+    );
+    await expectRejects(
+      createCustomProfileField({
+        name: 'fullname',
+        type: CustomProfileFieldType.Fullname,
+        required: true,
+        config: {
+          parts: [
+            {
+              name: 'middleName',
+              type: CustomProfileFieldType.Address,
+              enabled: true,
+              required: true,
+            },
+          ],
+        },
+      }),
+      {
+        code: 'custom_profile_fields.invalid_sub_component_type',
+        status: 400,
+      }
+    );
+  });
+
   it('should fail to create if field name is conflicted', async () => {
     const nameField = await createCustomProfileField(nameData);
     await expectRejects(createCustomProfileField(nameData), {
@@ -81,6 +174,7 @@ describe('custom profile fields API', () => {
         name: '',
         type: CustomProfileFieldType.Text,
         label: 'Invalid name',
+        required: true,
       }),
       {
         code: 'custom_profile_fields.invalid_name',
@@ -92,6 +186,7 @@ describe('custom profile fields API', () => {
         name: 'customData.test',
         type: CustomProfileFieldType.Text,
         label: 'Invalid name',
+        required: true,
       }),
       {
         code: 'custom_profile_fields.invalid_name',
@@ -103,6 +198,7 @@ describe('custom profile fields API', () => {
         name: '123-456',
         type: CustomProfileFieldType.Text,
         label: 'Invalid name',
+        required: true,
       }),
       {
         code: 'custom_profile_fields.invalid_name',
@@ -117,9 +213,24 @@ describe('custom profile fields API', () => {
         name: 'primaryEmail',
         type: CustomProfileFieldType.Text,
         label: 'Email address',
+        required: true,
       }),
       {
         code: 'custom_profile_fields.name_conflict_sign_in_identifier',
+        status: 400,
+      }
+    );
+  });
+
+  it('should fail to create if field name is "preferredUsername"', async () => {
+    await expectRejects(
+      createCustomProfileField({
+        name: 'preferredUsername',
+        type: CustomProfileFieldType.Text,
+        required: true,
+      }),
+      {
+        code: 'custom_profile_fields.name_conflict_built_in_prop',
         status: 400,
       }
     );
@@ -139,9 +250,27 @@ describe('custom profile fields API', () => {
       description: 'Your fullname (Given name and family name)',
       config: {
         parts: [
-          { key: 'givenName', enabled: true },
-          { key: 'middleName', enabled: true },
-          { key: 'familyName', enabled: true },
+          {
+            name: 'givenName',
+            enabled: true,
+            type: CustomProfileFieldType.Text,
+            label: 'Given name',
+            required: true,
+          },
+          {
+            name: 'middleName',
+            enabled: true,
+            type: CustomProfileFieldType.Text,
+            label: 'Middle name',
+            required: true,
+          },
+          {
+            name: 'familyName',
+            enabled: true,
+            type: CustomProfileFieldType.Text,
+            label: 'Family name',
+            required: true,
+          },
         ],
       },
     } satisfies Partial<FullnameProfileField>;
@@ -243,5 +372,41 @@ describe('custom profile fields API', () => {
     void deleteCustomProfileFieldByName(addressField.name);
     void deleteCustomProfileFieldByName(birthDateField.name);
     void deleteCustomProfileFieldByName(genderField.name);
+  });
+
+  it('should be able to batch create custom profile fields', async () => {
+    const fieldsToCreate = [
+      nameData,
+      fullnameData,
+      websiteData,
+      addressData,
+      birthDateData,
+      genderData,
+    ];
+    const createdFields = await batchCreateCustomProfileFields(fieldsToCreate);
+
+    expect(createdFields).toHaveLength(fieldsToCreate.length);
+    expect(createdFields).toMatchObject(fieldsToCreate);
+
+    for (const field of createdFields) {
+      void deleteCustomProfileFieldByName(field.name);
+    }
+  });
+
+  it('should fail to batch create more than 20 profile fields', async () => {
+    const fieldsToCreate = Array.from({ length: 21 }).map((_, index) => ({
+      name: `field${index}`,
+      type: CustomProfileFieldType.Text,
+      required: false,
+    })) satisfies CustomProfileFieldUnion[];
+
+    const zodData = await expectRejects<{
+      issues: Array<{ code: string; maximum?: number; type?: string }>;
+    }>(batchCreateCustomProfileFields(fieldsToCreate), {
+      code: 'guard.invalid_input',
+      status: 400,
+    });
+
+    expect(zodData.issues[0]).toMatchObject({ code: 'too_big', maximum: 20, type: 'array' });
   });
 });

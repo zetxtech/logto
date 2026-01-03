@@ -2,15 +2,28 @@ const mfa = {
   totp: "OTP dell'app Autenticatore",
   webauthn: 'Passkey',
   backup_code: 'Codice di backup',
+  email_verification_code: 'Codice di verifica email',
+  phone_verification_code: 'Codice di verifica SMS',
   link_totp_description: 'Ad esempio, Google Authenticator, ecc.',
   link_webauthn_description: 'Collega il tuo dispositivo o hardware USB',
   link_backup_code_description: 'Genera un codice di backup',
+  link_email_verification_code_description: 'Collega il tuo indirizzo email',
+  link_email_2fa_description: 'Collega il tuo indirizzo email per la verifica a 2 passaggi',
+  link_phone_verification_code_description: 'Collega il tuo numero di telefono',
+  link_phone_2fa_description: 'Collega il tuo numero di telefono per la verifica a 2 passaggi',
   verify_totp_description: "Inserisci il codice monouso nell'app",
   verify_webauthn_description: 'Verifica il tuo dispositivo o hardware USB',
   verify_backup_code_description: 'Incolla il codice di backup che hai salvato',
+  verify_email_verification_code_description: 'Inserisci il codice inviato alla tua email',
+  verify_phone_verification_code_description: 'Inserisci il codice inviato al tuo telefone',
+  send_to_email: 'Invia a {{identifier}}',
+  send_to_phone: 'Invia a {{identifier}}',
   add_mfa_factors: 'Aggiungi la verifica in due passaggi',
   add_mfa_description:
     'La verifica in due passaggi è abilitata. Seleziona il tuo secondo metodo di verifica per un accesso sicuro.',
+  add_another_mfa_factor: "Aggiungi un'altra verifica in 2 passaggi",
+  add_another_mfa_description:
+    "Seleziona un altro modo per verificare la tua identità al momento dell'accesso.",
   verify_mfa_factors: 'Verifica in due passaggi',
   verify_mfa_description:
     'La verifica in due passaggi è stata abilitata per questo account. Seleziona il secondo modo per verificare la tua identità.',
@@ -29,6 +42,12 @@ const mfa = {
     "Inserisci il codice di verifica a 6 cifre generato dall'app di autenticazione.",
   enter_one_time_code_description:
     'La verifica in due passaggi è stata abilitata per questo account. Inserisci il codice monouso mostrato sulla tua app di autenticazione collegata.',
+  enter_email_verification_code: 'Inserisci il codice di verifica e‑mail',
+  enter_email_verification_code_description:
+    'L’autenticazione a due passaggi è abilitata per questo account. Inserisci il codice di verifica e‑mail inviato a {{identifier}}.',
+  enter_phone_verification_code: 'Inserisci il codice di verifica SMS',
+  enter_phone_verification_code_description:
+    'L’autenticazione a due passaggi è abilitata per questo account. Inserisci il codice di verifica SMS inviato a {{identifier}}.',
   link_another_mfa_factor: 'Passa a un altro metodo',
   save_backup_code: 'Salva il codice di backup',
   save_backup_code_description:

@@ -13,10 +13,7 @@ import {
 import MockClient from '#src/client/index.js';
 
 import { experienceRoutes } from './const.js';
-
-type RedirectResponse = {
-  redirectTo: string;
-};
+import type { SanitizedInteractionStorageData, RedirectResponse } from './types.js';
 
 export class ExperienceClient extends MockClient {
   public async identifyUser(payload: IdentificationApiPayload = {}) {
@@ -78,6 +75,30 @@ export class ExperienceClient extends MockClient {
   }) {
     return this.api
       .post(`${experienceRoutes.verification}/verification-code/verify`, {
+        headers: { cookie: this.interactionCookie },
+        json: payload,
+      })
+      .json<{ verificationId: string }>();
+  }
+
+  public async sendMfaVerificationCode(payload: {
+    identifierType: SignInIdentifier.Email | SignInIdentifier.Phone;
+  }) {
+    return this.api
+      .post(`${experienceRoutes.verification}/mfa-verification-code`, {
+        headers: { cookie: this.interactionCookie },
+        json: payload,
+      })
+      .json<{ verificationId: string }>();
+  }
+
+  public async verifyMfaVerificationCode(payload: {
+    verificationId: string;
+    code: string;
+    identifierType: SignInIdentifier.Email | SignInIdentifier.Phone;
+  }) {
+    return this.api
+      .post(`${experienceRoutes.verification}/mfa-verification-code/verify`, {
         headers: { cookie: this.interactionCookie },
         json: payload,
       })
@@ -218,6 +239,12 @@ export class ExperienceClient extends MockClient {
     });
   }
 
+  public async skipMfaSuggestion() {
+    return this.api.post(`${experienceRoutes.mfa}/mfa-suggestion-skipped`, {
+      headers: { cookie: this.interactionCookie },
+    });
+  }
+
   public async bindMfa(type: MfaFactor, verificationId: string) {
     return this.api.post(`${experienceRoutes.mfa}`, {
       headers: { cookie: this.interactionCookie },
@@ -235,5 +262,13 @@ export class ExperienceClient extends MockClient {
         json: payload,
       })
       .json<{ verificationId: string }>();
+  }
+
+  public async getInteractionData() {
+    return this.api
+      .get(experienceRoutes.interaction, {
+        headers: { cookie: this.interactionCookie },
+      })
+      .json<SanitizedInteractionStorageData>();
   }
 }

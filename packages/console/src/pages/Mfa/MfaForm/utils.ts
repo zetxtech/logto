@@ -18,20 +18,20 @@ export const convertMfaConfigToForm = ({
   totpEnabled: factors.includes(MfaFactor.TOTP),
   webAuthnEnabled: factors.includes(MfaFactor.WebAuthn),
   backupCodeEnabled: factors.includes(MfaFactor.BackupCode),
+  emailVerificationCodeEnabled: factors.includes(MfaFactor.EmailVerificationCode),
+  phoneVerificationCodeEnabled: factors.includes(MfaFactor.PhoneVerificationCode),
   organizationRequiredMfaPolicy,
 });
 
-export const convertMfaFormToConfig = (
-  mfaConfigForm: MfaConfigForm,
-  // Should only manage the organization-required MFA policy for the admin tenant
-  includeOrganizationRequiredMfaPolicy = false
-): MfaConfig => {
+export const convertMfaFormToConfig = (mfaConfigForm: MfaConfigForm): MfaConfig => {
   const {
     isMandatory,
     setUpPrompt,
     totpEnabled,
     webAuthnEnabled,
     backupCodeEnabled,
+    emailVerificationCodeEnabled,
+    phoneVerificationCodeEnabled,
     organizationRequiredMfaPolicy,
   } = mfaConfigForm;
 
@@ -39,16 +39,15 @@ export const convertMfaFormToConfig = (
     conditional(totpEnabled && MfaFactor.TOTP),
     conditional(webAuthnEnabled && MfaFactor.WebAuthn),
     conditional(backupCodeEnabled && MfaFactor.BackupCode),
+    conditional(emailVerificationCodeEnabled && MfaFactor.EmailVerificationCode),
+    conditional(phoneVerificationCodeEnabled && MfaFactor.PhoneVerificationCode),
     // eslint-disable-next-line unicorn/prefer-native-coercion-functions
   ].filter((factor): factor is MfaFactor => Boolean(factor));
 
   return {
     policy: isMandatory ? MfaPolicy.Mandatory : setUpPrompt,
     factors,
-    ...conditional(
-      includeOrganizationRequiredMfaPolicy &&
-        organizationRequiredMfaPolicy && { organizationRequiredMfaPolicy }
-    ),
+    ...conditional(organizationRequiredMfaPolicy && { organizationRequiredMfaPolicy }),
   };
 };
 

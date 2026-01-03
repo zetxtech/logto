@@ -14,14 +14,6 @@ const connectors = {
   social_demo_tip:
     'Demo bağlayıcı sadece gösterim amaçlı tasarlanmıştır ve üretim ortamında uygulanması önerilmez.',
   connector_type: 'Tip',
-  connector_status: 'Oturum açma deneyimi',
-  connector_status_in_use: 'Kullanımda',
-  connector_status_not_in_use: 'Kullanımda değil',
-  not_in_use_tip: {
-    content:
-      'Kullanımda değil, oturum açma deneyiminiz bu oturum açma yöntemini kullanmamış demektir. <a>{{link}}</a> bağlantısını kullanarak bu oturum açma yöntemini ekleyin.',
-    go_to_sie: 'Oturum açma deneyimine git',
-  },
   placeholder_title: 'Sosyal bağlayıcı',
   placeholder_description:
     'Logto, çok sayıda kullanılan sosyal oturum açma bağlayıcısı sağlamıştır. Bu arada, standart protokollerle kendi bağlayıcınızı oluşturabilirsiniz.',
@@ -67,9 +59,16 @@ const connectors = {
     sync_profile_each_sign_in: 'Her oturum açmada her zaman senkronize et',
     sync_profile_tip:
       'Sosyal sağlayıcıdan temel profil (kullanıcıların adları ve avatarları gibi) senkronize edilsin.',
-    callback_uri: 'Geri dönüş URI',
+    enable_token_storage: {
+      title: 'Kalıcı API erişimi için belirteçleri saklayın',
+      description:
+        "Erişim ve yenileme belirteçlerini Gizli Kasada saklayın. Tekrarlı kullanıcı onayı olmadan otomatik API çağrılarına izin verir. Örnek: Yapay Zeka Ajansınızın kalıcı yetkilendirme ile Google Takvim'e etkinlikler eklemesine izin verin. <a>Üçüncü taraf API'larını nasıl çağıracağınızı öğrenin</a>",
+    },
+    callback_uri: "Yeniden yönlendirme URI'si (Geri dönüş URI'si)",
     callback_uri_description:
-      "Ayrıca yönlendirme URI'si olarak adlandırılır, kullanıcıların sosyal yetkilendirmeden sonra Logto'ya geri gönderilecekleri URI'dir, ve sosyal sağlayıcının yapılandırma sayfasına kopyalayın yapıştırın.",
+      "Yeniden yönlendirme URI'si, sosyal yetkilendirmeden sonra kullanıcıların yönlendirildiği yerdir. Bu URI'yi IdP yapılandırmanıza ekleyin.",
+    callback_uri_custom_domain_description:
+      "Logto'da birden fazla <a>özel alan adı</a> kullanıyorsanız, sosyal oturum açmanın her alan adında çalışması için ilgili tüm geri dönüş URI'lerini IdP'nize eklediğinizden emin olun.\n\nVarsayılan Logto alan adı (*.logto.app) her zaman geçerlidir; yalnızca o alan adı altında oturumları desteklemek istiyorsanız ekleyin.",
     acs_url: 'Assertion consumer service URL',
   },
   platform: {
@@ -82,6 +81,11 @@ const connectors = {
   drawer_subtitle: 'Bağlayıcıyı entegre etmek için yönergeleri izleyin',
   unknown: 'Bilinmeyen bağlayıcı',
   standard_connectors: 'Standart bağlayıcılar',
+  create_form: {
+    third_party_connectors:
+      'Hızlı sosyal oturum açma, sosyal hesap bağlama ve API erişimi için üçüncü taraf sağlayıcıları entegre edin. <a>Daha fazla bilgi edinin</a>',
+    standard_connectors: 'Veya standart bir protokolle sosyal bağlayıcınızı özelleştirebilirsiniz.',
+  },
 };
 
 export default Object.freeze(connectors);

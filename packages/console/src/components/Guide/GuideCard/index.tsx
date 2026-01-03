@@ -1,11 +1,9 @@
-import { ApplicationType, Theme } from '@logto/schemas';
+import { Theme } from '@logto/schemas';
 import classNames from 'classnames';
-import { Suspense, useCallback, useContext } from 'react';
+import { type ReactNode, Suspense, useCallback } from 'react';
 
 import { type Guide, type GuideMetadata } from '@/assets/docs/guides/types';
-import FeatureTag, { BetaTag } from '@/components/FeatureTag';
-import { latestProPlanId } from '@/consts/subscriptions';
-import { SubscriptionDataContext } from '@/contexts/SubscriptionDataProvider';
+import { BetaTag } from '@/components/FeatureTag';
 import Button from '@/ds-components/Button';
 import useTheme from '@/hooks/use-theme';
 import { onKeyDownHandler } from '@/utils/a11y';
@@ -22,20 +20,17 @@ type Props = {
   readonly onClick: (data: SelectedGuide) => void;
   readonly hasBorder?: boolean;
   readonly hasButton?: boolean;
-  readonly hasPaywall?: boolean;
+  readonly paywallTag?: ReactNode;
   readonly isBeta?: boolean;
 };
 
-function GuideCard({ data, onClick, hasBorder, hasButton, hasPaywall, isBeta }: Props) {
+function GuideCard({ data, onClick, hasBorder, hasButton, paywallTag, isBeta }: Props) {
   const { id, Logo, DarkLogo, metadata } = data;
-  const {
-    currentSubscription: { isEnterprisePlan },
-  } = useContext(SubscriptionDataContext);
 
   const { target, name, description } = metadata;
   const buttonText = target === 'API' ? 'guide.get_started' : 'guide.start_building';
   const theme = useTheme();
-  const hasTags = Boolean(hasPaywall) || Boolean(isBeta);
+  const hasTags = Boolean(paywallTag) || Boolean(isBeta);
 
   const handleClick = useCallback(() => {
     onClick({ id, metadata });
@@ -66,12 +61,7 @@ function GuideCard({ data, onClick, hasBorder, hasButton, hasPaywall, isBeta }: 
             <div className={styles.name}>{name}</div>
             {hasTags && (
               <div className={styles.tagWrapper}>
-                {hasPaywall &&
-                  (target === ApplicationType.SAML ? (
-                    <FeatureTag isEnterprise isVisible={!isEnterprisePlan} />
-                  ) : (
-                    <FeatureTag isVisible plan={latestProPlanId} />
-                  ))}
+                {paywallTag}
                 {isBeta && <BetaTag />}
               </div>
             )}

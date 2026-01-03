@@ -5,7 +5,10 @@ import {
 } from '@logto/schemas';
 import { type CommonQueryMethods, sql } from '@silverhand/slonik';
 
-import { buildInsertIntoWithPool } from '#src/database/insert-into.js';
+import {
+  buildInsertIntoWithPool,
+  buildBatchInsertIntoWithPool,
+} from '#src/database/insert-into.js';
 import { buildUpdateWhereWithPool } from '#src/database/update-where.js';
 import { convertToIdentifiers } from '#src/utils/sql.js';
 
@@ -41,6 +44,10 @@ export const createCustomProfileFieldsQueries = (pool: CommonQueryMethods) => {
     returning: true,
   });
 
+  const bulkInsertCustomProfileFields = buildBatchInsertIntoWithPool(pool)(CustomProfileFields, {
+    returning: true,
+  });
+
   const updateCustomProfileFieldsByName = buildUpdateWhereWithPool(pool)(CustomProfileFields, true);
 
   const deleteCustomProfileFieldsByName = async (name: string) => {
@@ -53,16 +60,22 @@ export const createCustomProfileFieldsQueries = (pool: CommonQueryMethods) => {
   /**
    * Update the display order of the custom profile fields in Sign-in Experience.
    */
-  const updateFieldOrderInSignInExperience = async (data: UpdateCustomProfileFieldSieOrder[]) => {
-    return pool.any(sql`
-      update ${table}
-      set ${fields.sieOrder} = t.new_sie_order::smallint
-      from (values ${sql.join(
-        data.map(({ name, sieOrder }) => sql`(${name}, ${sieOrder})`),
-        sql`,`
-      )}) t(name, new_sie_order)
-      where ${table}.${fields.name} = t.name
-      returning *
+  const updateFieldOrderInSignInExperience = async (
+    data: UpdateCustomProfileFieldSieOrder[]
+  ): Promise<readonly CustomProfileField[]> => {
+    return pool.any<CustomProfileField>(sql`
+      with updated_fields as (
+        update ${table}
+        set ${fields.sieOrder} = t.new_sie_order::smallint
+        from (values ${sql.join(
+          data.map(({ name, sieOrder }) => sql`(${name}, ${sieOrder})`),
+          sql`,`
+        )}) t(name, new_sie_order)
+        where ${table}.${fields.name} = t.name
+        returning *
+      )
+      select * from updated_fields
+      order by ${fields.sieOrder}
     `);
   };
 
@@ -72,6 +85,7 @@ export const createCustomProfileFieldsQueries = (pool: CommonQueryMethods) => {
     findCustomProfileFieldsByNames,
     insertCustomProfileFields,
     updateCustomProfileFieldsByName,
+    bulkInsertCustomProfileFields,
     deleteCustomProfileFieldsByName,
     updateFieldOrderInSignInExperience,
   };

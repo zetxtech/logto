@@ -1,9 +1,16 @@
 import { DemoConnector } from '@logto/connector-kit';
 import { PasswordPolicyChecker } from '@logto/core-kit';
-import { ConnectorType, SignInExperiences } from '@logto/schemas';
-import { conditional, tryThat } from '@silverhand/essentials';
+import {
+  ConnectorType,
+  SignInExperiences,
+  ForgotPasswordMethod,
+  ProductEvent,
+  type SignInExperience,
+} from '@logto/schemas';
+import { conditional, type Optional, tryThat } from '@silverhand/essentials';
 import { literal, object, string, z } from 'zod';
 
+import { EnvSet } from '#src/env-set/index.js';
 import {
   validateSignUp,
   validateSignIn,
@@ -14,15 +21,20 @@ import { validateMfa } from '#src/libraries/sign-in-experience/mfa.js';
 import koaGuard from '#src/middleware/koa-guard.js';
 
 import RequestError from '../../errors/RequestError/index.js';
+import assertThat from '../../utils/assert-that.js';
 import { checkPasswordPolicyForUser } from '../../utils/password.js';
+import { captureEvent } from '../../utils/posthog.js';
 import type { ManagementApiRouter, RouterInitArgs } from '../types.js';
 
 import customUiAssetsRoutes from './custom-ui-assets/index.js';
 
+const isMfaEnabled = (mfa: Optional<SignInExperience['mfa']>): boolean =>
+  Boolean(mfa?.factors && mfa.factors.length > 0);
+
 export default function signInExperiencesRoutes<T extends ManagementApiRouter>(
   ...args: RouterInitArgs<T>
 ) {
-  const [router, { queries, libraries, connectors }] = args;
+  const [router, { id: tenantId, queries, libraries, connectors }] = args;
   const { findDefaultSignInExperience, updateDefaultSignInExperience } = queries.signInExperiences;
   const { deleteConnectorById } = queries.connectors;
   const { findUserById } = queries.users;
@@ -82,13 +94,25 @@ export default function signInExperiencesRoutes<T extends ManagementApiRouter>(
         query: { removeUnusedDemoSocialConnector },
         body: { socialSignInConnectorTargets, emailBlocklistPolicy, ...rest },
       } = ctx.guard;
-      const { languageInfo, signUp, signIn, mfa, sentinelPolicy, captchaPolicy } = rest;
+      const {
+        languageInfo,
+        signUp,
+        signIn,
+        mfa,
+        sentinelPolicy,
+        captchaPolicy,
+        forgotPasswordMethods,
+        hideLogtoBranding,
+      } = rest;
 
       if (languageInfo) {
         await validateLanguageInfo(languageInfo);
       }
 
-      const connectors = await getLogtoConnectors();
+      const [connectors, currentSettings] = await Promise.all([
+        getLogtoConnectors(),
+        findDefaultSignInExperience(),
+      ]);
 
       // Remove unavailable connectors
       const filteredSocialSignInConnectorTargets = socialSignInConnectorTargets?.filter((target) =>
@@ -103,17 +127,38 @@ export default function signInExperiencesRoutes<T extends ManagementApiRouter>(
       }
 
       if (signIn) {
-        const { signUp: signUpSettings } = signUp
-          ? { signUp }
-          : await findDefaultSignInExperience();
-        validateSignIn(signIn, signUpSettings, connectors);
+        const { signUp: signUpSettings } = signUp ? { signUp } : currentSettings;
+        const { mfa: currentMfa } = mfa ? { mfa } : currentSettings;
+        validateSignIn(signIn, signUpSettings, connectors, currentMfa);
       }
 
       if (mfa) {
-        if (mfa.factors.length > 0) {
+        if (isMfaEnabled(mfa)) {
           await quota.guardTenantUsageByKey('mfaEnabled');
         }
-        validateMfa(mfa);
+        // Get the current sign-in configuration
+        const { signIn: currentSignIn } = signIn ? { signIn } : currentSettings;
+        validateMfa(mfa, currentSignIn);
+      }
+
+      if (forgotPasswordMethods) {
+        const hasEmailConnector = connectors.some(({ type }) => type === ConnectorType.Email);
+        const hasSmsConnector = connectors.some(({ type }) => type === ConnectorType.Sms);
+
+        for (const method of forgotPasswordMethods) {
+          if (method === ForgotPasswordMethod.EmailVerificationCode && !hasEmailConnector) {
+            throw new RequestError({
+              code: 'sign_in_experiences.forgot_password_method_requires_connector',
+              method: 'email',
+            });
+          }
+          if (method === ForgotPasswordMethod.PhoneVerificationCode && !hasSmsConnector) {
+            throw new RequestError({
+              code: 'sign_in_experiences.forgot_password_method_requires_connector',
+              method: 'sms',
+            });
+          }
+        }
       }
 
       /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
@@ -145,6 +190,19 @@ export default function signInExperiencesRoutes<T extends ManagementApiRouter>(
         );
       }
 
+      // Guard the quota for BYUI if the hideLogtoBranding is set to true
+      if (hideLogtoBranding) {
+        // Hide Logto branding is only available for Logto Cloud
+        assertThat(
+          EnvSet.values.isCloud,
+          new RequestError({
+            code: 'request.invalid_input',
+            details: 'Hide Logto branding is not supported in this environment',
+          })
+        );
+        await quota.guardTenantUsageByKey('bringYourUiEnabled');
+      }
+
       const payload = {
         ...rest,
         ...conditional(
@@ -167,6 +225,13 @@ export default function signInExperiencesRoutes<T extends ManagementApiRouter>(
         void quota.reportSubscriptionUpdatesUsage('securityFeaturesEnabled');
       }
 
+      // Only capture the event when MFA status changes
+      if (isMfaEnabled(currentSettings.mfa) !== isMfaEnabled(mfa)) {
+        captureEvent(
+          { tenantId, request: ctx.req },
+          isMfaEnabled(mfa) ? ProductEvent.MfaEnabled : ProductEvent.MfaDisabled
+        );
+      }
       return next();
     }
   );

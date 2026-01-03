@@ -3,7 +3,7 @@ const tabs = {
   dashboard: 'Панель управления',
   applications: 'Приложения',
   api_resources: 'Ресурсы API',
-  sign_in_experience: 'Опыт входа в систему',
+  sign_in_experience: 'Вход и аккаунт',
   connectors: 'Коннекторы',
   enterprise_sso: 'Единый вход в систему предприятия',
   security: 'Безопасность',

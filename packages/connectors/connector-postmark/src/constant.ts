@@ -12,6 +12,9 @@ export const defaultMetadata: ConnectorMetadata = {
   logoDark: null,
   description: {
     en: 'Postmark is a mail sending platform.',
+    'zh-CN': 'Postmark 是一个邮件发送平台。',
+    'tr-TR': 'Postmark, bir e-posta gönderim platformudur.',
+    ko: 'Postmark는 이메일 발송 플랫폼입니다.',
   },
   readme: './README.md',
   formItems: [
@@ -48,8 +51,28 @@ export const defaultMetadata: ConnectorMetadata = {
           templateAlias: 'logto-forgot-password',
         },
         {
+          usageType: 'OrganizationInvitation',
+          templateAlias: 'logto-organization-invitation',
+        },
+        {
           usageType: 'Generic',
           templateAlias: 'logto-generic',
+        },
+        {
+          usageType: 'UserPermissionValidation',
+          templateAlias: 'logto-user-permission-validation',
+        },
+        {
+          usageType: 'BindNewIdentifier',
+          templateAlias: 'logto-bind-new-identifier',
+        },
+        {
+          usageType: 'MfaVerification',
+          templateAlias: 'logto-mfa-verification',
+        },
+        {
+          usageType: 'BindMfa',
+          templateAlias: 'logto-bind-mfa',
         },
       ],
     },

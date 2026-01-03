@@ -36,6 +36,10 @@ const enterprise_sso = {
     },
     oidc: {
       redirect_uri_field_name: 'Redirect URI (Callback URL)',
+      redirect_uri_field_description:
+        "Redirect URI is where users are redirected after SSO authentication. Add this URI to your IdP's configuration.",
+      redirect_uri_field_custom_domain_description:
+        'If you use multiple <a>custom domains</a> in Logto, be sure to add all corresponding callback URIs to your IdP to make SSO work across every domain.\n\nThe default Logto domain (*.logto.app) is always valid — include it only if you also wish to support SSO under that domain.',
     },
   },
   attribute_mapping: {
@@ -71,6 +75,7 @@ const enterprise_sso = {
       client_secret_field_name: 'Client secret',
       issuer_field_name: 'Issuer',
       scope_field_name: 'Scope',
+      scope_field_placeholder: 'Enter the scopes (separated by a space)',
     },
   },
 };

@@ -18,10 +18,9 @@ const description = {
   resend_after_seconds:
     '¿No lo has recibido? Reenviar después de <span>{{seconds}}</span> segundos',
   resend_passcode: '¿No lo has recibido? <a>Reenviar código de verificación</a>',
-  create_account_id_exists: 'La cuenta con {{type}} {{value}} ya existe, ¿desea iniciar sesión?',
+  create_account_id_exists: 'Una cuenta con {{value}} ya existe. Continuar a iniciar sesión.',
   link_account_id_exists: 'La cuenta con {{type}} {{value}} ya existe. ¿Desea vincular?',
-  sign_in_id_does_not_exist:
-    'La cuenta con {{type}} {{value}} no existe, ¿desea crear una nueva cuenta?',
+  sign_in_id_does_not_exist: 'No se encontró cuenta para {{value}}. ¿Crear una nueva?',
   sign_in_id_does_not_exist_alert: 'La cuenta con {{type}} {{value}} no existe.',
   create_account_id_exists_alert:
     'La cuenta con {{type}} {{value}} está vinculada a otra cuenta. Por favor intente con otra {{type}}.',
@@ -112,6 +111,7 @@ const description = {
   switch_account_title: 'Actualmente has iniciado sesión como {{account}}',
   switch_account_description:
     'Para continuar, se cerrará la sesión de la cuenta actual, y se cambiará automáticamente a la nueva cuenta.',
+  about_yourself: 'Cuéntanos sobre ti',
 };
 
 export default Object.freeze(description);

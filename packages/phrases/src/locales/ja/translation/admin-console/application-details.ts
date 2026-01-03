@@ -4,7 +4,7 @@ const application_details = {
   check_guide: 'ガイドを確認',
   settings: '設定',
   settings_description:
-    'An "Application" is a registered software or service that can access user info or act for a user. Applications help recognize who’s asking for what from Logto and handle the sign-in and permission. Fill in the required fields for authentication.',
+    '「アプリケーション」とは、ユーザー情報にアクセスしたり利用者に代わって操作したりできる登録済みのソフトウェアやサービスを指します。アプリケーションは、Logto に誰が何を要求しているのかを認識させ、サインインと権限の処理を担います。認証に必要な項目を入力してください。',
   integration: '統合',
   integration_description:
     "Deploy with Logto secure workers, powered by Cloudflare's edge network for top-tier performance and 0ms cold starts worldwide.",
@@ -157,6 +157,18 @@ const application_details = {
     organization_description:
       '特定の組織データにアクセスするためにサードパーティアプリケーションが要求する権限を選択します。',
     grant_organization_level_permissions: '組織データの権限を付与する',
+    oidc_title: 'OIDC',
+    oidc_description:
+      '主要な OIDC 権限はアプリに自動的に設定されます。これらのスコープは認証に必須であり、ユーザーの同意画面には表示されません。',
+    default_oidc_permissions: '既定の OIDC 権限',
+    permission_column: '権限',
+    guide_column: 'ガイド',
+    openid_permission: 'openid',
+    openid_permission_guide:
+      "OAuth リソースへのアクセスでは任意です。\nOIDC 認証では必須です。ID トークンへのアクセスを許可し、'userinfo_endpoint' にアクセスできるようにします。",
+    offline_access_permission: 'offline_access',
+    offline_access_permission_guide:
+      '任意。長期アクセスやバックグラウンド処理のためのリフレッシュトークンを取得します。',
   },
   roles: {
     assign_button: 'マシン間の役割を割り当てる',

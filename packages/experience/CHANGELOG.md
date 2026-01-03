@@ -1,5 +1,117 @@
 # Change Log
 
+## 1.18.0
+
+### Minor Changes
+
+- 116dcf5e7d: support reCaptcha domain customization
+
+  You can now customize the domain for reCaptcha, for example, using reCaptcha with `recaptcha.net` domain.
+
+- 116dcf5e7d: support reCAPTCHA Enterprise checkbox mode
+
+  You can now choose between two verification modes for reCAPTCHA Enterprise:
+
+  - **Invisible**: Score-based verification that runs automatically in the background (default)
+  - **Checkbox**: Displays the "I'm not a robot" widget for user interaction
+
+  Note: The verification mode must match your reCAPTCHA key type configured in Google Cloud Console.
+
+## 1.17.0
+
+### Minor Changes
+
+- 08f887c448: support cross-app authentication callbacks within the same browser session
+
+  When multiple applications are initiating authentication requests within the same browser session,
+  authentication callbacks may interfere with each other due to the shared `_interaction` cookie.
+
+  To resolve this, we now change the cookie from a plain UID string to a structured mapping object
+  `{ [app_id]: interaction_uid }`, and maintain the `app_id` in either the URL search parameters or HTTP
+  headers for all authentication-related requests and redirects. This ensures that each application can
+  correctly identify its own authentication context without interference from others.
+
+  The fallback mechanism is also implemented to ensure backward compatibility.
+
+## 1.16.1
+
+### Patch Changes
+
+- 3ed4d0a91e: fix an issue that prevents Logto Experience from working in Android 11 and some older browser versions
+
+  The issue is introduced in version 1.32.0 by the usage of the `||=` operator, which is not supported in some older browsers (#7857).
+
+- 568db900bb: fix the country code dropdown menu position on desktop.
+
+  - fix initial position calculation by waiting for the parent input field element to be well rendered
+  - add a max dropdown menu top position to prevent it from going off the screen on a small screen
+
+## 1.16.0
+
+### Minor Changes
+
+- ad4f9d6abf: add support to the OIDC standard authentication parameter `ui_locales`
+
+  We are now supporting the standard OIDC `ui_locales` auth parameter to customize the language of the authentication pages. You can pass the `ui_locales` parameter in the `signIn` method via the `extraParams` option in all Logto SDKs.
+
+  ### What it does
+
+  - Determines the UI language of the Logto-hosted sign-in experience at runtime. Logto picks the first language tag in `ui_locales` that is supported in your tenant's language library.
+  - Affects email localization for messages triggered by the interaction (e.g., verification code emails).
+  - Exposes the original value to email templates as a variable `uiLocales`, allowing you to include it in the email subject/content if needed.
+
+  ### Example
+
+  If you want to display the sign-in page in French (Canada), you can do it like this:
+
+  ```ts
+  await logtoClient.signIn({
+    redirectUri: "https://your.app/callback",
+    extraParams: {
+      ui_locales: "fr-CA fr en",
+    },
+  });
+  ```
+
+  Refer to the [documentation](https://docs.logto.io/end-user-flows/authentication-parameters/ui-locales) for more details.
+
+- 1fb8593659: add email/phone MFA via verification codes
+
+  Summary
+
+  - Add two new MFA factors: Email verification code and SMS (phone) verification code.
+  - Support binding these factors during registration or first sign-in when MFA is required.
+  - Support verifying these factors on subsequent sign-ins with dedicated MFA verification pages.
+  - Update Console to configure these factors and surface guidance/conflict warnings.
+  - Support customizing forgot password methods in Sign-in Experience (related).
+
+  To learn more about this feature, please refer to the documentation: https://docs.logto.io/end-user-flows/mfa
+
+### Patch Changes
+
+- 147f257503: fix a bug that prevents terms agreement dialog from working properly when using magic link authentication
+
+## 1.15.0
+
+### Minor Changes
+
+- bb385eb15d: add a new feature for collecting user profile on new user registration
+
+  You can now collect user profile information on the last step of your registration flow.
+
+  ### Getting started
+
+  1. In Console: `Sign-in Experience > Collect user profile`. Add your profile fields:
+
+     - Use built-in basics (Name, Gender, Birthdate, Address, …); or
+     - Create custom fields (choose type, label, validation rules, required, etc.).
+
+  2. Drag & drop to reorder fields in the list; the order reflects in the form.
+  3. Test by signing up a new user in the demo app; a "Tell us about yourself" step will appear with your fields.
+  4. Registration completes only after all required fields are filled.
+
+  Check out our [docs](https://docs.logto.io/end-user-flows/collect-user-profile) for more details.
+
 ## 1.14.0
 
 ### Minor Changes

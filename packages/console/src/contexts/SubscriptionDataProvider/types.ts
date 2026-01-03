@@ -1,48 +1,60 @@
 import {
   type LogtoSkuResponse,
   type Subscription,
-  type NewSubscriptionQuota,
-  type NewSubscriptionCountBasedUsage,
-  type NewSubscriptionResourceScopeUsage,
-  type NewSubscriptionRoleScopeUsage,
+  type SubscriptionQuota,
+  type SubscriptionCountBasedUsage,
+  type SubscriptionResourceScopeUsage,
+  type SubscriptionRoleScopeUsage,
 } from '@/cloud/types/router';
 
-export type Context = {
+type BaseContext = {
   currentSubscription: Subscription;
   onCurrentSubscriptionUpdated: (subscription?: Subscription) => void;
 };
 
-export type SubscriptionUsageOptions<T extends keyof NewSubscriptionCountBasedUsage> = {
+export type SubscriptionUsageOptions<T extends keyof SubscriptionCountBasedUsage> = {
   quotaKey: T;
-  subscriptionUsage: NewSubscriptionCountBasedUsage;
-  subscriptionQuota: NewSubscriptionQuota;
-  usage?: NewSubscriptionCountBasedUsage[T];
+  subscriptionUsage: SubscriptionCountBasedUsage;
+  subscriptionQuota: SubscriptionQuota;
+  usage?: SubscriptionCountBasedUsage[T];
 };
 
-type NewSubscriptionSupplementContext = {
+type SubscriptionSupplementContext = {
   logtoSkus: LogtoSkuResponse[];
   currentSku: LogtoSkuResponse;
-  currentSubscriptionQuota: NewSubscriptionQuota;
-  currentSubscriptionBasicQuota: NewSubscriptionQuota;
-  currentSubscriptionUsage: NewSubscriptionCountBasedUsage;
-  currentSubscriptionResourceScopeUsage: NewSubscriptionResourceScopeUsage;
-  currentSubscriptionRoleScopeUsage: NewSubscriptionRoleScopeUsage;
+  currentSubscriptionQuota: SubscriptionQuota;
+  currentSubscriptionBasicQuota: SubscriptionQuota;
+  currentSubscriptionUsage: SubscriptionCountBasedUsage;
+  currentSubscriptionResourceScopeUsage: SubscriptionResourceScopeUsage;
+  currentSubscriptionRoleScopeUsage: SubscriptionRoleScopeUsage;
   mutateSubscriptionQuotaAndUsages: () => void;
 };
 
-type NewSubscriptionResourceStatus = {
-  hasSurpassedSubscriptionQuotaLimit: <T extends keyof NewSubscriptionCountBasedUsage>(
+type SubscriptionResourceStatus = {
+  /**
+   * Quota checking function with business rules applied.
+   *
+   * This function wraps the pure calculation utilities from SubscriptionDataProvider/utils
+   * and applies plan-specific enforcement policies (e.g., Development plan unlimited features).
+   * Backend still enforces actual limits; this function only controls UI behavior.
+   */
+  hasSurpassedSubscriptionQuotaLimit: <T extends keyof SubscriptionCountBasedUsage>(
     quotaKey: T,
-    usage?: NewSubscriptionCountBasedUsage[T]
+    usage?: SubscriptionCountBasedUsage[T]
   ) => boolean;
-  hasReachedSubscriptionQuotaLimit: <T extends keyof NewSubscriptionCountBasedUsage>(
+  /**
+   * Quota checking function with business rules applied.
+   *
+   * This function wraps the pure calculation utilities from SubscriptionDataProvider/utils
+   * and applies plan-specific enforcement policies (e.g., Development plan unlimited features).
+   * Backend still enforces actual limits; this function only controls UI behavior.
+   */
+  hasReachedSubscriptionQuotaLimit: <T extends keyof SubscriptionCountBasedUsage>(
     quotaKey: T,
-    usage?: NewSubscriptionCountBasedUsage[T]
+    usage?: SubscriptionCountBasedUsage[T]
   ) => boolean;
 };
 
-export type NewSubscriptionContext = Context & NewSubscriptionSupplementContext;
+export type SubscriptionContext = BaseContext & SubscriptionSupplementContext;
 
-export type FullContext = Context &
-  NewSubscriptionSupplementContext &
-  NewSubscriptionResourceStatus;
+export type FullContext = BaseContext & SubscriptionSupplementContext & SubscriptionResourceStatus;

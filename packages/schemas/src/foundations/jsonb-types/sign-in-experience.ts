@@ -167,6 +167,8 @@ export enum MfaFactor {
   TOTP = 'Totp',
   WebAuthn = 'WebAuthn',
   BackupCode = 'BackupCode',
+  EmailVerificationCode = 'EmailVerificationCode',
+  PhoneVerificationCode = 'PhoneVerificationCode',
 }
 
 export const mfaFactorsGuard = z.nativeEnum(MfaFactor).array();
@@ -278,3 +280,12 @@ export const emailBlocklistPolicyGuard = z.object({
   blockSubaddressing: z.boolean().optional(),
   customBlocklist: z.string().array().optional(),
 }) satisfies ToZodObject<EmailBlocklistPolicy>;
+
+export enum ForgotPasswordMethod {
+  EmailVerificationCode = 'EmailVerificationCode',
+  PhoneVerificationCode = 'PhoneVerificationCode',
+}
+
+export const forgotPasswordMethodsGuard = z.nativeEnum(ForgotPasswordMethod).array();
+
+export type ForgotPasswordMethods = z.infer<typeof forgotPasswordMethodsGuard>;

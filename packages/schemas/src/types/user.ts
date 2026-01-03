@@ -1,7 +1,12 @@
 import { z } from 'zod';
 
 import { type User, Users, UserSsoIdentities } from '../db-entries/index.js';
-import { MfaFactor } from '../foundations/index.js';
+import { identityGuard, MfaFactor } from '../foundations/index.js';
+
+import {
+  desensitizedEnterpriseSsoTokenSetSecretGuard,
+  desensitizedSocialTokenSetSecretGuard,
+} from './secrets.js';
 
 export const userInfoSelectFields = Object.freeze([
   'id',
@@ -41,6 +46,7 @@ export const userMfaVerificationResponseGuard = z
   .object({
     id: z.string(),
     createdAt: z.string(),
+    lastUsedAt: z.string().optional(),
     type: z.nativeEnum(MfaFactor),
     agent: z.string().optional(),
     name: z.string().optional(),
@@ -90,3 +96,24 @@ export const featuredUserGuard = Users.guard.pick({
 
 export const consoleUserPreferenceKey = 'adminConsolePreferences';
 export const guideRequestsKey = 'guideRequests';
+
+export const getUserSocialIdentityResponseGuard = z.object({
+  identity: identityGuard,
+  tokenSecret: desensitizedSocialTokenSetSecretGuard.optional(),
+});
+
+export type GetUserSocialIdentityResponse = z.infer<typeof getUserSocialIdentityResponseGuard>;
+
+export const getUserSsoIdentityResponseGuard = z.object({
+  ssoIdentity: UserSsoIdentities.guard,
+  tokenSecret: desensitizedEnterpriseSsoTokenSetSecretGuard.optional(),
+});
+
+export type GetUserSsoIdentityResponse = z.infer<typeof getUserSsoIdentityResponseGuard>;
+
+export const getUserAllIdentitiesResponseGuard = z.object({
+  socialIdentities: getUserSocialIdentityResponseGuard.extend({ target: z.string() }).array(),
+  ssoIdentities: getUserSsoIdentityResponseGuard.extend({ ssoConnectorId: z.string() }).array(),
+});
+
+export type GetUserAllIdentitiesResponse = z.infer<typeof getUserAllIdentitiesResponseGuard>;

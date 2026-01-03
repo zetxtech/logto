@@ -2,7 +2,6 @@ import api_resource_details from './api-resource-details.js';
 import api_resources from './api-resources.js';
 import application_details from './application-details.js';
 import applications from './applications.js';
-import auth_status from './auth-status.js';
 import cloud from './cloud.js';
 import components from './components.js';
 import connector_details from './connector-details.js';
@@ -12,6 +11,7 @@ import dashboard from './dashboard.js';
 import domain from './domain.js';
 import enterprise_sso_details from './enterprise-sso-details.js';
 import enterprise_sso from './enterprise-sso.js';
+import enterprise_subscription from './enterprise-subscription.js';
 import errors from './errors.js';
 import general from './general.js';
 import get_started from './get-started.js';
@@ -37,6 +37,7 @@ import session_expired from './session-expired.js';
 import sign_in_exp from './sign-in-exp/index.js';
 import signing_keys from './signing-keys.js';
 import subscription from './subscription/index.js';
+import system_limit from './system-limit.js';
 import tab_sections from './tab-sections.js';
 import tabs from './tabs.js';
 import tenant_members from './tenant-members.js';
@@ -44,6 +45,7 @@ import tenants from './tenants.js';
 import topbar from './topbar.js';
 import upsell from './upsell/index.js';
 import user_details from './user-details.js';
+import user_identity_details from './user-identity-details.js';
 import users from './users.js';
 import webhook_details from './webhook-details.js';
 import webhooks from './webhooks.js';
@@ -90,6 +92,7 @@ const admin_console = {
   tenant_members,
   topbar,
   subscription,
+  system_limit,
   upsell,
   guide,
   mfa,
@@ -102,7 +105,8 @@ const admin_console = {
   organization_template,
   organization_role_details,
   inkeep_ai_bot,
-  auth_status,
+  user_identity_details,
+  enterprise_subscription,
 };
 
 export default Object.freeze(admin_console);

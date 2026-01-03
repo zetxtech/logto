@@ -131,6 +131,20 @@ const user_details = {
       edited: 'تم تحرير الرمز {{name}} بنجاح.',
     },
   },
+  connections: {
+    title: 'الاتصال',
+    description:
+      'يقوم المستخدم بربط حسابات الطرف الثالث لتسجيل الدخول الاجتماعي، أو تسجيل الدخول الموحد للمؤسسات، أو الوصول إلى الموارد.',
+    token_status_column: 'حالة الرمز',
+    token_status: {
+      active: 'نشط',
+      expired: 'منتهي الصلاحية',
+      inactive: 'غير نشط',
+      not_applicable: 'غير قابل للتطبيق',
+      available: 'متاح',
+      not_available: 'غير متاح',
+    },
+  },
 };
 
 export default Object.freeze(user_details);

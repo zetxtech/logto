@@ -7,6 +7,9 @@ import {
   type UserSsoIdentity,
   type EnterpriseSsoVerificationRecordData,
   enterpriseSsoVerificationRecordDataGuard,
+  type SanitizedEnterpriseSsoVerificationRecordData,
+  type EncryptedTokenSet,
+  type SecretEnterpriseSsoConnectorRelationPayload,
 } from '@logto/schemas';
 import { generateStandardId } from '@logto/shared';
 import { conditional } from '@silverhand/essentials';
@@ -30,8 +33,15 @@ import { type IdentifierVerificationRecord } from './verification-record.js';
 
 export {
   type EnterpriseSsoVerificationRecordData,
+  type SanitizedEnterpriseSsoVerificationRecordData,
   enterpriseSsoVerificationRecordDataGuard,
+  sanitizedEnterpriseSsoVerificationRecordDataGuard,
 } from '@logto/schemas';
+
+export type EnterpriseSsoConnectorTokenSetSecret = {
+  encryptedTokenSet: EncryptedTokenSet;
+  enterpriseSsoConnectorRelationPayload: SecretEnterpriseSsoConnectorRelationPayload;
+};
 
 export class EnterpriseSsoVerification
   implements IdentifierVerificationRecord<VerificationType.EnterpriseSso>
@@ -48,6 +58,7 @@ export class EnterpriseSsoVerification
   public readonly type = VerificationType.EnterpriseSso;
   public readonly connectorId: string;
   public enterpriseSsoUserInfo?: ExtendedSocialUserInfo;
+  public encryptedTokenSet?: EncryptedTokenSet;
   public issuer?: string;
 
   private connectorDataCache?: SupportedSsoConnector;
@@ -57,13 +68,14 @@ export class EnterpriseSsoVerification
     private readonly queries: Queries,
     data: EnterpriseSsoVerificationRecordData
   ) {
-    const { id, connectorId, enterpriseSsoUserInfo, issuer } =
+    const { id, connectorId, enterpriseSsoUserInfo, encryptedTokenSet, issuer } =
       enterpriseSsoVerificationRecordDataGuard.parse(data);
 
     this.id = id;
     this.connectorId = connectorId;
     this.enterpriseSsoUserInfo = enterpriseSsoUserInfo;
     this.issuer = issuer;
+    this.encryptedTokenSet = encryptedTokenSet;
   }
 
   /** Returns true if the enterprise SSO identity has been verified */
@@ -110,7 +122,7 @@ export class EnterpriseSsoVerification
    */
   async verify(ctx: WithLogContext, tenantContext: TenantContext, callbackData: JsonObject) {
     const connectorData = await this.getConnectorData();
-    const { issuer, userInfo } = await verifySsoIdentity(
+    const { issuer, userInfo, encryptedTokenSet } = await verifySsoIdentity(
       ctx,
       tenantContext,
       connectorData,
@@ -119,6 +131,7 @@ export class EnterpriseSsoVerification
 
     this.issuer = issuer;
     this.enterpriseSsoUserInfo = userInfo;
+    this.encryptedTokenSet = encryptedTokenSet;
   }
 
   /**
@@ -206,16 +219,39 @@ export class EnterpriseSsoVerification
       : {};
   }
 
+  getTokenSetSecret(): EnterpriseSsoConnectorTokenSetSecret | undefined {
+    // Not verified or token set not found
+    if (!this.enterpriseSsoUserInfo || !this.issuer || !this.encryptedTokenSet) {
+      return;
+    }
+
+    return {
+      encryptedTokenSet: this.encryptedTokenSet,
+      enterpriseSsoConnectorRelationPayload: {
+        ssoConnectorId: this.connectorId,
+        issuer: this.issuer,
+        identityId: this.enterpriseSsoUserInfo.id,
+      },
+    };
+  }
+
   toJson(): EnterpriseSsoVerificationRecordData {
-    const { id, connectorId, type, enterpriseSsoUserInfo, issuer } = this;
+    const { id, type, connectorId, enterpriseSsoUserInfo, encryptedTokenSet, issuer } = this;
 
     return {
       id,
-      connectorId,
       type,
+      connectorId,
       enterpriseSsoUserInfo,
+      encryptedTokenSet,
       issuer,
     };
+  }
+
+  toSanitizedJson(): SanitizedEnterpriseSsoVerificationRecordData {
+    const { id, type, connectorId, enterpriseSsoUserInfo, issuer } = this;
+
+    return { id, type, connectorId, enterpriseSsoUserInfo, issuer };
   }
 
   private async findUserSsoIdentityByEnterpriseSsoUserInfo(): Promise<

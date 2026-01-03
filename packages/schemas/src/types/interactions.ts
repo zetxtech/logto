@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { emailRegEx, phoneRegEx, usernameRegEx } from '@logto/core-kit';
+import { emailRegEx, numberAndAlphabetRegEx, phoneRegEx, usernameRegEx } from '@logto/core-kit';
 import { z } from 'zod';
 
 import {
@@ -62,10 +62,16 @@ export type VerificationCodeIdentifier<
   type: T;
   value: string;
 };
-export const verificationCodeIdentifierGuard = z.object({
-  type: z.enum([SignInIdentifier.Email, SignInIdentifier.Phone]),
-  value: z.string(),
-}) satisfies ToZodObject<VerificationCodeIdentifier>;
+export const verificationCodeIdentifierGuard = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal(SignInIdentifier.Email),
+    value: z.string().regex(emailRegEx),
+  }),
+  z.object({
+    type: z.literal(SignInIdentifier.Phone),
+    value: z.string().regex(phoneRegEx),
+  }),
+]) satisfies z.ZodType<VerificationCodeIdentifier>;
 
 // REMARK: API payload guard
 
@@ -73,10 +79,12 @@ export const verificationCodeIdentifierGuard = z.object({
 export type SocialAuthorizationUrlPayload = {
   state: string;
   redirectUri: string;
+  scope?: string;
 };
 export const socialAuthorizationUrlPayloadGuard = z.object({
   state: z.string(),
   redirectUri: z.string(),
+  scope: z.string().optional(),
 }) satisfies ToZodObject<SocialAuthorizationUrlPayload>;
 
 /** Payload type for `POST /api/experience/verification/{social|sso}/:connectorId/verify`. */
@@ -201,6 +209,10 @@ export const updateProfileApiPayloadGuard = z.discriminatedUnion('type', [
     type: z.literal('social'),
     verificationId: z.string(),
   }),
+  z.object({
+    type: z.literal('extraProfile'),
+    values: z.record(z.string().regex(numberAndAlphabetRegEx), z.unknown()),
+  }),
 ]);
 export type UpdateProfileApiPayload = z.infer<typeof updateProfileApiPayloadGuard>;
 
@@ -296,6 +308,7 @@ export enum MissingProfile {
   phone = 'phone',
   password = 'password',
   emailOrPhone = 'emailOrPhone',
+  extraProfile = 'extraProfile',
 }
 
 export const bindTotpPayloadGuard = z.object({
@@ -407,12 +420,28 @@ export const pendingBackupCodeGuard = z.object({
 
 export type PendingBackupCode = z.infer<typeof pendingBackupCodeGuard>;
 
+export const pendingEmailVerificationCodeGuard = z.object({
+  type: z.literal(MfaFactor.EmailVerificationCode),
+  email: z.string(),
+});
+
+export type PendingEmailVerificationCode = z.infer<typeof pendingEmailVerificationCodeGuard>;
+
+export const pendingPhoneVerificationCodeGuard = z.object({
+  type: z.literal(MfaFactor.PhoneVerificationCode),
+  phone: z.string(),
+});
+
+export type PendingPhoneVerificationCode = z.infer<typeof pendingPhoneVerificationCodeGuard>;
+
 // Some information like TOTP secret should be generated in the backend
 // and stored in the interaction temporarily.
 export const pendingMfaGuard = z.discriminatedUnion('type', [
   pendingTotpGuard,
   pendingWebAuthnGuard,
   pendingBackupCodeGuard,
+  pendingEmailVerificationCodeGuard,
+  pendingPhoneVerificationCodeGuard,
 ]);
 
 export type PendingMfa = z.infer<typeof pendingMfaGuard>;
@@ -423,6 +452,7 @@ export type BindTotp = z.infer<typeof bindTotpGuard>;
 
 export const bindWebAuthnGuard = z.object({
   type: z.literal(MfaFactor.WebAuthn),
+  rpId: z.string(),
   credentialId: z.string(),
   publicKey: z.string(),
   transports: webAuthnTransportGuard.array(),

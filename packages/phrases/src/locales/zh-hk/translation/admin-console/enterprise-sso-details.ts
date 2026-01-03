@@ -105,6 +105,11 @@ const enterprise_sso_details = {
   trust_unverified_email_label: '始終信任身份提供者返回的未驗證電子郵件地址',
   trust_unverified_email_tip:
     'Entra ID（OIDC）連接器不返回 `email_verified` 聲明，這意味著來自 Azure 的電子郵件地址無法保證已被驗證。預設情況下，Logto 不會將未驗證的電子郵件地址同步到用戶配置文件。只有在你信任來自 Entra ID 目錄的所有電子郵件地址時才啟用此選項。',
+  offline_access: {
+    label: '刷新訪問令牌',
+    description:
+      '啟用 Google `offline` 訪問以請求刷新令牌，允許你的應用在不重新授權用戶的情況下刷新訪問令牌。',
+  },
 };
 
 export default Object.freeze(enterprise_sso_details);

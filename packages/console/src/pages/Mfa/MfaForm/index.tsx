@@ -1,21 +1,24 @@
+/* eslint-disable max-lines */
 import {
-  adminTenantId,
+  ConnectorType,
   MfaFactor,
   MfaPolicy,
   OrganizationRequiredMfaPolicy,
+  SignInIdentifier,
   type SignInExperience,
+  type SignIn,
 } from '@logto/schemas';
 import { useContext, useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import DetailsForm from '@/components/DetailsForm';
 import FormCard from '@/components/FormCard';
 import InlineUpsell from '@/components/InlineUpsell';
 import UnsavedChangesAlertModal from '@/components/UnsavedChangesAlertModal';
 import { mfa } from '@/consts';
-import { isCloud, isDevFeaturesEnabled } from '@/consts/env';
+import { isCloud } from '@/consts/env';
 import { SubscriptionDataContext } from '@/contexts/SubscriptionDataProvider';
 import { TenantsContext } from '@/contexts/TenantsProvider';
 import DynamicT from '@/ds-components/DynamicT';
@@ -23,7 +26,9 @@ import FormField from '@/ds-components/FormField';
 import InlineNotification from '@/ds-components/InlineNotification';
 import Select from '@/ds-components/Select';
 import Switch from '@/ds-components/Switch';
+import TextLink from '@/ds-components/TextLink';
 import useApi from '@/hooks/use-api';
+import useEnabledConnectorTypes from '@/hooks/use-enabled-connector-types';
 import { trySubmitSafe } from '@/utils/form';
 import { isPaidPlan } from '@/utils/subscription';
 
@@ -36,16 +41,18 @@ import { convertMfaFormToConfig, convertMfaConfigToForm, validateBackupCodeFacto
 
 type Props = {
   readonly data: MfaConfig;
+  readonly signInMethods: SignIn['methods'];
   readonly onMfaUpdated: (updatedData: MfaConfig) => void;
 };
 
-function MfaForm({ data, onMfaUpdated }: Props) {
+function MfaForm({ data, signInMethods, onMfaUpdated }: Props) {
   const {
     currentSubscription: { planId, isEnterprisePlan },
     currentSubscriptionQuota,
     mutateSubscriptionQuotaAndUsages,
   } = useContext(SubscriptionDataContext);
   const { currentTenantId } = useContext(TenantsContext);
+  const { isConnectorTypeEnabled } = useEnabledConnectorTypes();
 
   const isMfaDisabled =
     isCloud && !currentSubscriptionQuota.mfaEnabled && !isPaidPlan(planId, isEnterprisePlan);
@@ -68,6 +75,21 @@ function MfaForm({ data, onMfaUpdated }: Props) {
     const { factors } = convertMfaFormToConfig(formValues);
     return validateBackupCodeFactor(factors);
   }, [formValues]);
+
+  const isEmailCodePrimarySignInMethod = useMemo(() => {
+    return signInMethods.some(
+      (method) => method.identifier === SignInIdentifier.Email && method.verificationCode
+    );
+  }, [signInMethods]);
+
+  const isPhoneCodePrimarySignInMethod = useMemo(() => {
+    return signInMethods.some(
+      (method) => method.identifier === SignInIdentifier.Phone && method.verificationCode
+    );
+  }, [signInMethods]);
+
+  const hasEmailConnector = isConnectorTypeEnabled(ConnectorType.Email);
+  const hasSmsConnector = isConnectorTypeEnabled(ConnectorType.Sms);
 
   const isPolicySettingsDisabled = useMemo(() => {
     if (isMfaDisabled) {
@@ -132,16 +154,21 @@ function MfaForm({ data, onMfaUpdated }: Props) {
     [t]
   );
 
-  // Only show the organization MFA policy config for the admin tenant
-  const showOrganizationMfaPolicyConfig = useMemo(
-    () => isDevFeaturesEnabled || (isCloud && currentTenantId === adminTenantId),
-    [currentTenantId]
-  );
-
   const onSubmit = handleSubmit(
     trySubmitSafe(async (formData) => {
-      const mfaConfig = convertMfaFormToConfig(formData, showOrganizationMfaPolicyConfig);
+      const mfaConfig = convertMfaFormToConfig(formData);
       if (!validateBackupCodeFactor(mfaConfig.factors)) {
+        return;
+      }
+
+      // Check connector availability for email and SMS verification codes
+      if (formData.emailVerificationCodeEnabled && !hasEmailConnector) {
+        toast.error(t('mfa.no_email_connector_error'));
+        return;
+      }
+
+      if (formData.phoneVerificationCodeEnabled && !hasSmsConnector) {
+        toast.error(t('mfa.no_sms_connector_error'));
         return;
       }
 
@@ -175,14 +202,60 @@ function MfaForm({ data, onMfaUpdated }: Props) {
             <div className={styles.factorField}>
               <Switch
                 disabled={isMfaDisabled}
-                label={<FactorLabel type={MfaFactor.TOTP} />}
-                {...register('totpEnabled')}
-              />
-              <Switch
-                disabled={isMfaDisabled}
                 label={<FactorLabel type={MfaFactor.WebAuthn} />}
                 {...register('webAuthnEnabled')}
               />
+              <Switch
+                disabled={isMfaDisabled}
+                label={<FactorLabel type={MfaFactor.TOTP} />}
+                {...register('totpEnabled')}
+              />
+              <div>
+                <Switch
+                  disabled={isMfaDisabled || isPhoneCodePrimarySignInMethod}
+                  label={<FactorLabel type={MfaFactor.PhoneVerificationCode} />}
+                  tooltip={
+                    isPhoneCodePrimarySignInMethod ? t('mfa.phone_primary_method_tip') : undefined
+                  }
+                  {...register('phoneVerificationCodeEnabled')}
+                />
+                {formValues.phoneVerificationCodeEnabled && !hasSmsConnector && (
+                  <InlineNotification className={styles.connectorWarning}>
+                    <Trans
+                      components={{
+                        a: <TextLink to="/connectors" />,
+                      }}
+                    >
+                      {t('mfa.no_sms_connector_warning', {
+                        link: t('mfa.setup_link'),
+                      })}
+                    </Trans>
+                  </InlineNotification>
+                )}
+              </div>
+              <div>
+                <Switch
+                  disabled={isMfaDisabled || isEmailCodePrimarySignInMethod}
+                  label={<FactorLabel type={MfaFactor.EmailVerificationCode} />}
+                  tooltip={
+                    isEmailCodePrimarySignInMethod ? t('mfa.email_primary_method_tip') : undefined
+                  }
+                  {...register('emailVerificationCodeEnabled')}
+                />
+                {formValues.emailVerificationCodeEnabled && !hasEmailConnector && (
+                  <InlineNotification className={styles.connectorWarning}>
+                    <Trans
+                      components={{
+                        a: <TextLink to="/connectors" />,
+                      }}
+                    >
+                      {t('mfa.no_email_connector_warning', {
+                        link: t('mfa.setup_link'),
+                      })}
+                    </Trans>
+                  </InlineNotification>
+                )}
+              </div>
               <div className={styles.backupCodeField}>
                 <div className={styles.backupCodeDescription}>
                   <DynamicT forKey="mfa.backup_code_setup_hint" />
@@ -237,7 +310,7 @@ function MfaForm({ data, onMfaUpdated }: Props) {
               />
             </FormField>
           )}
-          {!formValues.isMandatory && showOrganizationMfaPolicyConfig && (
+          {!formValues.isMandatory && (
             <FormField title="mfa.set_up_organization_required_mfa_prompt" headlineSpacing="large">
               <Controller
                 control={control}
@@ -262,3 +335,4 @@ function MfaForm({ data, onMfaUpdated }: Props) {
 }
 
 export default MfaForm;
+/* eslint-enable max-lines */

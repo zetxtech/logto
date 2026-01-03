@@ -139,7 +139,7 @@ export const sieFormDataParser = {
     };
   },
   toSignInExperience: (formData: SignInExperienceForm): SignInExperiencePageManagedData => {
-    const { branding, createAccountEnabled, signUp, customCss } = formData;
+    const { branding, createAccountEnabled, signUp, customCss, forgotPasswordMethods } = formData;
 
     return {
       ...formData,

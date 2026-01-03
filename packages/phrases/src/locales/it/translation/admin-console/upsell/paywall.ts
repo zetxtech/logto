@@ -18,7 +18,9 @@ const paywall = {
   scopes_per_resource_other:
     'Hai raggiunto il limite di {{count, number}} autorizzazioni per risorsa API di <planName/>. Aggiorna ora per espanderlo. <a>Contattaci</a> per qualsiasi assistenza.',
   custom_domain:
-    'Sblocca la funzionalità del dominio personalizzato passando al piano <strong>Hobby</strong> o <strong>Pro</strong>. Non esitare a <a>contattarci</a> se hai bisogno di assistenza.',
+    'Limite di {{count, number}} dominio personalizzato di <planName/> raggiunto. Passa a un piano a pagamento per aggiungere più domini personalizzati e vantaggi premium. Non esitare a <a>contattarci</a> se hai domande.',
+  custom_domain_others:
+    'Limite di {{count, number}} domini personalizzati di <planName/> raggiunto. Passa a un piano a pagamento per aggiungere più domini personalizzati e vantaggi premium. Non esitare a <a>contattarci</a> se hai domande.',
   social_connectors:
     'Hai raggiunto il limite di {{count, number}} connettori sociali di <planName/>. Passa al piano per ottenere connettori sociali aggiuntivi e la possibilità di creare i tuoi connettori utilizzando i protocolli OIDC, OAuth 2.0 e SAML. Non esitare a <a>contattarci</a> se hai bisogno di assistenza.',
   social_connectors_other:
@@ -34,13 +36,7 @@ const paywall = {
   standard_connectors_pro_other:
     'Hai raggiunto il limite di {{count, number}} connettori standard di <planName/>. Passa al piano Enterprise per ottenere connettori sociali aggiuntivi e la possibilità di creare i tuoi connettori utilizzando i protocolli OIDC, OAuth 2.0 e SAML. Non esitare a <a>contattarci</a> se hai bisogno di assistenza.',
   roles:
-    'Hai raggiunto il limite di {{count, number}} ruoli di <planName/>. Aggiorna il piano per aggiungere ruoli e autorizzazioni aggiuntive. Non esitare a <a>contattarci</a> se hai bisogno di assistenza.',
-  roles_other:
-    'Hai raggiunto il limite di {{count, number}} ruoli di <planName/>. Aggiorna il piano per aggiungere ruoli e autorizzazioni aggiuntive. Non esitare a <a>contattarci</a> se hai bisogno di assistenza.',
-  machine_to_machine_roles:
-    '{{count, number}} ruolo machine-to-machine di <planName/> raggiunto. Aggiorna il piano per aggiungere ruoli e autorizzazioni aggiuntive. Non esitare a <a>contattarci</a> se hai bisogno di assistenza.',
-  machine_to_machine_roles_other:
-    '{{count, number}} ruoli machine-to-machine di <planName/> raggiunti. Aggiorna il piano per aggiungere ruoli e autorizzazioni aggiuntive. Non esitare a <a>contattarci</a> se hai bisogno di assistenza.',
+    'Aggiorna il piano per aggiungere ruoli e autorizzazioni aggiuntive. Non esitare a <a>contattarci</a> se hai bisogno di assistenza.',
   scopes_per_role:
     'Hai raggiunto il limite di {{count, number}} autorizzazioni per ruolo di <planName/>. Aggiorna il piano per aggiungere ruoli e autorizzazioni aggiuntive. Non esitare a <a>contattarci</a> se hai bisogno di assistenza.',
   scopes_per_role_other:
@@ -50,6 +46,8 @@ const paywall = {
   logto_pricing_button_text: 'Prezzi del Logto Cloud',
   saml_applications:
     "L'app SAML aggiuntiva è disponibile con il piano Logto Enterprise. Contattaci se hai bisogno di assistenza.",
+  saml_applications_add_on:
+    "Sblocca la funzionalità dell'app SAML passando a un piano a pagamento. Per qualsiasi assistenza, non esitare a <a>contattarci</a>.",
   hooks:
     'Hai raggiunto il limite di {{count, number}} webhook di <planName/>. Aggiorna il piano per creare altri webhook. Non esitare a <a>contattarci</a> se hai bisogno di assistenza.',
   hooks_other:
@@ -70,10 +68,14 @@ const paywall = {
     description:
       'Aggiorna a un piano a pagamento per la funzionalità JWT personalizzata e benefici premium. Non esitare a <a>contattarci</a> se hai domande.',
   },
+  branding_customization:
+    'Sblocca il controllo completo del branding con le funzionalità "Nascondi il branding Logto" e "Porta la tua UI" aggiornando il tuo piano.',
   bring_your_ui:
     'Aggiorna a un piano a pagamento per portare la tua funzionalità di interfaccia utente personalizzata e beneficiare dei vantaggi premium.',
   security_features:
     'Sblocca funzionalità di sicurezza avanzate passando al piano Pro. Non esitare a <a>contattarci</a> se hai domande.',
+  collect_user_profile:
+    'Aggiorna a un piano a pagamento per raccogliere informazioni aggiuntive del profilo utente durante la registrazione. Non esitare a <a>contattarci</a> se hai domande.',
 };
 
 export default Object.freeze(paywall);

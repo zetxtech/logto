@@ -13,6 +13,11 @@ const tenants = {
     description: '設置租戶名稱並查看您的數據托管區域和租戶類型。',
     tenant_id: '租戶ID',
     tenant_name: '租戶名稱',
+    /** UNTRANSLATED */
+    tenant_instance: 'Select your instance',
+    /** UNTRANSLATED */
+    tenant_instance_description:
+      'Select where your tenant will be hosted. Choose Logto Cloud for public shared infrastructure, or a private instance for dedicated resources.',
     tenant_region: '數據托管區域',
     tenant_region_description: '您的租戶資源（用戶、應用等）所在的實際位置。這無法在創建後更改。',
     tenant_region_tip: '您的租戶資源托管在{{region}}。 <a>了解更多</a>',
@@ -45,6 +50,7 @@ const tenants = {
     subtitle: '創建一個擁有獨立資源和用戶的新租戶。',
     tenant_usage_purpose: '你希望使用此租戶做什麼？',
     development_description: '僅供測試使用，不應在生產中使用。無需訂閱。',
+    development_description_for_private_regions: '僅供測試使用，不應在生產中使用。',
     development_hint: '它具有所有專業功能，但存在限制，例如登錄橫幅。',
     production_description: '用於最終用戶使用並可能需要付費訂閱。',
     available_plan: '可用方案：',

@@ -17,10 +17,9 @@ const description = {
   passcode_sent: 'تم إعادة إرسال رمز التحقق',
   resend_after_seconds: 'لم تستلمه بعد؟ إعادة إرسال بعد <span>{{seconds}}</span> ثانية',
   resend_passcode: 'لم تستلمه بعد؟ <a>إعادة إرسال رمز التحقق</a>',
-  create_account_id_exists: 'الحساب بنوع {{type}} {{value}} موجود بالفعل، هل ترغب في تسجيل الدخول؟',
+  create_account_id_exists: 'الحساب {{value}} موجود بالفعل. تابع لتسجيل الدخول.',
   link_account_id_exists: 'الحساب بنوع {{type}} {{value}} موجود بالفعل. هل ترغب في ربطه؟',
-  sign_in_id_does_not_exist:
-    'الحساب بنوع {{type}} {{value}} غير موجود، هل ترغب في إنشاء حساب جديد؟',
+  sign_in_id_does_not_exist: 'لم يتم العثور على حساب لـ {{value}}. إنشاء حساب جديد؟',
   sign_in_id_does_not_exist_alert: 'الحساب بنوع {{type}} {{value}} غير موجود.',
   create_account_id_exists_alert:
     'الحساب بنوع {{type}} {{value}} مرتبط بحساب آخر. يرجى المحاولة باستخدام {{type}} آخر.',
@@ -106,6 +105,7 @@ const description = {
   switch_account_title: 'أنت حاليًا مسجل الدخول كـ {{account}}',
   switch_account_description:
     'للمتابعة، سيتم تسجيل الخروج من الحساب الحالي، والتبديل تلقائيًا إلى الحساب الجديد.',
+  about_yourself: 'أخبرنا عن نفسك',
 };
 
 export default Object.freeze(description);

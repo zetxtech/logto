@@ -6,6 +6,7 @@ import { conditional, trySafe } from '@silverhand/essentials';
 import Client, { ResponseError } from '@withtyped/client';
 import { useContext, useMemo } from 'react';
 import { toast } from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
 import { cloudApi } from '@/consts';
@@ -41,6 +42,7 @@ type UseCloudApiProps = {
 export const useCloudApi = ({ hideErrorToast = false }: UseCloudApiProps = {}): Client<
   typeof router
 > => {
+  const { i18n } = useTranslation();
   const { isAuthenticated, getAccessToken } = useLogto();
   const api = useMemo(
     () =>
@@ -48,14 +50,17 @@ export const useCloudApi = ({ hideErrorToast = false }: UseCloudApiProps = {}): 
         baseUrl: window.location.origin,
         headers: async () => {
           if (isAuthenticated) {
-            return { Authorization: `Bearer ${(await getAccessToken(cloudApi.indicator)) ?? ''}` };
+            return {
+              Authorization: `Bearer ${(await getAccessToken(cloudApi.indicator)) ?? ''}`,
+              'Accept-Language': i18n.language,
+            };
           }
         },
         before: {
           ...conditional(!hideErrorToast && { error: toastResponseError }),
         },
       }),
-    [getAccessToken, hideErrorToast, isAuthenticated]
+    [getAccessToken, hideErrorToast, i18n.language, isAuthenticated]
   );
 
   return api;
@@ -64,6 +69,7 @@ export const useCloudApi = ({ hideErrorToast = false }: UseCloudApiProps = {}): 
 type CreateTenantOptions = UseCloudApiProps &
   Pick<ReturnType<typeof useLogto>, 'isAuthenticated' | 'getOrganizationToken'> & {
     tenantId: string;
+    language: string;
   };
 
 export const createTenantApi = ({
@@ -71,7 +77,8 @@ export const createTenantApi = ({
   isAuthenticated,
   getOrganizationToken,
   tenantId,
-}: CreateTenantOptions) =>
+  language,
+}: CreateTenantOptions): Client<typeof tenantAuthRouter> =>
   new Client<typeof tenantAuthRouter>({
     baseUrl: window.location.origin,
     headers: async () => {
@@ -80,6 +87,7 @@ export const createTenantApi = ({
           Authorization: `Bearer ${
             (await getOrganizationToken(getTenantOrganizationId(tenantId))) ?? ''
           }`,
+          'Accept-Language': language,
         };
       }
     },
@@ -94,6 +102,7 @@ export const createTenantApi = ({
 export const useAuthedCloudApi = ({ hideErrorToast = false }: UseCloudApiProps = {}): Client<
   typeof tenantAuthRouter
 > => {
+  const { i18n } = useTranslation();
   const { currentTenantId } = useContext(TenantsContext);
   const { isAuthenticated, getOrganizationToken } = useLogto();
   const api = useMemo(
@@ -103,8 +112,9 @@ export const useAuthedCloudApi = ({ hideErrorToast = false }: UseCloudApiProps =
         isAuthenticated,
         getOrganizationToken,
         tenantId: currentTenantId,
+        language: i18n.language,
       }),
-    [currentTenantId, getOrganizationToken, hideErrorToast, isAuthenticated]
+    [currentTenantId, getOrganizationToken, hideErrorToast, isAuthenticated, i18n.language]
   );
 
   return api;

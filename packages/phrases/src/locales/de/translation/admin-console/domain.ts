@@ -9,14 +9,16 @@ const domain = {
   error_hint:
     'Stellen Sie sicher, dass Sie Ihre DNS-Einträge aktualisiert haben. Wir werden alle {{value}} Sekunden weiter überprüfen.',
   custom: {
-    custom_domain: 'Benutzerdefinierte Domain',
+    custom_domain: 'Benutzerdefinierte Domains',
     custom_domain_description:
       'Verbessern Sie Ihre Markenbildung durch die Verwendung einer benutzerdefinierten Domain. Diese Domain wird in Ihrem Anmeldeerlebnis verwendet.',
-    custom_domain_field: 'Benutzerdefinierte Domain',
-    custom_domain_placeholder: 'ihre.domain.com',
+    custom_domain_field: 'Benutzerdefinierte Domains',
+    custom_domain_placeholder: 'auth.domain.com',
+    add_custom_domain_field: 'Benutzerdefinierte Domain hinzufügen',
+    custom_domains_field: 'Benutzerdefinierte Domains',
     add_domain: 'Domain hinzufügen',
     invalid_domain_format:
-      'Bitte geben Sie eine gültige Domain-URL mit mindestens drei Teilen an, z. B. "ihre.domain.com."',
+      'Bitte geben Sie eine gültige Domain-URL mit mindestens drei Teilen an, z. B. "auth.domain.com."',
     verify_domain: 'Domain überprüfen',
     enable_ssl: 'SSL aktivieren',
     checking_dns_tip:
@@ -40,6 +42,8 @@ const domain = {
         'Wenn Sie diese benutzerdefinierte Domain bereits in Ihrem Social-Connector-Provider oder Anwendungs-Endpunkt eingerichtet haben, müssen Sie die URI zur Logto-Standarddomain "<span>{{domain}}</span>" ändern. Dies ist notwendig, damit die Social-Sign-In-Schaltfläche ordnungsgemäß funktioniert.',
       deleted: 'Benutzerdefinierte Domain wurde erfolgreich gelöscht!',
     },
+    config_custom_domain_description:
+      'Konfigurieren Sie benutzerdefinierte Domains, um folgende Funktionen einzurichten: Anwendungen, Social‑Connectoren und Enterprise‑Connectoren.',
   },
   default: {
     default_domain: 'Standarddomain',
@@ -53,6 +57,12 @@ const domain = {
     'Sie können den Domainnamen dieser URI anpassen, um mit dem Endpunkt Ihrer Anwendung übereinzustimmen. Wählen Sie entweder "{{custom}}" oder "{{default}}".',
   custom_acs_url_note:
     'Sie können den Domainnamen dieser URI anpassen, um mit der URL Ihres Identitätsanbieters Assertions-Verbraucherdienst übereinzustimmen. Wählen Sie entweder "{{custom}}" oder "{{default}}".',
+  switch_custom_domain_tip:
+    'Wechseln Sie die Domain, um den entsprechenden Endpunkt anzuzeigen. Fügen Sie über <a>benutzerdefinierte Domains</a> weitere Domains hinzu.',
+  switch_saml_app_domain_tip:
+    'Wechseln Sie die Domain, um die entsprechenden URLs anzuzeigen. Bei SAML‑Protokollen können Metadaten‑URLs auf jeder erreichbaren Domain gehostet werden. Die ausgewählte Domain bestimmt jedoch die SSO-Service-URL, über die SPs Endbenutzer zur Authentifizierung umleiten – dies beeinflusst das Anmeldeerlebnis und die Sichtbarkeit der URL.',
+  switch_saml_connector_domain_tip:
+    'Wechseln Sie die Domain, um die entsprechenden URLs anzuzeigen. Die ausgewählte Domain bestimmt Ihre ACS-URL und damit wohin Nutzer nach dem SSO-Login weitergeleitet werden. Wählen Sie die Domain, die dem erwarteten Weiterleitungsverhalten Ihrer Anwendung entspricht.',
 };
 
 export default Object.freeze(domain);

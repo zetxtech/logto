@@ -1,13 +1,14 @@
 import { type ResponseError } from '@withtyped/client';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import useSWR from 'swr';
 
 import { useCloudApi } from '@/cloud/hooks/use-cloud-api';
-import { type TenantUsageAddOnSkus, type NewSubscriptionPeriodicUsage } from '@/cloud/types/router';
+import { type TenantUsageAddOnSkus, type SubscriptionPeriodicUsage } from '@/cloud/types/router';
 import PageMeta from '@/components/PageMeta';
 import { isCloud } from '@/consts/env';
 import { SubscriptionDataContext } from '@/contexts/SubscriptionDataProvider';
 import { TenantsContext } from '@/contexts/TenantsProvider';
+import useAvailableRegions from '@/hooks/use-available-regions';
 import { pickupFeaturedLogtoSkus } from '@/utils/subscription';
 
 import Skeleton from '../components/Skeleton';
@@ -21,12 +22,15 @@ function Subscription() {
   const cloudApi = useCloudApi();
   const { logtoSkus, currentSku, onCurrentSubscriptionUpdated } =
     useContext(SubscriptionDataContext);
-  const { currentTenantId, updateTenant } = useContext(TenantsContext);
+
+  const { currentTenant, currentTenantId, updateTenant } = useContext(TenantsContext);
+
+  const regions = useAvailableRegions();
 
   const reservedSkus = pickupFeaturedLogtoSkus(logtoSkus);
 
   const { data: periodicUsage, error: periodicUsageError } = useSWR<
-    NewSubscriptionPeriodicUsage,
+    SubscriptionPeriodicUsage,
     ResponseError
   >(isCloud && `/api/tenants/${currentTenantId}/subscription/periodic-usage`, async () =>
     cloudApi.get(`/api/tenants/:tenantId/subscription/periodic-usage`, {
@@ -43,6 +47,15 @@ function Subscription() {
     })
   );
 
+  const isPrivateRegionTenant = useMemo(() => {
+    if (!currentTenant) {
+      return false;
+    }
+
+    const region = regions.getRegionByName(currentTenant.regionName);
+    return region ? region.isPrivate : false;
+  }, [currentTenant, regions]);
+
   const isLoading =
     (!periodicUsage && !periodicUsageError) || (!usageAddOnSkus && !usageAddOnSkusError);
 
@@ -58,6 +71,8 @@ function Subscription() {
         usage: {
           activeUsers: periodicUsage.mauLimit,
           tokenUsage: periodicUsage.tokenLimit,
+          userTokenUsage: periodicUsage.userTokenLimit,
+          m2mTokenUsage: periodicUsage.m2mTokenLimit,
         },
       });
     }
@@ -71,19 +86,24 @@ function Subscription() {
     <div className={styles.container}>
       <PageMeta titleKey={['tenants.tabs.subscription', 'tenants.title']} />
       <CurrentPlan periodicUsage={periodicUsage} usageAddOnSkus={usageAddOnSkus} />
-      <ConsoleEmbeddedPricing />
-      <SwitchPlanActionBar
-        currentSkuId={currentSku.id}
-        logtoSkus={reservedSkus}
-        onSubscriptionUpdated={async () => {
-          /**
-           * The upcoming billing info is calculated based on the current subscription usage,
-           * and the usage is based on the current subscription plan,
-           * need to manually trigger the usage update while the subscription plan is changed.
-           */
-          onCurrentSubscriptionUpdated();
-        }}
-      />
+      {/* Hide pricing table for private regions */}
+      {!isPrivateRegionTenant && (
+        <>
+          <ConsoleEmbeddedPricing />
+          <SwitchPlanActionBar
+            currentSkuId={currentSku.id}
+            logtoSkus={reservedSkus}
+            onSubscriptionUpdated={async () => {
+              /**
+               * The upcoming billing info is calculated based on the current subscription usage,
+               * and the usage is based on the current subscription plan,
+               * need to manually trigger the usage update while the subscription plan is changed.
+               */
+              onCurrentSubscriptionUpdated();
+            }}
+          />
+        </>
+      )}
     </div>
   );
 }

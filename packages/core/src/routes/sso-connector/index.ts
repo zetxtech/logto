@@ -1,5 +1,7 @@
 import {
+  ProductEvent,
   SsoConnectors,
+  SsoProviderType,
   ssoConnectorProvidersResponseGuard,
   ssoConnectorWithProviderConfigGuard,
 } from '@logto/schemas';
@@ -7,6 +9,7 @@ import { generateStandardShortId } from '@logto/shared';
 import { assert, conditional } from '@silverhand/essentials';
 import { z } from 'zod';
 
+import { EnvSet } from '#src/env-set/index.js';
 import RequestError from '#src/errors/RequestError/index.js';
 import koaGuard from '#src/middleware/koa-guard.js';
 import koaPagination from '#src/middleware/koa-pagination.js';
@@ -17,7 +20,7 @@ import { isSupportedSsoConnector, isSupportedSsoProvider } from '#src/sso/utils.
 import { tableToPathname } from '#src/utils/SchemaRouter.js';
 import assertThat from '#src/utils/assert-that.js';
 
-import { EnvSet } from '../../env-set/index.js';
+import { captureEvent } from '../../utils/posthog.js';
 import { type ManagementApiRouter, type RouterInitArgs } from '../types.js';
 
 import ssoConnectorIdpInitiatedAuthConfigRoutes from './idp-initiated-auth-config.js';
@@ -36,7 +39,7 @@ export default function singleSignOnConnectorsRoutes<T extends ManagementApiRout
     router,
     {
       id: tenantId,
-      queries: { ssoConnectors },
+      queries: { ssoConnectors, secrets },
       libraries: {
         quota,
         ssoConnectors: { getSsoConnectorById, getSsoConnectors },
@@ -80,11 +83,10 @@ export default function singleSignOnConnectorsRoutes<T extends ManagementApiRout
     koaReportSubscriptionUpdates({
       quota,
       key: 'enterpriseSsoLimit',
-      methods: ['POST'],
     }),
     async (ctx, next) => {
       const { body } = ctx.guard;
-      const { providerName, connectorName, config, domains, ...rest } = body;
+      const { providerName, connectorName, config, domains: rawDomains, ...rest } = body;
 
       // Return 422 if the connector provider is not supported
       if (!isSupportedSsoProvider(providerName)) {
@@ -94,6 +96,9 @@ export default function singleSignOnConnectorsRoutes<T extends ManagementApiRout
           status: 422,
         });
       }
+
+      // Normalize domains to lowercase for consistency
+      const domains = rawDomains?.map((domain) => domain.toLowerCase());
 
       // Validate the connector domains if it's provided
       if (domains) {
@@ -123,6 +128,23 @@ export default function singleSignOnConnectorsRoutes<T extends ManagementApiRout
         );
       }
 
+      if (rest.enableTokenStorage) {
+        assertThat(
+          EnvSet.values.secretVaultKek,
+          new RequestError({
+            code: 'request.feature_not_supported',
+            status: 422,
+          })
+        );
+
+        // Only OIDC connector supports token storage currently.
+        const { providerType } = ssoConnectorFactories[providerName];
+        assertThat(
+          providerType === SsoProviderType.OIDC,
+          new RequestError('connector.token_storage_not_supported')
+        );
+      }
+
       const connector = await ssoConnectors.insert({
         id: connectorId,
         providerName,
@@ -134,6 +156,9 @@ export default function singleSignOnConnectorsRoutes<T extends ManagementApiRout
 
       ctx.body = connector;
 
+      captureEvent({ tenantId, request: ctx.req }, ProductEvent.SsoConnectorCreated, {
+        providerName,
+      });
       return next();
     }
   );
@@ -210,13 +235,17 @@ export default function singleSignOnConnectorsRoutes<T extends ManagementApiRout
     koaReportSubscriptionUpdates({
       quota,
       key: 'enterpriseSsoLimit',
-      methods: ['DELETE'],
     }),
     async (ctx, next) => {
       const { id } = ctx.guard.params;
+      const { providerName } = await getSsoConnectorById(id);
 
       await ssoConnectors.deleteById(id);
+
       ctx.status = 204;
+      captureEvent({ tenantId, request: ctx.req }, ProductEvent.SsoConnectorDeleted, {
+        providerName,
+      });
       return next();
     }
   );
@@ -230,6 +259,7 @@ export default function singleSignOnConnectorsRoutes<T extends ManagementApiRout
       response: ssoConnectorWithProviderConfigGuard,
       status: [200, 400, 404, 409, 422],
     }),
+    // eslint-disable-next-line complexity
     async (ctx, next) => {
       const {
         guard: {
@@ -241,7 +271,11 @@ export default function singleSignOnConnectorsRoutes<T extends ManagementApiRout
 
       const originalConnector = await getSsoConnectorById(id);
       const { providerName } = originalConnector;
-      const { config, domains, ...rest } = body;
+      const { config, domains: rawDomains, ...rest } = body;
+      const { providerType } = ssoConnectorFactories[providerName];
+
+      // Normalize domains to lowercase for consistency
+      const domains = rawDomains?.map((domain) => domain.toLowerCase());
 
       // Validate the connector domains if it's provided
       if (domains) {
@@ -274,8 +308,29 @@ export default function singleSignOnConnectorsRoutes<T extends ManagementApiRout
         );
       }
 
+      if (rest.enableTokenStorage) {
+        assertThat(
+          EnvSet.values.secretVaultKek,
+          new RequestError({
+            code: 'request.feature_not_supported',
+            status: 422,
+          })
+        );
+
+        // Only OIDC connector supports token storage currently.
+        assertThat(
+          providerType === SsoProviderType.OIDC,
+          new RequestError('connector.token_storage_not_supported')
+        );
+      }
+
+      // Delete the token secret if the token storage is disabled
+      if (rest.enableTokenStorage === false && providerType === SsoProviderType.OIDC) {
+        await secrets.deleteTokenSetSecretsByEnterpriseSsoConnectorId(id);
+      }
+
       // Check if there's any valid update
-      const hasValidUpdate = parsedConfig ?? Object.keys(rest).length > 0;
+      const hasValidUpdate = parsedConfig ?? domains ?? Object.keys(rest).length > 0;
 
       // Patch update the connector only if there's any valid update
       const connector = hasValidUpdate

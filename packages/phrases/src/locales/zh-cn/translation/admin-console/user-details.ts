@@ -124,6 +124,19 @@ const user_details = {
       edited: '令牌 {{name}} 已成功编辑。',
     },
   },
+  connections: {
+    title: '连接',
+    description: '用户关联第三方账户用于社交登录、企业单点登录或资源访问。',
+    token_status_column: '令牌状态',
+    token_status: {
+      active: '活跃',
+      expired: '已过期',
+      inactive: '未激活',
+      not_applicable: '不适用',
+      available: '可用',
+      not_available: '不可用',
+    },
+  },
 };
 
 export default Object.freeze(user_details);

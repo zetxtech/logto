@@ -7,9 +7,9 @@ import type { LinkProps } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
 import { useIframeModal } from '@/Providers/IframeModalProvider';
+import { usePreserveSearchParams } from '@/hooks/use-navigate-with-preserved-search-params';
 import usePlatform from '@/hooks/use-platform';
-
-import DynamicT from '../DynamicT';
+import DynamicT from '@/shared/components/DynamicT';
 
 import styles from './index.module.scss';
 
@@ -23,6 +23,7 @@ export type Props = AnchorHTMLAttributes<HTMLAnchorElement> & {
 
 const TextLink = ({ className, children, text, icon, type = 'primary', to, ...rest }: Props) => {
   const { t } = useTranslation();
+  const { getTo } = usePreserveSearchParams();
   const { isMobile } = usePlatform();
   const { setModalState } = useIframeModal();
 
@@ -54,7 +55,7 @@ const TextLink = ({ className, children, text, icon, type = 'primary', to, ...re
 
   if (to) {
     return (
-      <Link className={classNames(styles.link, styles[type], className)} to={to} {...rest}>
+      <Link className={classNames(styles.link, styles[type], className)} to={getTo(to)} {...rest}>
         {icon}
         {children ?? <DynamicT forKey={text} />}
       </Link>

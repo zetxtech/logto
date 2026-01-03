@@ -46,6 +46,10 @@ const user = {
     'Endereço de email é um identificador obrigatório, não podes defini-lo como nulo.',
   phone_required:
     'Número de telefone é um identificador obrigatório, não podes defini-lo como nulo.',
+  enterprise_sso_identity_not_exists:
+    'O utilizador não tem uma identidade empresarial ligada ao ID do conector SSO especificado: {{ ssoConnectorId }}.',
+  identity_not_exists_in_current_user:
+    'A identidade especificada não existe na conta do utilizador atual. Por favor, vincule a identidade antes de prosseguir.',
 };
 
 export default Object.freeze(user);

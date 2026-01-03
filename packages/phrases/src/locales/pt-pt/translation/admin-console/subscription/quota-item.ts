@@ -171,6 +171,12 @@ const quota_item = {
     unlimited: 'Traga a sua interface gráfica',
     not_eligible: 'Remova os teus ativos de UI personalizados',
   },
+  collect_user_profile_enabled: {
+    name: 'Recolher perfil do utilizador',
+    limited: 'Recolher perfil do utilizador',
+    unlimited: 'Recolher perfil do utilizador',
+    not_eligible: 'Remove os teus campos de recolha de perfil do utilizador',
+  },
   idp_initiated_sso_enabled: {
     name: 'SSO iniciado por IDP',
     limited: 'SSO iniciado por IDP',
@@ -195,6 +201,13 @@ const quota_item = {
     limited: 'Segurança avançada',
     unlimited: 'Segurança avançada',
     not_eligible: 'Remove as tuas definições de segurança avançada',
+  },
+  custom_domains_limit: {
+    name: 'Domínios personalizados',
+    limited: '{{count, number}} domínio personalizado',
+    limited_other: '{{count, number}} domínios personalizados',
+    unlimited: 'Domínios personalizados ilimitados',
+    not_eligible: 'Remover os teus domínios personalizados',
   },
 };
 

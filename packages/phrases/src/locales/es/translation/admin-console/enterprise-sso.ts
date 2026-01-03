@@ -36,6 +36,10 @@ const enterprise_sso = {
     },
     oidc: {
       redirect_uri_field_name: 'URI de redireccionamiento (URL de devolución de llamada)',
+      redirect_uri_field_description:
+        'La URI de redirección es donde se redirige a los usuarios tras la autenticación SSO. Añade esta URI a la configuración de tu IdP.',
+      redirect_uri_field_custom_domain_description:
+        'Si usas varios <a>dominios personalizados</a> en Logto, asegúrate de añadir todas las URI de callback correspondientes a tu IdP para que el SSO funcione en cada dominio.\n\nEl dominio predeterminado de Logto (*.logto.app) siempre es válido; inclúyelo solo si también deseas admitir SSO bajo ese dominio.',
     },
   },
   attribute_mapping: {
@@ -71,6 +75,7 @@ const enterprise_sso = {
       client_secret_field_name: 'Secreto de cliente',
       issuer_field_name: 'Emisor',
       scope_field_name: 'Ámbito',
+      scope_field_placeholder: 'Ingrese los ámbitos (separados por un espacio)',
     },
   },
 };

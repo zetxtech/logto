@@ -75,6 +75,8 @@ const general = {
   or: 'Lub',
   reset: 'Resetuj',
   generate: 'Generuj',
+  manage: 'Zarządzaj',
+  live_preview: 'Podgląd na żywo',
 };
 
 export default Object.freeze(general);

@@ -137,6 +137,20 @@ const user_details = {
       edited: 'Le jeton {{name}} a été modifié avec succès.',
     },
   },
+  connections: {
+    title: 'Connexion',
+    description:
+      "L'utilisateur lie des comptes tiers pour la connexion sociale, l'authentification unique d'entreprise ou l'accès aux ressources.",
+    token_status_column: 'Statut du jeton',
+    token_status: {
+      active: 'Actif',
+      expired: 'Expiré',
+      inactive: 'Inactif',
+      not_applicable: 'Non applicable',
+      available: 'Disponible',
+      not_available: 'Non disponible',
+    },
+  },
 };
 
 export default Object.freeze(user_details);

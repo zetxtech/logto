@@ -34,6 +34,10 @@ export enum TemplateType {
   UserPermissionValidation = 'UserPermissionValidation',
   /** The template for binding a new identifier to an existing account. */
   BindNewIdentifier = 'BindNewIdentifier',
+  /** The template for sending MFA verification code. */
+  MfaVerification = 'MfaVerification',
+  /** The template for binding MFA verification. */
+  BindMfa = 'BindMfa',
 }
 
 export const templateTypeGuard = z.nativeEnum(TemplateType);
@@ -62,6 +66,19 @@ export type SendMessagePayload = {
    * @example 'en-US'
    */
   locale?: string;
+  /**
+   * The `ui_locales` parameter from the authentication request, which can be used to localize the message.
+   * This is different from `locale` as it is the original request parameter and may contain multiple language
+   * tags sorted by user's preference.
+   * The `locale` field, is the single language tag resolved from multiple sources, and the precedence is:
+   * `ui_locales` > HTTP `Accept-Language` header > default fallback (en).
+   *
+   * @remarks
+   * For email connectors that handle email templates at the provider side, use this field to indicate the user's preferred language.
+   *
+   * @example 'en-US en'
+   */
+  uiLocales?: string;
 } & Record<string, unknown>;
 
 /** The guard for {@link SendMessagePayload}. */
@@ -70,6 +87,7 @@ export const sendMessagePayloadGuard = z
     code: z.string().optional(),
     link: z.string().optional(),
     locale: z.string().optional(),
+    uiLocales: z.string().optional(),
   })
   .catchall(z.unknown()) satisfies z.ZodType<SendMessagePayload>;
 
@@ -94,12 +112,19 @@ export type SendMessageData = {
   to: string;
   type: TemplateType;
   payload: SendMessagePayload;
+  /**
+   * The client IP address of the user who triggered the message.
+   * This can be used by connectors for rate limiting, fraud detection, or logging purposes.
+   * @example '192.168.1.1'
+   */
+  ip?: string;
 };
 
 export const sendMessageDataGuard = z.object({
   to: z.string(),
   type: templateTypeGuard,
   payload: sendMessagePayloadGuard,
+  ip: z.string().optional(),
 }) satisfies z.ZodType<SendMessageData>;
 
 export type SendMessageFunction = (data: SendMessageData, config?: unknown) => Promise<unknown>;

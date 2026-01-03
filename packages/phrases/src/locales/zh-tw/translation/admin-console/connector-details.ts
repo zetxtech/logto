@@ -3,8 +3,9 @@ const connector_details = {
   back_to_connectors: '返回連結器',
   check_readme: '檢視 README',
   settings: '通用設定',
-  settings_description:
-    '連結器在 Logto 中扮演著至關重要的角色。借助它們的幫助，Logto 使終端用戶能夠使用無密碼註冊或登錄的功能以及使用社交帳戶登錄的功能。',
+  settings_description: '整合第三方提供者以快速進行社交登入和社交帳戶連結',
+  setting_description_with_token_storage_supported:
+    '整合第三方提供者以快速進行社交登入、社交帳戶連結和 API 存取。',
   email_connector_settings_description:
     '與你的電子郵件傳遞服務提供者整合，以啟用終端用戶的無密碼電子郵件註冊和登錄。',
   parameter_configuration: '參數配置',
@@ -62,6 +63,10 @@ const connector_details = {
     auto_select: '自動選擇憑證（如果可能）',
     close_on_tap_outside: '在用戶點擊/點擊外面時取消提示',
     itp_support: '啟用 <a>ITP 瀏覽器上的升級一鍵登入用戶體驗</a>',
+  },
+  sign_in_experience: {
+    in_use: '已啟用登錄',
+    not_in_use: '已停用登錄',
   },
 };
 

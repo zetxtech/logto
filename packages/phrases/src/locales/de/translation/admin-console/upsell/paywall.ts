@@ -18,7 +18,9 @@ const paywall = {
   scopes_per_resource_other:
     'Sie haben das Limit von {{count, number}} Berechtigungen pro API-Ressource von <planName/> erreicht. Upgraden Sie jetzt, um zu erweitern. <a>Kontaktieren Sie uns</a>, wenn Sie Hilfe benötigen.',
   custom_domain:
-    'Freischalten Sie die Funktion für benutzerdefinierte Domains, indem Sie auf den <strong>Hobby</strong>- oder <strong>Pro</strong>-Plan upgraden. Zögern Sie nicht, uns zu <a>kontaktieren</a>, wenn Sie Unterstützung benötigen.',
+    'Limit von {{count, number}} benutzerdefinierter Domain für <planName/> erreicht. Upgraden Sie auf einen kostenpflichtigen Plan, um mehrere benutzerdefinierte Domains und Premium-Vorteile hinzuzufügen. Zögern Sie nicht, <a>uns zu kontaktieren</a>, wenn Sie Fragen haben.',
+  custom_domain_others:
+    'Limit von {{count, number}} benutzerdefinierten Domains für <planName/> erreicht. Upgraden Sie auf einen kostenpflichtigen Plan, um mehrere benutzerdefinierte Domains und Premium-Vorteile hinzuzufügen. Zögern Sie nicht, <a>uns zu kontaktieren</a>, wenn Sie Fragen haben.',
   social_connectors:
     'Sie haben das Limit von {{count, number}} <planName/>-Sozialconnectoren erreicht. Upgraden Sie Ihren Plan, um zusätzliche Sozialconnectoren und die Möglichkeit zur Erstellung eigener Connectoren mit OIDC, OAuth 2.0 und SAML-Protokollen zu erhalten. Zögern Sie nicht, <a>Kontaktieren Sie uns</a>, wenn Sie Hilfe benötigen.',
   social_connectors_other:
@@ -34,13 +36,7 @@ const paywall = {
   standard_connectors_pro_other:
     'Sie haben das Limit von {{count, number}} <planName/>-Standardconnectoren erreicht. Upgraden Sie auf den Enterprise-Plan, um zusätzliche Sozialconnectoren und die Möglichkeit zur Erstellung eigener Connectoren mit OIDC, OAuth 2.0 und SAML-Protokollen zu erhalten. Zögern Sie nicht, <a>Kontaktieren Sie uns</a>, wenn Sie Hilfe benötigen.',
   roles:
-    'Sie haben das Limit von {{count, number}} <planName/>-Rollen erreicht. Upgraden Sie Ihren Plan, um zusätzliche Rollen und Berechtigungen hinzuzufügen. Zögern Sie nicht, <a>Kontaktieren Sie uns</a>, wenn Sie Hilfe benötigen.',
-  roles_other:
-    'Sie haben das Limit von {{count, number}} <planName/>-Rollen erreicht. Upgraden Sie Ihren Plan, um zusätzliche Rollen und Berechtigungen hinzuzufügen. Zögern Sie nicht, <a>Kontaktieren Sie uns</a>, wenn Sie Hilfe benötigen.',
-  machine_to_machine_roles:
-    '{{count, number}} Maschine-zu-Maschine-Rolle des Limits von <planName/> erreicht. Upgraden Sie Ihren Plan, um zusätzliche Rollen und Berechtigungen hinzuzufügen. Fühlen Sie sich frei, uns zu <a>kontaktieren</a>, wenn Sie Unterstützung benötigen.',
-  machine_to_machine_roles_other:
-    '{{count, number}} Maschine-zu-Maschine-Rollen des Limits von <planName/> erreicht. Upgraden Sie Ihren Plan, um zusätzliche Rollen und Berechtigungen hinzuzufügen. Fühlen Sie sich frei, uns zu <a>kontaktieren</a>, wenn Sie Unterstützung benötigen.',
+    'Upgraden Sie den Plan, um zusätzliche Rollen und Berechtigungen hinzuzufügen. Gerne können Sie sich <a>an uns wenden</a>, wenn Sie Unterstützung benötigen.',
   scopes_per_role:
     'Sie haben das Limit von {{count, number}} Berechtigungen pro Rolle von <planName/> erreicht. Upgraden Sie Ihren Plan, um zusätzliche Rollen und Berechtigungen hinzuzufügen. Bei Fragen stehen wir Ihnen gerne zur Verfügung. <a>Kontaktieren Sie uns</a>, wenn Sie Hilfe benötigen.',
   scopes_per_role_other:
@@ -50,6 +46,8 @@ const paywall = {
   logto_pricing_button_text: 'Logto Cloud-Preise',
   saml_applications:
     'Die zusätzliche SAML-App ist mit dem Logto-Enterprise-Plan verfügbar. Kontaktieren Sie uns, wenn Sie Hilfe benötigen.',
+  saml_applications_add_on:
+    'Schalten Sie die SAML-App-Funktion frei, indem Sie auf einen kostenpflichtigen Plan upgraden. Gerne können Sie sich <a>an uns wenden</a>, wenn Sie Unterstützung benötigen.',
   hooks:
     'Sie haben das Limit von {{count, number}} <planName/>-Webhooks erreicht. Upgraden Sie Ihren Plan, um mehr Webhooks zu erstellen. Zögern Sie nicht, <a>Kontaktieren Sie uns</a>, wenn Sie Hilfe benötigen.',
   hooks_other:
@@ -70,10 +68,14 @@ const paywall = {
     description:
       'Upgrade auf einen kostenpflichtigen Plan für benutzerdefinierte JWT-Funktionalität und Premium-Vorteile. Wenn Sie Fragen haben, zögern Sie nicht, uns zu <a>kontaktieren</a>.',
   },
+  branding_customization:
+    'Schalten Sie die vollständige Branding-Kontrolle mit den Funktionen "Logto-Branding ausblenden" und "Bringen Sie Ihr UI" frei, indem Sie Ihren Plan upgraden.',
   bring_your_ui:
     'Upgrade auf einen kostenpflichtigen Plan für benutzerdefinierte UI-Funktionalität und Premium-Vorteile.',
   security_features:
     'Schalten Sie erweiterte Sicherheitsfunktionen durch ein Upgrade auf den Pro-Plan frei. Zögern Sie nicht, uns zu <a>kontaktieren</a>, wenn Sie Fragen haben.',
+  collect_user_profile:
+    'Upgraden Sie auf einen kostenpflichtigen Plan, um bei der Anmeldung zusätzliche Benutzerprofilinformationen zu sammeln. Zögern Sie nicht, uns zu <a>kontaktieren</a>, wenn Sie Fragen haben.',
 };
 
 export default Object.freeze(paywall);

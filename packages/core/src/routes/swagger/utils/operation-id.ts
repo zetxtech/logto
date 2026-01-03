@@ -27,14 +27,7 @@ const methodToVerb = Object.freeze({
 
 type RouteDictionary = Record<`${OpenAPIV3.HttpMethods} ${string}`, string>;
 
-const devFeatureCustomRoutes: RouteDictionary = Object.freeze({
-  'get /google-one-tap/config': 'GetGoogleOneTapConfig',
-  'post /google-one-tap/verify': 'VerifyGoogleOneTapToken',
-  'get /custom-profile-fields/:name': 'GetCustomProfileFieldByName',
-  'put /custom-profile-fields/:name': 'UpdateCustomProfileFieldByName',
-  'delete /custom-profile-fields/:name': 'DeleteCustomProfileFieldByName',
-  'post /custom-profile-fields/sie-order': 'UpdateCustomProfileFieldsSieOrder',
-});
+const devFeatureCustomRoutes: RouteDictionary = Object.freeze({});
 
 export const customRoutes: Readonly<RouteDictionary> = Object.freeze({
   // Authn
@@ -77,6 +70,8 @@ export const customRoutes: Readonly<RouteDictionary> = Object.freeze({
   // Users
   'post /users/:userId/roles': 'AssignUserRoles',
   'post /users/:userId/password/verify': 'VerifyUserPassword',
+  'post /users/:userId/personal-access-tokens/delete': 'DeletePersonalAccessTokenByName',
+  'patch /users/:userId/personal-access-tokens': 'UpdatePersonalAccessTokenByName',
   // Dashboard
   'get /dashboard/users/total': 'GetTotalUserCount',
   'get /dashboard/users/new': 'GetNewUserCounts',
@@ -95,6 +90,12 @@ export const customRoutes: Readonly<RouteDictionary> = Object.freeze({
   'post /one-time-tokens/verify': 'VerifyOneTimeToken',
   // Sentinel activities
   'post /sentinel-activities/delete': 'DeleteSentinelActivities',
+  // Collect user profile
+  'get /custom-profile-fields/:name': 'GetCustomProfileFieldByName',
+  'put /custom-profile-fields/:name': 'UpdateCustomProfileFieldByName',
+  'delete /custom-profile-fields/:name': 'DeleteCustomProfileFieldByName',
+  'post /custom-profile-fields/batch': 'CreateCustomProfileFieldsBatch',
+  'post /custom-profile-fields/properties/sie-order': 'UpdateCustomProfileFieldsSieOrder',
   ...(EnvSet.values.isDevFeaturesEnabled ? devFeatureCustomRoutes : {}),
 } satisfies RouteDictionary); // Key assertion doesn't work without `satisfies`
 
@@ -136,7 +137,6 @@ export const throwByDifference = (builtCustomRoutes: Set<string>) => {
 /** Path segments that are treated as namespace prefixes. */
 const namespacePrefixes = Object.freeze(['jit', '.well-known']);
 const exceptionPrefixes = Object.freeze([
-  '/interaction',
   '/experience',
   '/sign-in-exp/default/check-password',
   accountApiPrefix,
@@ -181,7 +181,6 @@ export const buildOperationId = (method: OpenAPIV3.HttpMethods, path: string) =>
     return customOperationId;
   }
 
-  // Skip interactions APIs as they are going to replaced by the new APIs soon.
   // Skip experience APIs, as all the experience APIs' `operationId` will be customized in the custom openapi.json documents.
   if (exceptionPrefixes.some((prefix) => path.startsWith(prefix))) {
     return;

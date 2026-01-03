@@ -106,7 +106,7 @@ function ApplicationDetailsContent({ data, secrets, oidcConfig, onApplicationUpd
       setIsDeleted(true);
       setIsDeleteFormOpen(false);
       toast.success(t('application_details.application_deleted', { name: data.name }));
-      navigate(`/applications`);
+      navigate(`/applications${data.isThirdParty ? '/third-party-applications' : ''}`);
     } finally {
       setIsDeleting(false);
     }
@@ -124,10 +124,11 @@ function ApplicationDetailsContent({ data, secrets, oidcConfig, onApplicationUpd
         icon={<ApplicationIcon type={data.type} isThirdParty={data.isThirdParty} />}
         title={data.name}
         primaryTag={
-          // We have ensured that SAML applications are always third party in DB schema, we use `||` here to make TypeScript happy.
-          // TODO: @darcy fix this when we add SAML apps details page
-          data.isThirdParty || data.type === ApplicationType.SAML
-            ? t(`${applicationTypeI18nKey.thirdParty}.title`)
+          data.isThirdParty
+            ? [
+                t(`${applicationTypeI18nKey.thirdParty}.title`),
+                t(`${applicationTypeI18nKey[data.type]}.title`),
+              ]
             : t(`${applicationTypeI18nKey[data.type]}.title`)
         }
         identifier={{ name: 'App ID', value: data.id }}

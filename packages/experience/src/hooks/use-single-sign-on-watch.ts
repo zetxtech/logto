@@ -5,21 +5,21 @@ import {
   type SsoConnectorMetadata,
 } from '@logto/schemas';
 import { useCallback, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import SingleSignOnFormModeContext from '@/Providers/SingleSignOnFormModeContextProvider/SingleSignOnFormModeContext';
 import UserInteractionContext from '@/Providers/UserInteractionContextProvider/UserInteractionContext';
 import { getSsoConnectors } from '@/apis/experience';
-import type { IdentifierInputValue } from '@/components/InputFields/SmartInputField';
 import useApi from '@/hooks/use-api';
+import useNavigateWithPreservedSearchParams from '@/hooks/use-navigate-with-preserved-search-params';
 import useSingleSignOn from '@/hooks/use-single-sign-on';
+import type { IdentifierInputValue } from '@/shared/components/InputFields/SmartInputField';
 import { validateEmail } from '@/utils/form';
 
 import { useSieMethods } from './use-sie';
 import useTerms from './use-terms';
 
 const useSingleSignOnWatch = (identifierInput?: IdentifierInputValue) => {
-  const navigate = useNavigate();
+  const navigate = useNavigateWithPreservedSearchParams();
 
   const { singleSignOnEnabled } = useSieMethods();
 

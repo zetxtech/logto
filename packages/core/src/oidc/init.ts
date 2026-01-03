@@ -4,12 +4,12 @@ import assert from 'node:assert';
 import { readFileSync } from 'node:fs';
 import querystring from 'node:querystring';
 
+import { logtoGoogleOneTapCookieKey } from '@logto/connector-kit';
 import { userClaims } from '@logto/core-kit';
 import type { I18nKey } from '@logto/phrases';
 import {
   customClientMetadataDefault,
   CustomClientMetadataKey,
-  experience,
   extraParamsObjectGuard,
   inSeconds,
   logtoCookieKey,
@@ -32,6 +32,7 @@ import koaBodyEtag from '#src/middleware/koa-body-etag.js';
 import koaResourceParam from '#src/middleware/koa-resource-param.js';
 import postgresAdapter from '#src/oidc/adapter.js';
 import {
+  buildConsentPromptUrl,
   buildLoginPromptUrl,
   isOriginAllowed,
   validateCustomClientMetadata,
@@ -63,6 +64,7 @@ import { getAcceptedUserClaims, getUserClaimsData } from './scope.js';
 const supportedSigningAlgs = Object.freeze(['RS256', 'PS256', 'ES256', 'ES384', 'ES512'] as const);
 
 export default function initOidc(
+  tenantId: string,
   envSet: EnvSet,
   queries: Queries,
   libraries: Libraries,
@@ -217,10 +219,24 @@ export default function initOidc(
             removeUndefinedKeys({
               appId: typeof appId === 'string' ? appId : undefined,
               organizationId: params.organization_id,
+              uiLocales: params.ui_locales,
             }) satisfies LogtoUiCookie
           ),
           { sameSite: 'lax', overwrite: true, httpOnly: false }
         );
+
+        if (params[ExtraParamsKey.GoogleOneTapCredential]) {
+          ctx.cookies.set(
+            logtoGoogleOneTapCookieKey,
+            params[ExtraParamsKey.GoogleOneTapCredential],
+            {
+              sameSite: 'lax',
+              overwrite: true,
+              httpOnly: false,
+              maxAge: 10 * 1000, // 10s
+            }
+          );
+        }
 
         switch (prompt.name) {
           case 'login': {
@@ -228,7 +244,7 @@ export default function initOidc(
           }
 
           case 'consent': {
-            return '/' + experience.routes.consent;
+            return '/' + buildConsentPromptUrl(appId);
           }
 
           default: {
@@ -346,7 +362,8 @@ export default function initOidc(
       },
       Interaction: 3600 /* 1 hour in seconds */,
       Session: 1_209_600 /* 14 days in seconds */,
-      Grant: 1_209_600 /* 14 days in seconds */,
+      // Set this to the longest allowed duration of the refresh token
+      Grant: 180 * 3600 * 24 /* 180 days in seconds */,
     },
     rotateRefreshToken: (ctx) => {
       const { Client: client } = ctx.oidc.entities;
@@ -368,7 +385,7 @@ export default function initOidc(
     },
   });
 
-  addOidcEventListeners(oidc, queries);
+  addOidcEventListeners(tenantId, oidc, queries);
   registerGrants(oidc, envSet, queries);
 
   // Provide audit log context for event listeners

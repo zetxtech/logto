@@ -2,15 +2,28 @@ const mfa = {
   totp: "OTP de l'application d'authentification",
   webauthn: 'Passkey',
   backup_code: 'Code de sauvegarde',
+  email_verification_code: 'Code de vérification par e-mail',
+  phone_verification_code: 'Code de vérification par SMS',
   link_totp_description: 'Par exemple, Google Authenticator, etc.',
   link_webauthn_description: 'Associez votre appareil ou matériel USB',
   link_backup_code_description: 'Générez un code de sauvegarde',
+  link_email_verification_code_description: 'Associez votre adresse e-mail',
+  link_email_2fa_description: 'Associez votre adresse e-mail pour la vérification en 2 étapes',
+  link_phone_verification_code_description: 'Associez votre numéro de téléphone',
+  link_phone_2fa_description: 'Associez votre numéro de téléphone pour la vérification en 2 étapes',
   verify_totp_description: "Saisissez le code à usage unique dans l'application",
   verify_webauthn_description: 'Vérifiez votre appareil ou matériel USB',
   verify_backup_code_description: 'Collez le code de sauvegarde que vous avez enregistré',
+  verify_email_verification_code_description: 'Saisissez le code envoyé à votre e-mail',
+  verify_phone_verification_code_description: 'Saisissez le code envoyé à votre téléphone',
+  send_to_email: 'Envoyer à {{identifier}}',
+  send_to_phone: 'Envoyer à {{identifier}}',
   add_mfa_factors: 'Ajouter la vérification en deux étapes',
   add_mfa_description:
     'La vérification en deux étapes est activée. Sélectionnez votre deuxième méthode de vérification pour une connexion sécurisée.',
+  add_another_mfa_factor: 'Ajouter une autre vérification en deux étapes',
+  add_another_mfa_description:
+    'Sélectionnez une autre méthode pour vérifier votre identité lors de la connexion.',
   verify_mfa_factors: 'Vérification en deux étapes',
   verify_mfa_description:
     'La vérification en deux étapes a été activée pour ce compte. Veuillez sélectionner la deuxième façon de vérifier votre identité.',
@@ -29,6 +42,12 @@ const mfa = {
     "Saisissez le code de vérification à 6 chiffres généré par l'application d'authentification.",
   enter_one_time_code_description:
     "La vérification en deux étapes a été activée pour ce compte. Veuillez entrer le code à usage unique affiché sur votre application d'authentification liée.",
+  enter_email_verification_code: 'Saisir le code de vérification par e‑mail',
+  enter_email_verification_code_description:
+    'L’authentification à deux étapes est activée pour ce compte. Veuillez saisir le code de vérification envoyé à {{identifier}}.',
+  enter_phone_verification_code: 'Saisir le code de vérification par SMS',
+  enter_phone_verification_code_description:
+    'L’authentification à deux étapes est activée pour ce compte. Veuillez saisir le code de vérification par SMS envoyé à {{identifier}}.',
   link_another_mfa_factor: 'Passez à une autre méthode',
   save_backup_code: 'Enregistrez votre code de sauvegarde',
   save_backup_code_description:

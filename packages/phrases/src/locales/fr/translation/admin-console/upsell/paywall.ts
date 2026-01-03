@@ -18,7 +18,9 @@ const paywall = {
   scopes_per_resource_other:
     'Vous avez atteint la limite de {{count, number}} permissions par ressource API de <planName/>. Mettez à niveau maintenant pour étendre. <a>Contactez-nous</a> pour toute assistance.',
   custom_domain:
-    "Débloquez la fonctionnalité de domaine personnalisé en mettant à niveau vers les plans <strong>Hobby</strong> ou <strong>Pro</strong>. N'hésitez pas à <a>nous contacter</a> si vous avez besoin d'assistance.",
+    "Limite de {{count, number}} domaine personnalisé de <planName/> atteinte. Passez à un plan payant pour ajouter plusieurs domaines personnalisés et bénéficier d'avantages premium. N'hésitez pas à <a>nous contacter</a> si vous avez des questions.",
+  custom_domain_others:
+    "Limite de {{count, number}} domaines personnalisés de <planName/> atteinte. Passez à un plan payant pour ajouter plusieurs domaines personnalisés et bénéficier d'avantages premium. N'hésitez pas à <a>nous contacter</a> si vous avez des questions.",
   social_connectors:
     "Vous avez atteint la limite de {{count, number}} connecteur social de <planName/>. Pour répondre aux besoins de votre équipe, passez à un plan supérieur pour obtenir des connecteurs sociaux supplémentaires et la possibilité de créer vos propres connecteurs en utilisant les protocoles OIDC, OAuth 2.0 et SAML. N’hésitez pas à <a>nous contacter</a> si vous avez besoin d'aide.",
   social_connectors_other:
@@ -34,13 +36,7 @@ const paywall = {
   standard_connectors_pro_other:
     "Vous avez atteint la limite de {{count, number}} connecteurs standard de <planName/>. Pour répondre aux besoins de votre équipe, passez au plan Entreprise pour obtenir des connecteurs sociaux supplémentaires et la possibilité de créer vos propres connecteurs en utilisant les protocoles OIDC, OAuth 2.0 et SAML. N’hésitez pas à <a>nous contacter</a> si vous avez besoin d'aide.",
   roles:
-    "Vous avez atteint la limite de {{count, number}} rôle de <planName/>. Mettez à niveau votre plan pour ajouter des rôles et des permissions supplémentaires. N’hésitez pas à <a>nous contacter</a> si vous avez besoin d'aide.",
-  roles_other:
-    "Vous avez atteint la limite de {{count, number}} rôles de <planName/>. Mettez à niveau votre plan pour ajouter des rôles et des permissions supplémentaires. N’hésitez pas à <a>nous contacter</a> si vous avez besoin d'aide.",
-  machine_to_machine_roles:
-    "{{count, number}} rôle machine à machine de <planName/> atteint la limite. Mettez à niveau le plan pour ajouter des rôles et des permissions supplémentaires. N’hésitez pas à <a>nous contacter</a> si vous avez besoin d'aide.",
-  machine_to_machine_roles_other:
-    "{{count, number}} rôles machine à machine de <planName/> atteints la limite. Mettez à niveau le plan pour ajouter des rôles et des permissions supplémentaires. N’hésitez pas à <a>nous contacter</a> si vous avez besoin d'aide.",
+    "Mettez à niveau votre plan pour ajouter des rôles et des permissions supplémentaires. N'hésitez pas à <a>nous contacter</a> si vous avez besoin d'assistance.",
   scopes_per_role:
     'Vous avez atteint la limite de {{count, number}} permission par rôle de <planName/>. Mettez à niveau votre plan pour ajouter des rôles et des permissions supplémentaires. Pour toute assistance, n’hésitez pas à <a>nous contacter</a>.',
   scopes_per_role_other:
@@ -50,6 +46,8 @@ const paywall = {
   logto_pricing_button_text: 'Tarification Logto Cloud',
   saml_applications:
     "L'application SAML supplémentaire est disponible avec le plan Logto Enterprise. Contactez-nous si vous avez besoin d'assistance.",
+  saml_applications_add_on:
+    "Débloquez la fonctionnalité des applications SAML en passant à un plan payant. Pour toute assistance, n'hésitez pas à <a>nous contacter</a>.",
   hooks:
     "Vous avez atteint la limite de {{count, number}} webhook de <planName/>. Mettez à niveau votre plan pour créer plus de webhooks. N’hésitez pas à <a>nous contacter</a> si vous avez besoin d'aide.",
   hooks_other:
@@ -70,10 +68,14 @@ const paywall = {
     description:
       "Passez à un plan payant pour obtenir la fonctionnalité JWT personnalisée et des avantages premium. N'hésitez pas à <a>nous contacter</a> si vous avez des questions.",
   },
+  branding_customization:
+    'Débloquez un contrôle total de l\'image de marque grâce aux fonctionnalités "Masquer la marque Logto" et "Apportez votre UI" en mettant votre plan à niveau.',
   bring_your_ui:
     "Passez à un plan payant pour obtenir des fonctionnalités de personnalisation de l'interface utilisateur ainsi que des avantages premium.",
   security_features:
     "Débloquez des fonctionnalités de sécurité avancées en passant au plan Pro. N'hésitez pas à <a>nous contacter</a> si vous avez des questions.",
+  collect_user_profile:
+    "Passez à un plan payant pour collecter des informations supplémentaires de profil utilisateur lors de l'inscription. N'hésitez pas à <a>nous contacter</a> si vous avez des questions.",
 };
 
 export default Object.freeze(paywall);

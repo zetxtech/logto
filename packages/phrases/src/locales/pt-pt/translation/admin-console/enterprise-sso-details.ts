@@ -120,6 +120,11 @@ const enterprise_sso_details = {
     'Confiar sempre nos endereços de email não verificados retornados pelo fornecedor de identidade',
   trust_unverified_email_tip:
     'O conector Entra ID (OIDC) não retorna a reivindicação `email_verified`, o que significa que os endereços de email do Azure não são garantidamente verificados. Por padrão, o Logto não sincronizará endereços de email não verificados para o perfil do utilizador. Ative esta opção apenas se confiar em todos os endereços de email do diretório do Entra ID.',
+  offline_access: {
+    label: 'Atualizar token de acesso',
+    description:
+      'Ative o acesso `offline` do Google para solicitar um token de atualização, permitindo que a tua aplicação atualize o token de acesso sem a reautorização do utilizador.',
+  },
 };
 
 export default Object.freeze(enterprise_sso_details);

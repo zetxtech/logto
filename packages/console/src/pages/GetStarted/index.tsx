@@ -16,13 +16,14 @@ import GuideCardGroup from '@/components/Guide/GuideCardGroup';
 import { useApiGuideMetadata, useAppGuideMetadata } from '@/components/Guide/hooks';
 import PageMeta from '@/components/PageMeta';
 import { ConnectorsTabs, convertToProductionThresholdDays } from '@/consts';
-import { isCloud, isDevFeaturesEnabled } from '@/consts/env';
+import { isCloud } from '@/consts/env';
 import { AppDataContext } from '@/contexts/AppDataProvider';
 import { TenantsContext } from '@/contexts/TenantsProvider';
 import { LinkButton } from '@/ds-components/Button';
 import Card from '@/ds-components/Card';
 import Spacer from '@/ds-components/Spacer';
 import TextLink from '@/ds-components/TextLink';
+import { isDevOnlyRegion } from '@/hooks/use-available-regions';
 import useTenantPathname from '@/hooks/use-tenant-pathname';
 import useTheme from '@/hooks/use-theme';
 import useWindowResize from '@/hooks/use-window-resize';
@@ -105,12 +106,7 @@ function GetStarted() {
   );
 
   const shouldShowConvertToProductionCard = useMemo(() => {
-    // Todo: @xiaoyijun feature flag for dev-to-pro
-    if (!isDevFeaturesEnabled) {
-      return false;
-    }
-
-    if (!isCloud || !isDevTenant || !currentTenant) {
+    if (!isCloud || !isDevTenant || !currentTenant || isDevOnlyRegion(currentTenant.regionName)) {
       return false;
     }
 

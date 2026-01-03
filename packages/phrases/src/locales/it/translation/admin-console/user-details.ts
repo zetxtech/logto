@@ -136,6 +136,20 @@ const user_details = {
       edited: 'Il token {{name}} è stato modificato con successo.',
     },
   },
+  connections: {
+    title: 'Connessione',
+    description:
+      "L'utente collega account di terze parti per l'accesso tramite social, SSO aziendale o accesso alle risorse.",
+    token_status_column: 'Stato del token',
+    token_status: {
+      active: 'Attivo',
+      expired: 'Scaduto',
+      inactive: 'Inattivo',
+      not_applicable: 'Non applicabile',
+      available: 'Disponibile',
+      not_available: 'Non disponibile',
+    },
+  },
 };
 
 export default Object.freeze(user_details);

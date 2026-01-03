@@ -1,5 +1,47 @@
 # Change Log
 
+## 1.35.0
+
+### Patch Changes
+
+- @logto/cli@1.35.0
+
+## 1.34.0
+
+### Patch Changes
+
+- @logto/cli@1.34.0
+
+## 1.33.0
+
+### Patch Changes
+
+- @logto/cli@1.33.0
+
+## 1.32.0
+
+### Patch Changes
+
+- @logto/cli@1.32.0
+
+## 1.31.0
+
+### Patch Changes
+
+- @logto/cli@1.31.0
+
+## 1.30.1
+
+### Patch Changes
+
+- @logto/cli@1.30.1
+
+## 1.30.0
+
+### Patch Changes
+
+- @logto/cli@1.30.0
+
 ## 1.29.0
 
 ### Patch Changes

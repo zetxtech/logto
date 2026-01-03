@@ -9,14 +9,16 @@ const domain = {
   error_hint:
     'Certifique-se de atualizar seus registros DNS. Nós continuaremos a verificação a cada {{value}} segundos.',
   custom: {
-    custom_domain: 'Domínio personalizado',
+    custom_domain: 'Domínios personalizados',
     custom_domain_description:
       'Melhore sua marca utilizando um domínio personalizado. Este domínio será utilizado em sua experiência de login.',
-    custom_domain_field: 'Domínio personalizado',
-    custom_domain_placeholder: 'seu.domínio.com',
+    custom_domain_field: 'Domínios personalizados',
+    custom_domain_placeholder: 'auth.domain.com',
+    add_custom_domain_field: 'Adicionar um domínio personalizado',
+    custom_domains_field: 'Domínios personalizados',
     add_domain: 'Adicionar domínio',
     invalid_domain_format:
-      'Por favor, forneça uma URL de domínio válida com um mínimo de três partes, por exemplo, "seu.domínio.com."',
+      'Por favor, forneça uma URL de domínio válida com um mínimo de três partes, por exemplo, "auth.domain.com."',
     verify_domain: 'Verificar domínio',
     enable_ssl: 'Habilitar SSL',
     checking_dns_tip:
@@ -40,6 +42,8 @@ const domain = {
         'Se você configurou este domínio personalizado em seu provedor de conexão social ou ponto de extremidade de aplicativo antes, você precisará modificar a URI para o domínio padrão do Logto "<span>{{domain}}</span>" primeiro. Isso é necessário para que o botão de login social funcione corretamente.',
       deleted: 'Domínio personalizado excluído com sucesso!',
     },
+    config_custom_domain_description:
+      'Configure domínios personalizados para definir os seguintes recursos: aplicativos, conectores sociais e conectores empresariais.',
   },
   default: {
     default_domain: 'Domínio padrão',
@@ -53,6 +57,12 @@ const domain = {
     'Você pode personalizar o nome de domínio desta URI para corresponder ao endpoint de seu aplicativo. Escolha "{{custom}}" ou "{{default}}".',
   custom_acs_url_note:
     'Você pode personalizar o nome de domínio desta URI para corresponder à URL do serviço consumidor de assertividade de seu provedor de identidade. Escolha "{{custom}}" ou "{{default}}".',
+  switch_custom_domain_tip:
+    'Altere seu domínio para ver o endpoint correspondente. Adicione mais domínios via <a>domínios personalizados</a>.',
+  switch_saml_app_domain_tip:
+    'Altere seu domínio para ver as URLs correspondentes. Em protocolos SAML, as URLs de metadados podem ser hospedadas em qualquer domínio acessível. Porém, o domínio selecionado determina a URL de serviço SSO que os SPs usam para redirecionar os usuários para autenticação, afetando a experiência de login e a visibilidade da URL.',
+  switch_saml_connector_domain_tip:
+    'Altere o domínio para ver as URLs correspondentes. O domínio selecionado determina sua URL ACS, que afeta para onde os usuários são redirecionados após o login SSO. Escolha o domínio que corresponda ao comportamento de redirecionamento esperado do seu aplicativo.',
 };
 
 export default Object.freeze(domain);

@@ -3,8 +3,9 @@ const connector_details = {
   back_to_connectors: '返回连接器',
   check_readme: '查看 README',
   settings: '通用设置',
-  settings_description:
-    '连接器在 Logto 中扮演着至关重要的角色。借助它们的帮助，Logto 使终端用户能够使用无密码注册或登录的功能以及使用社交帐户登录的功能。',
+  settings_description: '集成第三方提供商以快速实现社交登录和社交账户关联',
+  setting_description_with_token_storage_supported:
+    '集成第三方提供商以快速实现社交登录、社交账户关联和 API 访问。',
   email_connector_settings_description:
     '与电子邮件传递提供商集成，以启用无密码电子邮件注册和终端用户登录功能。',
   parameter_configuration: '参数配置',
@@ -62,6 +63,10 @@ const connector_details = {
     auto_select: '如果可能，自动选择凭据',
     close_on_tap_outside: '如果用户点击/点击外部则取消提示',
     itp_support: '启用 <a>在 ITP 浏览器上升级的一键登录 UX</a>',
+  },
+  sign_in_experience: {
+    in_use: '已启用用于登录',
+    not_in_use: '已禁用用于登录',
   },
 };
 

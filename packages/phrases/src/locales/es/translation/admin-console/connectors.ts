@@ -14,14 +14,6 @@ const connectors = {
   social_demo_tip:
     'El conector de demostración está diseñado exclusivamente para fines de demostración y no se recomienda para implementación en un entorno de producción.',
   connector_type: 'Tipo',
-  connector_status: 'Experiencia de inicio de sesión',
-  connector_status_in_use: 'En uso',
-  connector_status_not_in_use: 'No en uso',
-  not_in_use_tip: {
-    content:
-      'No en uso significa que tu experiencia de inicio de sesión no ha utilizado este método de inicio de sesión. <a>{{link}}</a> para agregar este método de inicio de sesión. ',
-    go_to_sie: 'Ir a la experiencia de inicio de sesión',
-  },
   placeholder_title: 'Conector social',
   placeholder_description:
     'Logto ha proporcionado muchos conectores de inicio de sesión social ampliamente utilizados, mientras tanto, puede crear el suyo con protocolos estándar.',
@@ -67,9 +59,16 @@ const connectors = {
     sync_profile_each_sign_in: 'Siempre sincronice en cada inicio de sesión',
     sync_profile_tip:
       'Sincronice el perfil básico del proveedor social, como los nombres de los usuarios y sus avatares.',
-    callback_uri: 'URI de devolución de llamada',
+    enable_token_storage: {
+      title: 'Almacenar tokens para acceso persistente a la API',
+      description:
+        'Almacene tokens de acceso y actualización en el Secret Vault. Permite llamadas API automatizadas sin un consentimiento repetido del usuario. Ejemplo: permite que tu agente de IA agregue eventos a Google Calendar con autorización persistente. <a>Aprende a llamar a APIs de terceros</a>',
+    },
+    callback_uri: 'URI de redirección (URI de devolución de llamada)',
     callback_uri_description:
-      'También llamado URI de redireccionamiento, es la URI en Logto a la que se enviarán los usuarios después de la autorización social, copie y pegue en la página de configuración del proveedor social.',
+      'La URI de redirección es donde se redirige a los usuarios tras la autorización social. Añade esta URI a la configuración de tu IdP.',
+    callback_uri_custom_domain_description:
+      'Si usas varios <a>dominios personalizados</a> en Logto, asegúrate de añadir todas las URI de callback correspondientes a tu IdP para que el inicio de sesión social funcione en cada dominio.\n\nEl dominio predeterminado de Logto (*.logto.app) siempre es válido; inclúyelo solo si también deseas admitir inicios de sesión bajo ese dominio.',
     acs_url: 'URL del servicio de consumo de afirmaciones',
   },
   platform: {
@@ -82,6 +81,11 @@ const connectors = {
   drawer_subtitle: 'Siga las instrucciones para integrar su conector',
   unknown: 'Conector desconocido',
   standard_connectors: 'Conectores estándar',
+  create_form: {
+    third_party_connectors:
+      'Integra proveedores de terceros para un inicio de sesión social rápido, vinculación de cuentas sociales y acceso a la API. <a>Aprende más</a>',
+    standard_connectors: 'O puedes personalizar tu conector social mediante un protocolo estándar.',
+  },
 };
 
 export default Object.freeze(connectors);

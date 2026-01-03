@@ -12,7 +12,7 @@ import {
   type SignInExperience,
   SignInExperiences,
 } from '../db-entries/index.js';
-import { CaptchaType } from '../foundations/jsonb-types/index.js';
+import { CaptchaType, RecaptchaEnterpriseMode } from '../foundations/jsonb-types/index.js';
 import { type ToZodObject } from '../utils/zod.js';
 
 import { type SsoConnectorMetadata, ssoConnectorMetadataGuard } from './sso-connector.js';
@@ -31,7 +31,7 @@ export type ExperienceSocialConnector = Omit<
   'description' | 'configTemplate' | 'formItems' | 'readme' | 'customData'
 >;
 
-export type FullSignInExperience = SignInExperience & {
+export type FullSignInExperience = Omit<SignInExperience, 'forgotPasswordMethods'> & {
   socialConnectors: ExperienceSocialConnector[];
   ssoConnectors: SsoConnectorMetadata[];
   forgotPassword: ForgotPassword;
@@ -48,32 +48,37 @@ export type FullSignInExperience = SignInExperience & {
   captchaConfig?: {
     type: CaptchaType;
     siteKey: string;
+    domain?: string;
+    mode?: RecaptchaEnterpriseMode;
   };
   customProfileFields?: Readonly<CustomProfileField[]>;
 };
 
-export const fullSignInExperienceGuard = SignInExperiences.guard.extend({
-  socialConnectors: connectorMetadataGuard
-    .omit({
-      description: true,
-      configTemplate: true,
-      formItems: true,
-      readme: true,
-      customData: true,
-    })
-    .array(),
-  ssoConnectors: ssoConnectorMetadataGuard.array(),
-  forgotPassword: z.object({ phone: z.boolean(), email: z.boolean() }),
-  isDevelopmentTenant: z.boolean(),
-  googleOneTap: googleOneTapConfigGuard
-    .extend({ clientId: z.string(), connectorId: z.string() })
-    .optional(),
-  captchaConfig: z
-    .object({
-      type: z.nativeEnum(CaptchaType),
-      siteKey: z.string(),
-    })
-    .optional(),
-  // @charles TODO: Remove `optional` before release
-  customProfileFields: CustomProfileFields.guard.array().optional(),
-}) satisfies ToZodObject<FullSignInExperience>;
+export const fullSignInExperienceGuard = SignInExperiences.guard
+  .omit({ forgotPasswordMethods: true })
+  .extend({
+    socialConnectors: connectorMetadataGuard
+      .omit({
+        description: true,
+        configTemplate: true,
+        formItems: true,
+        readme: true,
+        customData: true,
+      })
+      .array(),
+    ssoConnectors: ssoConnectorMetadataGuard.array(),
+    forgotPassword: z.object({ phone: z.boolean(), email: z.boolean() }),
+    isDevelopmentTenant: z.boolean(),
+    googleOneTap: googleOneTapConfigGuard
+      .extend({ clientId: z.string(), connectorId: z.string() })
+      .optional(),
+    captchaConfig: z
+      .object({
+        type: z.nativeEnum(CaptchaType),
+        siteKey: z.string(),
+        domain: z.string().optional(),
+        mode: z.nativeEnum(RecaptchaEnterpriseMode).optional(),
+      })
+      .optional(),
+    customProfileFields: CustomProfileFields.guard.array(),
+  }) satisfies ToZodObject<FullSignInExperience>;

@@ -52,6 +52,8 @@ const getPasscodeIdentifierPayload = (
 type CodeVerificationIdentifierMap = {
   [VerificationType.EmailVerificationCode]: { primaryEmail: string };
   [VerificationType.PhoneVerificationCode]: { primaryPhone: string };
+  [VerificationType.MfaEmailVerificationCode]: Record<string, unknown>;
+  [VerificationType.MfaPhoneVerificationCode]: Record<string, unknown>;
 };
 
 /**
@@ -168,6 +170,10 @@ abstract class CodeVerification<T extends CodeVerificationType>
     };
   }
 
+  toSanitizedJson(): CodeVerificationRecordData<T> {
+    return this.toJson();
+  }
+
   abstract toUserProfile(): CodeVerificationIdentifierMap[T];
 }
 
@@ -227,6 +233,32 @@ export class PhoneCodeVerification extends CodeVerification<VerificationType.Pho
   }
 }
 
+export class MfaEmailCodeVerification extends CodeVerification<VerificationType.MfaEmailVerificationCode> {
+  public readonly type = VerificationType.MfaEmailVerificationCode;
+
+  toUserProfile(): Record<string, unknown> {
+    return {};
+  }
+
+  get isNewBindMfaVerification(): boolean {
+    // This class is only used for MFA verification
+    return false;
+  }
+}
+
+export class MfaPhoneCodeVerification extends CodeVerification<VerificationType.MfaPhoneVerificationCode> {
+  public readonly type = VerificationType.MfaPhoneVerificationCode;
+
+  toUserProfile(): Record<string, unknown> {
+    return {};
+  }
+
+  get isNewBindMfaVerification(): boolean {
+    // This class is only used for MFA verification
+    return false;
+  }
+}
+
 /**
  * Factory method to create a new `EmailCodeVerification` / `PhoneCodeVerification` record using the given identifier.
  */
@@ -257,6 +289,41 @@ export const createNewCodeVerificationRecord = (
         identifier,
         templateType,
         verified: false,
+      });
+    }
+  }
+};
+
+/**
+ * Factory method to create a new `MfaEmailCodeVerification` / `MfaPhoneCodeVerification` record using the given identifier.
+ */
+export const createNewMfaCodeVerificationRecord = (
+  libraries: Libraries,
+  queries: Queries,
+  identifier:
+    | VerificationCodeIdentifier<SignInIdentifier.Email>
+    | VerificationCodeIdentifier<SignInIdentifier.Phone>,
+  verified = false
+): MfaEmailCodeVerification | MfaPhoneCodeVerification => {
+  const { type } = identifier;
+
+  switch (type) {
+    case SignInIdentifier.Email: {
+      return new MfaEmailCodeVerification(libraries, queries, {
+        id: generateStandardId(),
+        type: VerificationType.MfaEmailVerificationCode,
+        identifier,
+        templateType: TemplateType.MfaVerification,
+        verified,
+      });
+    }
+    case SignInIdentifier.Phone: {
+      return new MfaPhoneCodeVerification(libraries, queries, {
+        id: generateStandardId(),
+        type: VerificationType.MfaPhoneVerificationCode,
+        identifier,
+        templateType: TemplateType.MfaVerification,
+        verified,
       });
     }
   }

@@ -4,7 +4,7 @@ const application_details = {
   check_guide: 'تحقق من الدليل',
   settings: 'الإعدادات',
   settings_description:
-    'تعتبر "التطبيق" برنامجًا أو خدمة مسجلة يمكنه الوصول إلى معلومات المستخدم أو التصرف نيابة عن المستخدم. يساعد التطبيقات في التعرف على من يطلب ما من Logto والتعامل مع عملية تسجيل الدخول والإذن. قم بملء الحقول المطلوبة للمصادقة.',
+    '"التطبيق" هو برنامج أو خدمة مسجَّلة يمكنها الوصول إلى معلومات المستخدم أو التصرف نيابةً عنه. تساعد التطبيقات Logto على معرفة من يطلب ماذا، وتتولى إدارة تسجيل الدخول والصلاحيات. املأ الحقول المطلوبة لإتمام المصادقة.',
   integration: 'التكامل',
   integration_description:
     'نشر مع العمال الآمنة لـ Logto ، المدعومة بشبكة Cloudflare للأداء على أعلى مستوى وبدء بارد بدون تأخير في جميع أنحاء العالم.',
@@ -155,6 +155,18 @@ const application_details = {
     organization_description:
       'Select the permissions requested by the third-party app for accessing specific organization data.',
     grant_organization_level_permissions: 'Grant permissions of organization data',
+    oidc_title: 'OIDC',
+    oidc_description:
+      'يتم تكوين أذونات OIDC الأساسية تلقائيًا لتطبيقك. هذه النطاقات ضرورية للمصادقة ولا يتم عرضها على شاشة موافقة المستخدم.',
+    default_oidc_permissions: 'أذونات OIDC الافتراضية',
+    permission_column: 'الإذن',
+    guide_column: 'الدليل',
+    openid_permission: 'openid',
+    openid_permission_guide:
+      "اختياري للوصول إلى موارد OAuth.\nمطلوب لمصادقة OIDC. يمنح الوصول إلى رمز مميز للهوية (ID token) ويسمح بالوصول إلى 'userinfo_endpoint'.",
+    offline_access_permission: 'offline_access',
+    offline_access_permission_guide:
+      'اختياري. يسترجع رموز التحديث للوصول طويل الأمد أو للمهام في الخلفية.',
   },
   roles: {
     assign_button: 'Assign roles',

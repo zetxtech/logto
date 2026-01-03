@@ -21,6 +21,12 @@ const mfa = {
     'Gdy użytkownicy nie mogą zweryfikować powyższych czynników MFA, skorzystaj z opcji kopii zapasowej.',
   backup_code_error_hint:
     'Aby użyć kodu zapasowego, potrzebujesz co najmniej jednej kolejnej metody MFA do pomyślnego uwierzytelniania użytkownika.',
+  email_verification_code: 'Kod weryfikacyjny e-mail',
+  email_verification_code_description:
+    'Połącz adres e-mail, aby otrzymywać i weryfikować kody weryfikacyjne.',
+  phone_verification_code: 'Kod weryfikacyjny SMS',
+  phone_verification_code_description:
+    'Połącz numer telefonu, aby otrzymywać i weryfikować kody weryfikacyjne SMS.',
   policy: 'Polityka',
   policy_description: 'Ustaw politykę MFA dla procesów logowania i rejestracji.',
   two_step_sign_in_policy: 'Polityka weryfikacji dwuetapowej podczas logowania',
@@ -43,6 +49,19 @@ const mfa = {
     'Monit o konfigurację MFA dla organizacji wymagającej MFA',
   prompt_at_sign_in_no_skip:
     'Wymagaj od użytkowników skonfigurowania MFA przy następnym logowaniu (nie można pominąć)',
+  email_primary_method_tip:
+    'Kod weryfikacyjny e-mail jest już twoją główną metodą logowania. Aby utrzymać bezpieczeństwo, nie można go ponownie używać do MFA.',
+  phone_primary_method_tip:
+    'Kod weryfikacyjny SMS jest już twoją główną metodą logowania. Aby utrzymać bezpieczeństwo, nie można go ponownie używać do MFA.',
+  no_email_connector_warning:
+    'Łącznik e-mail nie został jeszcze skonfigurowany. Przed zakończeniem konfiguracji użytkownicy nie będą mogli używać kodów weryfikacyjnych e-mail do MFA. <a>{{link}}</a> w "Łączniki".',
+  no_sms_connector_warning:
+    'Łącznik SMS nie został jeszcze skonfigurowany. Przed zakończeniem konfiguracji użytkownicy nie będą mogli używać kodów weryfikacyjnych SMS do MFA. <a>{{link}}</a> w "Łączniki".',
+  no_email_connector_error:
+    'Nie można włączyć MFA z kodem weryfikacyjnym e-mail bez łącznika e-mail. Proszę najpierw skonfigurować łącznik e-mail.',
+  no_sms_connector_error:
+    'Nie można włączyć MFA z kodem weryfikacyjnym SMS bez łącznika SMS. Proszę najpierw skonfigurować łącznik SMS.',
+  setup_link: 'Skonfiguruj',
 };
 
 export default Object.freeze(mfa);

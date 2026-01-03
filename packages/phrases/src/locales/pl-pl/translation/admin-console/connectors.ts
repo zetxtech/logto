@@ -13,14 +13,6 @@ const connectors = {
   social_demo_tip:
     'Łącznik demonstracyjny został zaprojektowany wyłącznie dla celów demonstracyjnych i nie jest zalecany do wdrożenia w środowisku produkcyjnym.',
   connector_type: 'Typ',
-  connector_status: 'Doświadczenie logowania',
-  connector_status_in_use: 'W użyciu',
-  connector_status_not_in_use: 'Nie w użyciu',
-  not_in_use_tip: {
-    content:
-      'Nie w użyciu oznacza, że Twoje doświadczenie logowania nie użyło tej metody logowania. <a>{{link}}</a> aby dodać tę metodę logowania.',
-    go_to_sie: 'Przejdź do doświadczenia logowania',
-  },
   placeholder_title: 'Łącznik społecznościowy',
   placeholder_description:
     'Logto dostarczył wiele powszechnie używanych łączników społecznościowych, tymczasem możesz utworzyć własne z wykorzystaniem standardowych protokołów.',
@@ -66,9 +58,16 @@ const connectors = {
     sync_profile_each_sign_in: 'Zawsze wykonaj synchronizację przy każdym logowaniu',
     sync_profile_tip:
       'Synchronizuje podstawowy profil z dostawcy usług społecznościowych, takie jak nazwy użytkowników i ich awatary.',
-    callback_uri: 'URI zwrotu (Callback)',
+    enable_token_storage: {
+      title: 'Przechowuj tokeny do trwałego dostępu do API',
+      description:
+        'Przechowuj tokeny dostępu i odświeżania w Tajnej Skrytce. Pozwala to na zautomatyzowane wywołania API bez powtarzającej się zgody użytkownika. Przykład: pozwól swojemu Agentowi AI dodawać wydarzenia do Kalendarza Google z trwałym upoważnieniem. <a>Dowiedz się, jak wywoływać zewnętrzne API</a>',
+    },
+    callback_uri: 'URI przekierowania (URI zwrotu)',
     callback_uri_description:
-      'Nazywany także URI przekierowania, to URI w Logto, do którego użytkownicy zostaną przesłani po autoryzacji społecznej; skopiuj i wklej na stronie konfiguracyjnej dostawcy usług społecznościowych.',
+      'URI przekierowania to miejsce, do którego użytkownicy są kierowani po autoryzacji społecznościowej. Dodaj ten adres URI do konfiguracji swojego IdP.',
+    callback_uri_custom_domain_description:
+      'Jeśli używasz w Logto wielu <a>domen niestandardowych</a>, dodaj wszystkie odpowiadające im adresy URI zwrotu do IdP, aby logowanie społecznościowe działało w każdej domenie.\n\nDomyślna domena Logto (*.logto.app) jest zawsze ważna - uwzględnij ją tylko wtedy, gdy chcesz obsługiwać logowania także w tej domenie.',
     acs_url: 'Assertion consumer service URL',
   },
   platform: {
@@ -81,6 +80,12 @@ const connectors = {
   drawer_subtitle: 'Postępuj zgodnie z instrukcjami, aby zintegrować swój łącznik',
   unknown: 'Nieznany Łącznik',
   standard_connectors: 'Standardowe łączniki',
+  create_form: {
+    third_party_connectors:
+      'Zintegruj zewnętrznych dostawców, aby szybko zalogować się przez nich społecznościowo, połączyć konta społecznościowe i uzyskać dostęp do API. <a>Dowiedz się więcej</a>',
+    standard_connectors:
+      'Lub możesz dostosować swój łącznik społecznościowy, korzystając ze standardowego protokołu.',
+  },
 };
 
 export default Object.freeze(connectors);

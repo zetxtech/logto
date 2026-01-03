@@ -116,6 +116,11 @@ const enterprise_sso_details = {
     'Always trust the unverified email addresses returned from the identity provider',
   trust_unverified_email_tip:
     'The Entra ID (OIDC) connector does not return the `email_verified` claim, meaning that email addresses from Azure are not guaranteed to be verified. By default, Logto will not sync unverified email addresses to the user profile. Enable this option only if you trust all the email addresses from the Entra ID directory.',
+  offline_access: {
+    label: 'Refresh access token',
+    description:
+      'Enable Google `offline` access to request a refresh token, allowing your app to refresh the access token without user re-authorization.',
+  },
 };
 
 export default Object.freeze(enterprise_sso_details);

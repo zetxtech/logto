@@ -1,14 +1,15 @@
-import { MfaFactor, type RequestErrorBody } from '@logto/schemas';
+import { MfaFactor, SignInIdentifier, type RequestErrorBody } from '@logto/schemas';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { validate } from 'superstruct';
 
+import useNavigateWithPreservedSearchParams from '@/hooks/use-navigate-with-preserved-search-params';
 import { UserMfaFlow } from '@/types';
 import { type MfaFlowState, mfaErrorDataGuard } from '@/types/guard';
 import { isNativeWebview } from '@/utils/native-sdk';
 
 import type { ErrorHandlers } from './use-error-handler';
+import useSendMfaVerificationCode from './use-send-mfa-verification-code';
 import useStartBackupCodeBinding from './use-start-backup-code-binding';
 import useStartTotpBinding from './use-start-totp-binding';
 import useStartWebAuthnProcessing from './use-start-webauthn-processing';
@@ -20,12 +21,13 @@ export type Options = {
 };
 
 const useMfaErrorHandler = ({ replace }: Options = {}) => {
-  const navigate = useNavigate();
+  const navigate = useNavigateWithPreservedSearchParams();
   const { t } = useTranslation();
   const { setToast } = useToast();
   const startTotpBinding = useStartTotpBinding();
   const startWebAuthnProcessing = useStartWebAuthnProcessing();
   const startBackupCodeBinding = useStartBackupCodeBinding();
+  const { onSubmit: startMfaVerificationCodeProcessing } = useSendMfaVerificationCode();
 
   /**
    * Redirect the user to the corresponding MFA page.
@@ -84,12 +86,28 @@ const useMfaErrorHandler = ({ replace }: Options = {}) => {
         return startWebAuthnProcessing(flow, state, replace);
       }
 
+      if (factor === MfaFactor.EmailVerificationCode && flow === UserMfaFlow.MfaVerification) {
+        return startMfaVerificationCodeProcessing(SignInIdentifier.Email, state);
+      }
+
+      if (factor === MfaFactor.PhoneVerificationCode && flow === UserMfaFlow.MfaVerification) {
+        return startMfaVerificationCodeProcessing(SignInIdentifier.Phone, state);
+      }
+
       /**
        * Redirect to the specific MFA factor page.
        */
       navigate({ pathname: `/${flow}/${factor}` }, { replace, state });
     },
-    [navigate, replace, setToast, startTotpBinding, startWebAuthnProcessing, t]
+    [
+      navigate,
+      replace,
+      setToast,
+      startMfaVerificationCodeProcessing,
+      startTotpBinding,
+      startWebAuthnProcessing,
+      t,
+    ]
   );
 
   const handleMfaError = useCallback(
@@ -98,6 +116,8 @@ const useMfaErrorHandler = ({ replace }: Options = {}) => {
         const [_, data] = validate(error.data, mfaErrorDataGuard);
         const factors = data?.availableFactors ?? [];
         const skippable = data?.skippable;
+        const maskedIdentifiers = data?.maskedIdentifiers;
+        const suggestion = data?.suggestion;
 
         if (factors.length === 0) {
           setToast(error.message);
@@ -110,7 +130,12 @@ const useMfaErrorHandler = ({ replace }: Options = {}) => {
             ? factors.filter((factor) => factor !== MfaFactor.WebAuthn)
             : factors;
 
-        await handleMfaRedirect(flow, { availableFactors, skippable });
+        await handleMfaRedirect(flow, {
+          availableFactors,
+          skippable,
+          maskedIdentifiers,
+          suggestion,
+        });
       };
     },
     [handleMfaRedirect, setToast]
@@ -120,6 +145,8 @@ const useMfaErrorHandler = ({ replace }: Options = {}) => {
     () => ({
       'user.missing_mfa': handleMfaError(UserMfaFlow.MfaBinding),
       'session.mfa.require_mfa_verification': handleMfaError(UserMfaFlow.MfaVerification),
+      // Optional suggestion to add another MFA during registration
+      'session.mfa.suggest_additional_mfa': handleMfaError(UserMfaFlow.MfaBinding),
       'session.mfa.backup_code_required': async () => startBackupCodeBinding(replace),
     }),
     [handleMfaError, replace, startBackupCodeBinding]

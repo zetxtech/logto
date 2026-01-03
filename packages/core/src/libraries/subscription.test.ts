@@ -79,14 +79,14 @@ describe('get subscription data with cache expiration', () => {
     jest.advanceTimersByTime(60 * 60 * 24);
     mockGetTenantSubscription.mockResolvedValueOnce({
       ...mockSubscription,
-      planId: ReservedPlanId.Pro202411,
+      planId: ReservedPlanId.Pro202509,
     });
 
     // Should get new subscription data
     const refreshedSubscriptionData = await subscription.getSubscriptionData();
     expect(refreshedSubscriptionData).toEqual({
       ...mockSubscription,
-      planId: ReservedPlanId.Pro202411,
+      planId: ReservedPlanId.Pro202509,
     });
     expect(mockGetTenantSubscription).toHaveBeenCalled();
   });
@@ -118,14 +118,14 @@ describe('get subscription data with cache expiration', () => {
     jest.advanceTimersByTime(2 * 60 * 60);
     mockGetTenantSubscription.mockResolvedValueOnce({
       ...mockFarFutureSubscription,
-      planId: ReservedPlanId.Pro202411,
+      planId: ReservedPlanId.Pro202509,
     });
 
     // Should get new subscription data due to max TTL
     const refreshedSubscriptionData = await subscription.getSubscriptionData();
     expect(refreshedSubscriptionData).toEqual({
       ...mockFarFutureSubscription,
-      planId: ReservedPlanId.Pro202411,
+      planId: ReservedPlanId.Pro202509,
     });
     expect(mockGetTenantSubscription).toHaveBeenCalled();
   });
@@ -149,14 +149,14 @@ describe('get subscription data with cache expiration', () => {
     jest.advanceTimersByTime(60 * 60);
     mockGetTenantSubscription.mockResolvedValueOnce({
       ...mockExpiredSubscription,
-      planId: ReservedPlanId.Pro202411,
+      planId: ReservedPlanId.Pro202509,
     });
 
     // Should get new subscription data since the cache should be invalidated
     const refreshedSubscriptionData = await subscription.getSubscriptionData();
     expect(refreshedSubscriptionData).toEqual({
       ...mockExpiredSubscription,
-      planId: ReservedPlanId.Pro202411,
+      planId: ReservedPlanId.Pro202509,
     });
     expect(mockGetTenantSubscription).toHaveBeenCalled();
   });
@@ -173,12 +173,16 @@ describe('get tenant token usage', () => {
   const to = new Date(from.valueOf() + 1000 * 60 * 60 * 24);
 
   it('should get tenant token usage without cache', async () => {
-    mockCountTokenUsage.mockResolvedValueOnce({ tokenUsage: 100 });
+    mockCountTokenUsage.mockResolvedValueOnce({
+      totalUsage: 100,
+      userTokenUsage: 60,
+      m2mTokenUsage: 40,
+    });
     const tokenUsage = await subscription.getTenantTokenUsage({
       from,
       to,
     });
-    expect(tokenUsage).toBe(100);
+    expect(tokenUsage.totalUsage).toBe(100);
   });
 
   it('should get tenant token usage from cache', async () => {
@@ -187,18 +191,22 @@ describe('get tenant token usage', () => {
       from,
       to,
     });
-    expect(tokenUsageFromCache).toBe(100);
+    expect(tokenUsageFromCache.totalUsage).toBe(100);
     expect(mockCountTokenUsage).not.toHaveBeenCalled();
   });
 
   it('should get new tenant token usage if the period is different', async () => {
-    mockCountTokenUsage.mockResolvedValueOnce({ tokenUsage: 200 });
+    mockCountTokenUsage.mockResolvedValueOnce({
+      totalUsage: 200,
+      userTokenUsage: 120,
+      m2mTokenUsage: 80,
+    });
     const tokenUsage = await subscription.getTenantTokenUsage({
       from,
       to: new Date(to.valueOf() + 1000 * 60 * 60 * 24),
     });
 
-    expect(tokenUsage).toBe(200);
+    expect(tokenUsage.totalUsage).toBe(200);
     expect(mockCountTokenUsage).toHaveBeenCalled();
   });
 });
@@ -222,12 +230,16 @@ describe('get tenant token usage with cache expiration', () => {
       },
     });
 
-    mockCountTokenUsage.mockResolvedValueOnce({ tokenUsage: 100 });
+    mockCountTokenUsage.mockResolvedValueOnce({
+      totalUsage: 100,
+      userTokenUsage: 60,
+      m2mTokenUsage: 40,
+    });
     const tokenUsage = await subscription.getTenantTokenUsage({
       from,
       to,
     });
-    expect(tokenUsage).toBe(100);
+    expect(tokenUsage.totalUsage).toBe(100);
 
     // Move the time to 30 minutes later
     mockCountTokenUsage.mockClear();
@@ -236,17 +248,21 @@ describe('get tenant token usage with cache expiration', () => {
       from,
       to,
     });
-    expect(tokenUsageFromCache).toBe(100);
+    expect(tokenUsageFromCache.totalUsage).toBe(100);
     expect(mockCountTokenUsage).not.toHaveBeenCalled();
 
     // Move the time to 1 hour later
-    mockCountTokenUsage.mockResolvedValueOnce({ tokenUsage: 200 });
+    mockCountTokenUsage.mockResolvedValueOnce({
+      totalUsage: 200,
+      userTokenUsage: 120,
+      m2mTokenUsage: 80,
+    });
     jest.advanceTimersByTime(tokenUsageCacheTtl / 2 + 1);
     const refreshedTokenUsage = await subscription.getTenantTokenUsage({
       from,
       to,
     });
-    expect(refreshedTokenUsage).toBe(200);
+    expect(refreshedTokenUsage.totalUsage).toBe(200);
     expect(mockCountTokenUsage).toHaveBeenCalled();
   });
 });

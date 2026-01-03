@@ -171,6 +171,12 @@ const quota_item = {
     unlimited: 'カスタム UI',
     not_eligible: 'カスタム UI を削除してください',
   },
+  collect_user_profile_enabled: {
+    name: 'ユーザープロフィール収集',
+    limited: 'ユーザープロフィール収集',
+    unlimited: 'ユーザープロフィール収集',
+    not_eligible: 'ユーザープロフィール収集フィールドを削除してください',
+  },
   idp_initiated_sso_enabled: {
     name: 'IDPによって開始された SSO',
     limited: 'IDPによって開始された SSO',
@@ -195,6 +201,13 @@ const quota_item = {
     limited: '高度なセキュリティ',
     unlimited: '高度なセキュリティ',
     not_eligible: '高度なセキュリティ設定を削除してください',
+  },
+  custom_domains_limit: {
+    name: 'カスタムドメイン',
+    limited: '{{count, number}} カスタムドメイン',
+    limited_other: '{{count, number}} カスタムドメイン',
+    unlimited: '無制限のカスタムドメイン',
+    not_eligible: 'カスタムドメインを削除してください',
   },
 };
 

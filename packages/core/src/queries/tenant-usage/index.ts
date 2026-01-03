@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import {
   Applications,
   ApplicationType,
@@ -9,20 +8,37 @@ import {
   RoleType,
   RolesScopes,
   Hooks,
-  LogtoConfigs,
-  LogtoJwtTokenKey,
-  SignInExperiences,
   SsoConnectors,
   Organizations,
-  SsoConnectorIdpInitiatedAuthConfigs,
   InternalRole,
+  OrganizationUserRelations,
+  OrganizationRoles,
+  OrganizationScopes,
+  Domains,
 } from '@logto/schemas';
 import { sql } from '@silverhand/slonik';
-import type { CommonQueryMethods, TaggedTemplateLiteralInvocation } from '@silverhand/slonik';
+import type { CommonQueryMethods } from '@silverhand/slonik';
 
 import { convertToIdentifiers } from '#src/utils/sql.js';
 
-import { tenantUsageGuard } from './types.js';
+import {
+  type TenantBasedUsageKey,
+  type EntityBasedUsageKey,
+  type SelfComputedUsageKey,
+} from './types.js';
+
+type UsageQuery = (tenantId: string) => Promise<number>;
+type UsageQueryWithEntityId = (tenantId: string, entityId: string) => Promise<number>;
+
+type UsageQueryRegistery = { [key in TenantBasedUsageKey]: UsageQuery } & {
+  [key in EntityBasedUsageKey]: UsageQueryWithEntityId;
+};
+
+type GetSelfComputedUsageByKey<K extends SelfComputedUsageKey> = (
+  tenantId: string,
+  key: K,
+  entityId: K extends EntityBasedUsageKey ? string : undefined
+) => Promise<number>;
 
 const { table: applicationsTable, fields: applicationsFields } = convertToIdentifiers(
   Applications,
@@ -36,359 +52,239 @@ const { table: rolesScopesTable, fields: rolesScopesFields } = convertToIdentifi
   true
 );
 const { table: hooksTable } = convertToIdentifiers(Hooks, true);
-const { table: logtoConfigsTable, fields: logtoConfigsFields } = convertToIdentifiers(
-  LogtoConfigs,
-  true
-);
-const { table: signInExperiencesTable, fields: signInExperiencesFields } = convertToIdentifiers(
-  SignInExperiences,
-  true
-);
 const { table: ssoConnectorsTable } = convertToIdentifiers(SsoConnectors, true);
 const { table: organizationsTable } = convertToIdentifiers(Organizations, true);
-const { table: ssoConnectorIdpInitiatedAuthConfigsTable } = convertToIdentifiers(
-  SsoConnectorIdpInitiatedAuthConfigs,
+const { table: organizationUserRelationsTable, fields: organizationUserRelationsFields } =
+  convertToIdentifiers(OrganizationUserRelations, true);
+const { table: organizationRolesTable, fields: organizationRolesFields } = convertToIdentifiers(
+  OrganizationRoles,
   true
 );
-const { table: signInExperienceTable, fields: signInExperienceFields } = convertToIdentifiers(
-  SignInExperiences,
-  true
-);
+const { table: organizationScopesTable } = convertToIdentifiers(OrganizationScopes, true);
+const { table: domainsTable } = convertToIdentifiers(Domains, true);
 
 export default class TenantUsageQuery {
   constructor(private readonly pool: CommonQueryMethods) {}
 
-  public async getRawTenantUsage(tenantId: string) {
-    const sqlQuery = sql`
-      select ${sql.join(
-        [
-          this.countAllApplications(),
-          this.countThirdPartyApplications(),
-          this.countMachineToMachineApplications(),
-          this.countMaxScopesPerResource(tenantId),
-          this.countUserRoles(),
-          this.countMachineToMachineRoles(),
-          this.countMaxScopesPerRole(),
-          this.countHooks(),
-          this.isCustomJwtEnabled(),
-          this.isBringYourUiEnabled(),
-          this.countResources(tenantId),
-          this.countEnterpriseSso(),
-          this.isMfaEnabled(),
-          this.countOrganizations(),
-          this.isIdpInitiatedSsoEnabled(),
-          this.countSamlApplications(),
-          this.isSecurityFeaturesEnabled(),
-        ].map(([query, key]) => sql`(${query}) as "${key}"`),
-        sql`, `
-      )}
-    `;
-    const usage = await this.pool.one(sqlQuery);
-
-    return tenantUsageGuard.parse(usage);
+  private get selfComputedUsageQueryRegistery(): UsageQueryRegistery {
+    return {
+      applicationsLimit: this.countAllApplications,
+      thirdPartyApplicationsLimit: this.countThirdPartyApplications,
+      machineToMachineLimit: this.countMachineToMachineApplications,
+      userRolesLimit: this.countUserRoles,
+      machineToMachineRolesLimit: this.countMachineToMachineRoles,
+      scopesPerRoleLimit: this.countScopesForRole,
+      scopesPerResourceLimit: this.countScopesForResource,
+      hooksLimit: this.countHooks,
+      resourcesLimit: this.countResources,
+      enterpriseSsoLimit: this.countEnterpriseSso,
+      organizationsLimit: this.countOrganizations,
+      samlApplicationsLimit: this.countSamlApplications,
+      usersPerOrganizationLimit: this.countUsersForOrganization,
+      organizationUserRolesLimit: this.countOrganizationUserRoles,
+      organizationMachineToMachineRolesLimit: this.countOrganizationMachineToMachineRoles,
+      organizationScopesLimit: this.countOrganizationScopes,
+      customDomainsLimit: this.countCustomDomains,
+    };
   }
 
-  public async getScopesForRolesTenantUsage() {
-    const records = await this.pool.any<{ roleId: string; count: string }>(
-      this.countScopesForRoles()
-    );
-
-    return Object.fromEntries(records.map(({ roleId, count }) => [roleId, Number(count)]));
-  }
-
-  public async getScopesForResourcesTenantUsage(tenantId: string) {
-    const records = await this.pool.any<{ resourceId: string; count: string }>(
-      this.countScopesForResources(tenantId)
-    );
-
-    return Object.fromEntries(records.map(({ resourceId, count }) => [resourceId, Number(count)]));
-  }
-
-  private readonly countAllApplications = (): [
-    TaggedTemplateLiteralInvocation,
-    TaggedTemplateLiteralInvocation,
-  ] => {
-    return [
-      sql`
-        select
-          count(*)
-        from ${applicationsTable}
-      `,
-      sql`applicationsLimit`,
-    ];
+  public getSelfComputedUsageByKey: GetSelfComputedUsageByKey<SelfComputedUsageKey> = async (
+    tenantId,
+    key,
+    entityId
+  ) => {
+    const query = this.selfComputedUsageQueryRegistery[key];
+    // @ts-expect-error -- TypeScript cannot infer the correct type here due to conditional type complexity
+    return query(tenantId, entityId);
   };
 
-  private readonly countThirdPartyApplications = (): [
-    TaggedTemplateLiteralInvocation,
-    TaggedTemplateLiteralInvocation,
-  ] => {
-    return [
-      sql`
-        select
-          count(*)
-        from ${applicationsTable}
-        where ${applicationsFields.isThirdParty} = true
-      `,
-      sql`thirdPartyApplicationsLimit`,
-    ];
+  private readonly countAllApplications: UsageQuery = async () => {
+    const result = await this.pool.one<{ count: string }>(sql`
+      select
+        count(*)
+      from ${applicationsTable}
+    `);
+
+    return Number(result.count);
   };
 
-  private readonly countMachineToMachineApplications = (): [
-    TaggedTemplateLiteralInvocation,
-    TaggedTemplateLiteralInvocation,
-  ] => {
-    return [
-      sql`
-        select
-          count(*)
-        from ${applicationsTable}
-        where ${applicationsFields.type} = ${ApplicationType.MachineToMachine}
-      `,
-      sql`machineToMachineLimit`,
-    ];
+  private readonly countThirdPartyApplications: UsageQuery = async () => {
+    const result = await this.pool.one<{ count: string }>(sql`
+      select
+        count(*)
+      from ${applicationsTable}
+      where ${applicationsFields.isThirdParty} = true
+    `);
+
+    return Number(result.count);
   };
 
-  private readonly countMaxScopesPerResource = (
-    tenantId: string
-  ): [TaggedTemplateLiteralInvocation, TaggedTemplateLiteralInvocation] => {
-    return [
-      sql`
-        with cte as (
-          select ${scopesFields.resourceId}, count(*) as count
-          from ${scopesTable}
-          join ${resourcesTable} on ${scopesFields.resourceId} = ${resourcesFields.id}
-          where ${resourcesFields.indicator} != ${getManagementApiResourceIndicator(tenantId)}
-          group by ${scopesFields.resourceId}
-        ) select coalesce(max(count), 0) from cte
-      `,
-      sql`scopesPerResourceLimit`,
-    ];
+  private readonly countMachineToMachineApplications: UsageQuery = async () => {
+    const result = await this.pool.one<{ count: string }>(sql`
+      select
+        count(*)
+      from ${applicationsTable}
+      where ${applicationsFields.type} = ${ApplicationType.MachineToMachine}
+    `);
+
+    return Number(result.count);
   };
 
-  private readonly countUserRoles = (): [
-    TaggedTemplateLiteralInvocation,
-    TaggedTemplateLiteralInvocation,
-  ] => {
-    return [
-      sql`
-        select
-          count(*)
-        from ${rolesTable}
-        where ${rolesFields.type} = ${RoleType.User}
-      `,
-      sql`userRolesLimit`,
-    ];
-  };
-
-  private readonly countMachineToMachineRoles = (): [
-    TaggedTemplateLiteralInvocation,
-    TaggedTemplateLiteralInvocation,
-  ] => {
-    return [
-      sql`
-        select
-          count(*)
-        from ${rolesTable}
-        where ${rolesFields.type} = ${RoleType.MachineToMachine}
-        and ${rolesFields.name} != ${InternalRole.Admin}
-      `,
-      sql`machineToMachineRolesLimit`,
-    ];
-  };
-
-  private readonly countMaxScopesPerRole = (): [
-    TaggedTemplateLiteralInvocation,
-    TaggedTemplateLiteralInvocation,
-  ] => {
-    return [
-      sql`
-        with cte as (
-          select ${rolesFields.id}, count(*) as count
-          from ${rolesTable}
-          join ${rolesScopesTable} on ${rolesFields.id} = ${rolesScopesFields.roleId}
-          group by ${rolesFields.id}
-        ) select coalesce(max(count), 0) from cte
-      `,
-      sql`scopesPerRoleLimit`,
-    ];
-  };
-
-  private readonly countHooks = (): [
-    TaggedTemplateLiteralInvocation,
-    TaggedTemplateLiteralInvocation,
-  ] => {
-    return [
-      sql`
-        select
-          count(*)
-        from ${hooksTable}
-      `,
-      sql`hooksLimit`,
-    ];
-  };
-
-  private readonly isCustomJwtEnabled = (): [
-    TaggedTemplateLiteralInvocation,
-    TaggedTemplateLiteralInvocation,
-  ] => {
-    return [
-      sql`
-        select exists (
-          select * from ${logtoConfigsTable}
-          where ${logtoConfigsFields.key} in (${sql.join(
-            [LogtoJwtTokenKey.AccessToken, LogtoJwtTokenKey.ClientCredentials],
-            sql`, `
-          )})
-        )
-      `,
-      sql`customJwtEnabled`,
-    ];
-  };
-
-  private readonly isBringYourUiEnabled = (): [
-    TaggedTemplateLiteralInvocation,
-    TaggedTemplateLiteralInvocation,
-  ] => {
-    return [
-      sql`
-        select exists (
-          select * from ${signInExperiencesTable}
-          where ${signInExperiencesFields.customUiAssets} is not null
-        )
-      `,
-      sql`bringYourUiEnabled`,
-    ];
-  };
-
-  private readonly countResources = (
-    tenantId: string
-  ): [TaggedTemplateLiteralInvocation, TaggedTemplateLiteralInvocation] => {
-    return [
-      sql`
-        select
-          count(*)
-        from ${resourcesTable}
-        where ${resourcesFields.indicator} != ${getManagementApiResourceIndicator(tenantId)}
-      `,
-      sql`resourcesLimit`,
-    ];
-  };
-
-  private readonly countEnterpriseSso = (): [
-    TaggedTemplateLiteralInvocation,
-    TaggedTemplateLiteralInvocation,
-  ] => {
-    return [
-      sql`
-        select
-          count(*)
-        from ${ssoConnectorsTable}
-      `,
-      sql`enterpriseSsoLimit`,
-    ];
-  };
-
-  private readonly isMfaEnabled = (): [
-    TaggedTemplateLiteralInvocation,
-    TaggedTemplateLiteralInvocation,
-  ] => {
-    return [
-      sql`
-        select exists (
-          select * from ${signInExperiencesTable}
-          where jsonb_array_length(${signInExperiencesFields.mfa}->'factors') > 0
-        )
-      `,
-      sql`mfaEnabled`,
-    ];
-  };
-
-  private readonly countOrganizations = (): [
-    TaggedTemplateLiteralInvocation,
-    TaggedTemplateLiteralInvocation,
-  ] => {
-    return [
-      sql`
-        select
-          count(*)
-        from ${organizationsTable}
-      `,
-      sql`organizationsLimit`,
-    ];
-  };
-
-  private readonly isIdpInitiatedSsoEnabled = (): [
-    TaggedTemplateLiteralInvocation,
-    TaggedTemplateLiteralInvocation,
-  ] => {
-    return [
-      sql`
-        select exists (
-          select * from ${ssoConnectorIdpInitiatedAuthConfigsTable}
-        )
-    `,
-      sql`idpInitiatedSsoEnabled`,
-    ];
-  };
-
-  private readonly countSamlApplications = (): [
-    TaggedTemplateLiteralInvocation,
-    TaggedTemplateLiteralInvocation,
-  ] => {
-    return [
-      sql`
-        select
-          count(*)
-        from ${applicationsTable}
-        where ${applicationsFields.type} = ${ApplicationType.SAML}
-      `,
-      sql`samlApplicationsLimit`,
-    ];
-  };
-
-  private readonly countScopesForResources = (
-    tenantId: string
-  ): TaggedTemplateLiteralInvocation => {
-    return sql`
-      select ${scopesFields.resourceId}, count(*) as count
+  private readonly countScopesForResource: UsageQueryWithEntityId = async (
+    tenantId: string,
+    entityId: string
+  ): Promise<number> => {
+    const result = await this.pool.one<{ count: string }>(sql`
+      select count(*) as count
       from ${scopesTable}
       join ${resourcesTable} on ${scopesFields.resourceId} = ${resourcesFields.id}
+      where ${scopesFields.resourceId} = ${entityId}
+      and ${resourcesFields.indicator} != ${getManagementApiResourceIndicator(tenantId)}
+    `);
+    return Number(result.count);
+  };
+
+  private readonly countUserRoles: UsageQuery = async () => {
+    const result = await this.pool.one<{ count: string }>(sql`
+      select
+        count(*)
+      from ${rolesTable}
+      where ${rolesFields.type} = ${RoleType.User}
+    `);
+
+    return Number(result.count);
+  };
+
+  private readonly countMachineToMachineRoles: UsageQuery = async () => {
+    const result = await this.pool.one<{ count: string }>(sql`
+      select
+        count(*)
+      from ${rolesTable}
+      where ${rolesFields.type} = ${RoleType.MachineToMachine}
+      and ${rolesFields.name} != ${InternalRole.Admin}
+    `);
+
+    return Number(result.count);
+  };
+
+  private readonly countScopesForRole: UsageQueryWithEntityId = async (
+    _: string,
+    entityId: string
+  ): Promise<number> => {
+    const result = await this.pool.one<{ count: string }>(sql`
+    select count(*) as count
+    from ${rolesScopesTable}
+    where ${rolesScopesFields.roleId} = ${entityId}
+  `);
+
+    return Number(result.count);
+  };
+
+  private readonly countHooks: UsageQuery = async () => {
+    const result = await this.pool.one<{ count: string }>(sql`
+      select
+        count(*)
+      from ${hooksTable}
+    `);
+
+    return Number(result.count);
+  };
+
+  private readonly countResources: UsageQuery = async (tenantId) => {
+    const result = await this.pool.one<{ count: string }>(sql`
+      select
+        count(*)
+      from ${resourcesTable}
       where ${resourcesFields.indicator} != ${getManagementApiResourceIndicator(tenantId)}
-      group by ${scopesFields.resourceId}
-    `;
+    `);
+
+    return Number(result.count);
   };
 
-  private readonly countScopesForRoles = (): TaggedTemplateLiteralInvocation => {
-    return sql`
-      select ${rolesScopesFields.roleId}, count(*) as count
-      from ${rolesScopesTable}
-      join ${rolesTable} on ${rolesScopesFields.roleId} = ${rolesFields.id}
-      where ${rolesFields.name} != ${InternalRole.Admin}
-      group by ${rolesScopesFields.roleId}
-    `;
+  private readonly countEnterpriseSso: UsageQuery = async () => {
+    const result = await this.pool.one<{ count: string }>(sql`
+      select
+        count(*)
+      from ${ssoConnectorsTable}
+    `);
+
+    return Number(result.count);
   };
 
-  private readonly isSecurityFeaturesEnabled = (): [
-    TaggedTemplateLiteralInvocation,
-    TaggedTemplateLiteralInvocation,
-  ] => {
-    return [
-      sql`
-        select 
-          CASE 
-            WHEN ${signInExperienceFields.captchaPolicy}->>'enabled' = 'true' THEN true
-            WHEN ${signInExperienceFields.sentinelPolicy}->>'maxAttempts' is not null THEN true
-            WHEN ${signInExperienceFields.sentinelPolicy}->>'lockoutDuration' is not null THEN true
-            WHEN ${signInExperienceFields.emailBlocklistPolicy} ->> 'blockDisposableAddresses' = 'true' THEN true
-            WHEN ${signInExperienceFields.emailBlocklistPolicy} ->> 'blockSubaddressing' = 'true' THEN true
-            WHEN ${signInExperienceFields.emailBlocklistPolicy} ->> 'customBlocklist' is not null 
-                AND jsonb_array_length(${signInExperienceFields.emailBlocklistPolicy} -> 'customBlocklist') > 0 THEN true
-            ELSE false
-          END as isSecurityFeaturesEnabled
-        from ${signInExperienceTable}
-    `,
-      sql`securityFeaturesEnabled`,
-    ];
+  private readonly countOrganizations: UsageQuery = async () => {
+    const result = await this.pool.one<{ count: string }>(sql`
+      select
+        count(*)
+      from ${organizationsTable}
+    `);
+
+    return Number(result.count);
+  };
+
+  private readonly countUsersForOrganization: UsageQueryWithEntityId = async (
+    _: string,
+    entityId: string
+  ): Promise<number> => {
+    const result = await this.pool.one<{ count: string }>(sql`
+      select
+        count(*)
+      from ${organizationUserRelationsTable}
+      where ${organizationUserRelationsFields.organizationId} = ${entityId}
+    `);
+
+    return Number(result.count);
+  };
+
+  private readonly countOrganizationUserRoles: UsageQuery = async () => {
+    const result = await this.pool.one<{ count: string }>(sql`
+      select
+        count(*)
+      from ${organizationRolesTable}
+      where ${organizationRolesFields.type} = ${RoleType.User}
+    `);
+
+    return Number(result.count);
+  };
+
+  private readonly countOrganizationMachineToMachineRoles: UsageQuery = async () => {
+    const result = await this.pool.one<{ count: string }>(sql`
+      select
+        count(*)
+      from ${organizationRolesTable}
+      where ${organizationRolesFields.type} = ${RoleType.MachineToMachine}
+    `);
+
+    return Number(result.count);
+  };
+
+  private readonly countOrganizationScopes: UsageQuery = async () => {
+    const result = await this.pool.one<{ count: string }>(sql`
+      select
+        count(*)
+      from ${organizationScopesTable}
+    `);
+
+    return Number(result.count);
+  };
+
+  private readonly countSamlApplications: UsageQuery = async () => {
+    const result = await this.pool.one<{ count: string }>(sql`
+      select
+        count(*)
+      from ${applicationsTable}
+      where ${applicationsFields.type} = ${ApplicationType.SAML}
+    `);
+
+    return Number(result.count);
+  };
+
+  private readonly countCustomDomains: UsageQuery = async () => {
+    const result = await this.pool.one<{ count: string }>(sql`  
+      select
+        count(*)
+      from ${domainsTable}
+    `);
+
+    return Number(result.count);
   };
 }
-/* eslint-enable max-lines */

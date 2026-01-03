@@ -13,6 +13,11 @@ const tenants = {
     description: 'تعيين اسم المستأجر وعرض منطقة البيانات المستضيفة ونوع المستأجر.',
     tenant_id: 'معرف المستأجر',
     tenant_name: 'اسم المستأجر',
+    /** UNTRANSLATED */
+    tenant_instance: 'Select your instance',
+    /** UNTRANSLATED */
+    tenant_instance_description:
+      'Select where your tenant will be hosted. Choose Logto Cloud for public shared infrastructure, or a private instance for dedicated resources.',
     tenant_region: 'منطقة البيانات',
     tenant_region_description:
       'الموقع الفعلي الذي يتم استضافة موارد المستأجر الخاصة بك (المستخدمين ، التطبيقات ، إلخ). لا يمكن تغييره بعد الإنشاء.',
@@ -49,6 +54,7 @@ const tenants = {
     subtitle: 'إنشاء مستأجر جديد يحتوي على موارد ومستخدمين معزولين.',
     tenant_usage_purpose: 'ماذا تريد استخدام هذا المستأجر ل؟',
     development_description: 'للاختبار فقط ويجب ألا يستخدم في الإنتاج. لا يلزم اشتراك.',
+    development_description_for_private_regions: 'للاختبار فقط ويجب ألا يستخدم في الإنتاج.',
     development_hint: 'لديه جميع الميزات المهنية ولكن لديه قيود مثل لافتة تسجيل الدخول.',
     production_description: 'للاستخدام من قبل المستخدمين النهائيين وقد يتطلب اشتراكًا مدفوعًا.',
     available_plan: 'الخطة المتاحة:',

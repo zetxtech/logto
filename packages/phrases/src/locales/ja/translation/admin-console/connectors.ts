@@ -13,14 +13,6 @@ const connectors = {
   social_demo_tip:
     'このデモコネクタは実演目的にのみ使用するように設計されており、本番環境での展開は推奨されません。',
   connector_type: 'タイプ',
-  connector_status: 'サインイン体験',
-  connector_status_in_use: '使用中',
-  connector_status_not_in_use: '未使用',
-  not_in_use_tip: {
-    content:
-      '未使用は、サインイン体験でこのサインイン方法が使用されていないことを意味します。<a>{{link}}</a>でこのサインイン方法を追加してください。',
-    go_to_sie: 'サインイン体験に進む',
-  },
   placeholder_title: 'ソーシャルコネクタ',
   placeholder_description:
     'Logto は、標準プロトコルを使用して独自のソーシャルサインインコネクタを作成できるとともに、多くの一般的に使用されているソーシャルサインインコネクタを提供しています。',
@@ -65,9 +57,16 @@ const connectors = {
     sync_profile_each_sign_in: 'サインインごとに同期する',
     sync_profile_tip:
       '基本プロファイル（ユーザーの名前やアバターなど）をソーシャルプロバイダから同期します。',
-    callback_uri: 'Callback URI',
+    enable_token_storage: {
+      title: '持続的な API アクセスのためにトークンを保存',
+      description:
+        'アクセス トークンとリフレッシュ トークンをシークレット ボールトに保存します。繰り返されるユーザーの同意なしに自動化された API コールを許可します。例: 持続的な承認で AI エージェントに Google カレンダーにイベントを追加させる。<a>サードパーティの API を呼び出す方法</a>',
+    },
+    callback_uri: 'リダイレクト URI（コールバック URI）',
     callback_uri_description:
-      'Redirect URI もしくはコールバック URI とも呼ばれ、Logto に戻る URI です。コピーしてソーシャルプロバイダの構成ページに貼り付けてください。',
+      'Redirect URI は、ソーシャル認可の後にユーザーがリダイレクトされる場所です。この URI を IdP の設定に追加してください。',
+    callback_uri_custom_domain_description:
+      'Logto で複数の<a>カスタムドメイン</a>を使用する場合は、すべての対応するコールバック URI を IdP に追加し、各ドメインでソーシャルログインが機能するようにしてください。\n\nLogto の既定ドメイン (*.logto.app) は常に有効です。そのドメインでのログインもサポートしたい場合にのみ含めてください。',
     acs_url: 'アサーションコンシューマーサービス URL',
   },
   platform: {
@@ -81,6 +80,11 @@ const connectors = {
   drawer_subtitle: 'インテグレーションの手順に従ってください',
   unknown: '不明なコネクタ',
   standard_connectors: '標準コネクタ',
+  create_form: {
+    third_party_connectors:
+      'サードパーティ プロバイダーを統合して、迅速なソーシャル サインイン、ソーシャル アカウントのリンク、および API アクセスを提供します。<a>詳細はこちら</a>',
+    standard_connectors: 'または標準プロトコルでソーシャルコネクタをカスタマイズできます。',
+  },
 };
 
 export default Object.freeze(connectors);

@@ -9,14 +9,16 @@ const domain = {
   error_hint:
     'Make sure to update your DNS records. We will continue to check every {{value}} seconds.',
   custom: {
-    custom_domain: 'Custom Domain',
+    custom_domain: 'Custom Domains',
     custom_domain_description:
       'Improve your branding by utilizing a custom domain. This domain will be used in your sign-in experience.',
-    custom_domain_field: 'Custom domain',
-    custom_domain_placeholder: 'your.domain.com',
+    custom_domain_field: 'Custom domains',
+    custom_domain_placeholder: 'auth.domain.com',
+    add_custom_domain_field: 'Add a custom domain',
+    custom_domains_field: 'Custom domains',
     add_domain: 'Add domain',
     invalid_domain_format:
-      'Please provide a valid domain URL with a minimum of three parts, e.g. "your.domain.com."',
+      'Please provide a valid domain URL with a minimum of three parts, e.g. "auth.domain.com."',
     verify_domain: 'Verify domain',
     enable_ssl: 'Enable SSL',
     checking_dns_tip:
@@ -40,6 +42,8 @@ const domain = {
         'If you’ve set up this custom domain in your social connector provider or application endpoint before, you’ll need to modify the URI to the Logto default domain "<span>{{domain}}</span>" first. This is necessary for the social sign-in button to work properly.',
       deleted: 'Delete custom domain successfully!',
     },
+    config_custom_domain_description:
+      'Configure custom domains to set up the following features: applications, social connectors, and enterprise connectors.',
   },
   default: {
     default_domain: 'Default domain',
@@ -53,6 +57,12 @@ const domain = {
     'You can customize the domain name of this URI to match your application’s endpoint. Choose either "{{custom}}" or "{{default}}".',
   custom_acs_url_note:
     'You can customize the domain name of this URI to match your identity provider assertion consumer service URL. Choose either "{{custom}}" or "{{default}}".',
+  switch_custom_domain_tip:
+    'Switch your domain to view the corresponding endpoint. Add more domains via <a>custom domains</a>.',
+  switch_saml_app_domain_tip:
+    'Switch your domain to view the corresponding URLs. For SAML protocols, metadata URLs can be hosted on any accessible domain. However, the selected domain determines the SSO service URL that SPs use to redirect end users for authentication, which affects the login experience and URL visibility.',
+  switch_saml_connector_domain_tip:
+    "Switch domains to view corresponding URLs. The selected domain determines your ACS URL, which affects where users are redirected after SSO login. Choose the domain that matches your application's expected redirect behavior.",
 };
 
 export default Object.freeze(domain);

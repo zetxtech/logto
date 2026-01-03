@@ -40,6 +40,9 @@ const user = {
   email_or_phone_required: '邮箱地址或手机号码是必需的标识符，至少需要一个。',
   email_required: '邮箱地址是必需的标识符，你不能将其设置为 null。',
   phone_required: '手机号码是必需的标识符，你不能将其设置为 null。',
+  enterprise_sso_identity_not_exists:
+    '用户没有与指定的 SSO 连接器 ID {{ ssoConnectorId }} 关联的企业身份。',
+  identity_not_exists_in_current_user: '当前用户账户中不存在指定的身份。请在继续之前链接此身份。',
 };
 
 export default Object.freeze(user);

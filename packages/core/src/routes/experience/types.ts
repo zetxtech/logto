@@ -3,6 +3,7 @@ import {
   type CreateUser,
   encryptedTokenSetGuard,
   InteractionEvent,
+  secretEnterpriseSsoConnectorRelationPayloadGuard,
   secretSocialConnectorRelationPayloadGuard,
   type User,
   Users,
@@ -15,14 +16,23 @@ import { z } from 'zod';
 import { type WithLogContext } from '#src/middleware/koa-audit-log.js';
 import { type WithInteractionDetailsContext } from '#src/middleware/koa-interaction-details.js';
 
+import { type WithEmailI18nContext } from '../../middleware/koa-email-i18n.js';
 import { type WithI18nContext } from '../../middleware/koa-i18next.js';
 
-import { mfaDataGuard, type MfaData } from './classes/mfa.js';
+import {
+  mfaDataGuard,
+  type SanitizedMfaData,
+  type MfaData,
+  sanitizedMfaDataGuard,
+} from './classes/mfa.js';
+import { type EnterpriseSsoConnectorTokenSetSecret } from './classes/verifications/enterprise-sso-verification.js';
 import {
   type VerificationRecordData,
   type VerificationRecord,
   type VerificationRecordMap,
   verificationRecordDataGuard,
+  publicVerificationRecordDataGuard,
+  type SanitizedVerificationRecordData,
 } from './classes/verifications/index.js';
 import { type SocialConnectorTokenSetSecret } from './classes/verifications/social-verification.js';
 import { type WithExperienceInteractionHooksContext } from './middleware/koa-experience-interaction-hooks.js';
@@ -49,6 +59,10 @@ export type InteractionProfile = {
    * Store encrypted token set from a social verification record.  If present, Logto will save this token set in the Secret Vault for future use by the user.
    */
   socialConnectorTokenSetSecret?: SocialConnectorTokenSetSecret;
+  /**
+   * Store encrypted token set from a enterprise SSO verification record.  If present, Logto will save this token set in the Secret Vault for future use by the user.
+   */
+  enterpriseSsoConnectorTokenSetSecret?: EnterpriseSsoConnectorTokenSetSecret;
 } & Pick<
   CreateUser,
   | 'avatar'
@@ -58,6 +72,8 @@ export type InteractionProfile = {
   | 'primaryPhone'
   | 'passwordEncrypted'
   | 'passwordEncryptionMethod'
+  | 'profile'
+  | 'customData'
 >;
 
 const interactionProfileGuard = Users.createGuard
@@ -69,6 +85,8 @@ const interactionProfileGuard = Users.createGuard
     primaryPhone: true,
     passwordEncrypted: true,
     passwordEncryptionMethod: true,
+    profile: true,
+    customData: true,
   })
   .extend({
     socialIdentity: z
@@ -99,7 +117,28 @@ const interactionProfileGuard = Users.createGuard
         socialConnectorRelationPayload: secretSocialConnectorRelationPayloadGuard,
       })
       .optional(),
+    enterpriseSsoConnectorTokenSetSecret: z
+      .object({
+        encryptedTokenSet: encryptedTokenSetGuard,
+        enterpriseSsoConnectorRelationPayload: secretEnterpriseSsoConnectorRelationPayloadGuard,
+      })
+      .optional(),
   }) satisfies ToZodObject<InteractionProfile>;
+
+export type SanitizedInteractionProfile = Omit<
+  InteractionProfile,
+  | 'passwordEncrypted'
+  | 'passwordEncryptionMethod'
+  | 'socialConnectorTokenSetSecret'
+  | 'enterpriseSsoConnectorTokenSetSecret'
+>;
+
+const sanitizedInteractionProfileGuard = interactionProfileGuard.omit({
+  passwordEncrypted: true,
+  passwordEncryptionMethod: true,
+  socialConnectorTokenSetSecret: true,
+  enterpriseSsoConnectorTokenSetSecret: true,
+}) satisfies ToZodObject<SanitizedInteractionProfile>;
 
 /**
  * The interaction context provides the callback functions to get the user and verification record from the interaction
@@ -112,11 +151,13 @@ export type InteractionContext = {
     type: K,
     verificationId: string
   ) => VerificationRecordMap[K];
+  getCurrentProfile: () => InteractionProfile;
 };
 
 export type ExperienceInteractionRouterContext<ContextT extends WithLogContext = WithLogContext> =
   ContextT &
     WithI18nContext &
+    WithEmailI18nContext &
     WithInteractionDetailsContext &
     WithExperienceInteractionHooksContext &
     WithExperienceInteractionContext;
@@ -155,3 +196,33 @@ export const interactionStorageGuard = z.object({
     })
     .optional(),
 }) satisfies ToZodObject<InteractionStorage>;
+
+export type SanitizedInteractionStorageData = {
+  interactionEvent: InteractionEvent;
+  userId?: string;
+  profile?: SanitizedInteractionProfile;
+  verificationRecords?: SanitizedVerificationRecordData[];
+  mfa?: SanitizedMfaData;
+  captcha?: {
+    verified: boolean;
+    skipped: boolean;
+  };
+};
+
+/**
+ * Sanitized interaction response type that excludes sensitive information
+ * but includes data needed for client-side logic and form pre-population
+ */
+export const sanitizedInteractionStorageGuard = z.object({
+  interactionEvent: z.nativeEnum(InteractionEvent),
+  userId: z.string().optional(),
+  profile: sanitizedInteractionProfileGuard,
+  verificationRecords: publicVerificationRecordDataGuard.array().optional(),
+  mfa: sanitizedMfaDataGuard.optional(),
+  captcha: z
+    .object({
+      verified: z.boolean(),
+      skipped: z.boolean(),
+    })
+    .optional(),
+}) satisfies ToZodObject<SanitizedInteractionStorageData>;

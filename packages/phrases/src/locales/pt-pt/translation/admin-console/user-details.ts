@@ -136,6 +136,20 @@ const user_details = {
       edited: 'O token {{name}} foi editado com sucesso.',
     },
   },
+  connections: {
+    title: 'Ligação',
+    description:
+      'O utilizador liga contas de terceiros para login social, SSO empresarial ou acesso a recursos.',
+    token_status_column: 'Estado do token',
+    token_status: {
+      active: 'Ativo',
+      expired: 'Expirado',
+      inactive: 'Inativo',
+      not_applicable: 'Não aplicável',
+      available: 'Disponível',
+      not_available: 'Indisponível',
+    },
+  },
 };
 
 export default Object.freeze(user_details);

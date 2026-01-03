@@ -24,10 +24,14 @@ import { type AnonymousRouter, type RouterInitArgs } from '../types.js';
 import experienceAnonymousRoutes from './anonymous-routes/index.js';
 import ExperienceInteraction from './classes/experience-interaction.js';
 import { experienceRoutes } from './const.js';
+import koaExperienceAuditLog from './middleware/koa-experience-audit-log.js';
 import { koaExperienceInteractionHooks } from './middleware/koa-experience-interaction-hooks.js';
 import koaExperienceInteraction from './middleware/koa-experience-interaction.js';
 import profileRoutes from './profile-routes.js';
-import { type ExperienceInteractionRouterContext } from './types.js';
+import {
+  sanitizedInteractionStorageGuard,
+  type ExperienceInteractionRouterContext,
+} from './types.js';
 import backupCodeVerificationRoutes from './verification-routes/backup-code-verification.js';
 import enterpriseSsoVerificationRoutes from './verification-routes/enterprise-sso-verification.js';
 import newPasswordIdentityVerificationRoutes from './verification-routes/new-password-identity-verification.js';
@@ -51,7 +55,8 @@ export default function experienceApiRoutes<T extends AnonymousRouter>(
     (anonymousRouter as Router<unknown, ExperienceInteractionRouterContext<RouterContext<T>>>).use(
       koaInteractionDetails(provider),
       koaExperienceInteractionHooks(libraries),
-      koaExperienceInteraction(tenant)
+      koaExperienceInteraction(tenant),
+      koaExperienceAuditLog()
     );
 
   experienceRouter.put(
@@ -183,6 +188,21 @@ export default function experienceApiRoutes<T extends AnonymousRouter>(
         userId: ctx.experienceInteraction.identifiedUserId,
       });
 
+      ctx.status = 200;
+      return next();
+    }
+  );
+
+  experienceRouter.get(
+    `${experienceRoutes.interaction}`,
+    koaGuard({
+      status: [200],
+      response: sanitizedInteractionStorageGuard,
+    }),
+    async (ctx, next) => {
+      const { experienceInteraction } = ctx;
+
+      ctx.body = experienceInteraction.toSanitizedJson();
       ctx.status = 200;
       return next();
     }

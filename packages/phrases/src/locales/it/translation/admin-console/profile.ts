@@ -109,6 +109,54 @@ const profile = {
   unlink_confirm_text: 'Sì, scollega',
   unlink_reminder:
     "Gli utenti non potranno più accedere tramite l'account <span></span> se lo scolleghi. Sicuro di procedere?",
+  fields: {
+    name: 'Nome',
+    name_description:
+      'Il nome completo dell\'utente in forma visualizzabile, includendo tutte le parti del nome (es. "Mario Rossi").',
+    avatar: 'Avatar',
+    avatar_description: "URL dell'immagine dell'avatar dell'utente.",
+    familyName: 'Cognome',
+    familyName_description: 'Il cognome dell\'utente (es. "Rossi").',
+    givenName: 'Nome',
+    givenName_description: 'Il nome dell\'utente (es. "Mario").',
+    middleName: 'Secondo nome',
+    middleName_description: 'Il secondo nome dell\'utente (es. "Luigi").',
+    nickname: 'Soprannome',
+    nickname_description:
+      "Nome informale o familiare per l'utente, che può differire dal suo nome legale.",
+    preferredUsername: 'Nome utente preferito',
+    preferredUsername_description:
+      "Identificatore abbreviato con cui l'utente desidera essere referenziato.",
+    profile: 'Profilo',
+    profile_description:
+      "URL della pagina del profilo leggibile dall'uomo dell'utente (es. profilo social).",
+    website: 'Sito web',
+    website_description: "URL del sito web personale o blog dell'utente.",
+    gender: 'Genere',
+    gender_description:
+      'Il genere auto-identificato dell\'utente (es. "Femmina", "Maschio", "Non-binario").',
+    birthdate: 'Data di nascita',
+    birthdate_description:
+      'La data di nascita dell\'utente in un formato specificato (es. "GG-MM-AAAA").',
+    zoneinfo: 'Fuso orario',
+    zoneinfo_description:
+      'Il fuso orario dell\'utente in formato IANA (es. "Europe/Rome" o "America/New_York").',
+    locale: 'Lingua',
+    locale_description: 'La lingua dell\'utente in formato IETF BCP 47 (es. "it-IT" o "en-US").',
+    address: {
+      formatted: 'Indirizzo',
+      streetAddress: 'Indirizzo stradale',
+      locality: 'Città',
+      region: 'Stato/Provincia',
+      postalCode: 'CAP',
+      country: 'Paese',
+    },
+    address_description:
+      "L'indirizzo completo dell'utente in forma visualizzabile, includendo tutte le parti dell'indirizzo (es. \"Via Roma 123, Milano, Italia 20100\").",
+    fullname: 'Nome completo',
+    fullname_description:
+      'Combina flessibilmente cognome, nome e secondo nome in base alla configurazione.',
+  },
 };
 
 export default Object.freeze(profile);

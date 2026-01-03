@@ -1,14 +1,18 @@
 import content from './content.js';
+import custom_profile_fields from './custom-profile-fields.js';
 import sign_up_and_sign_in from './sign-up-and-sign-in.js';
 
 const sign_in_exp = {
   page_title: 'サインインエクスペリエンス',
-  title: 'サインインエクスペリエンス',
+  page_title_with_account: 'サインインとアカウント',
+  title: 'サインインとアカウント',
   description:
     '認証フローと UI をカスタマイズし、すぐに使えるエクスペリエンスをリアルタイムでプレビューします。',
   tabs: {
     branding: 'ブランディング',
     sign_up_and_sign_in: 'サインアップとサインイン',
+    collect_user_profile: 'ユーザープロフィールを収集',
+    account_center: 'アカウントセンター',
     content: '内容',
     password_policy: 'パスワードポリシー',
   },
@@ -37,6 +41,10 @@ const sign_in_exp = {
     with_dark: '{{value}} (ダーク)',
     app_logo_and_favicon: 'アプリロゴとファビコン',
     company_logo_and_favicon: '企業ロゴとファビコン',
+    organization_logo_and_favicon: '組織のロゴとファビコン',
+    hide_logto_branding: 'Logtoのブランディングを非表示にする',
+    hide_logto_branding_description:
+      '「Powered by Logto」を削除します。クリーンでプロフェッショナルなサインイン体験で自社ブランドだけを際立たせましょう。',
   },
   branding_uploads: {
     app_logo: {
@@ -84,6 +92,114 @@ const sign_in_exp = {
     preview_with_bring_your_ui_description:
       'カスタム UI のアセットは正常にアップロードされ、現在提供されています。したがって、組み込みのプレビューウィンドウは無効になりました。\nパーソナライズされたサインイン UI をテストするには、「ライブプレビュー」ボタンをクリックして新しいブラウザタブで開きます。',
   },
+  account_center: {
+    title: 'アカウントセンター',
+    description: 'Logto API を使用してアカウントセンターのフローをカスタマイズします。',
+    enable_account_api: 'Account API を有効化',
+    enable_account_api_description:
+      'Account API を有効化してカスタムのアカウントセンターを構築し、Logto 管理 API を使わずにエンドユーザーへ直接 API へのアクセスを提供します。',
+    field_options: {
+      off: 'オフ',
+      edit: '編集',
+      read_only: '閲覧のみ',
+      enabled: '有効',
+      disabled: '無効',
+    },
+    sections: {
+      account_security: {
+        title: 'アカウントセキュリティ',
+        description:
+          'Account API へのアクセスを管理し、ユーザーがアプリにサインインした後に本人情報や認証要素を表示または編集できるようにします。これらのセキュリティ関連の変更を行う前に、ユーザーは本人確認を行い、有効期限 10 分の検証レコード ID を取得する必要があります。',
+        groups: {
+          identifiers: {
+            title: '識別子',
+          },
+          authentication_factors: {
+            title: '認証要素',
+          },
+        },
+      },
+      user_profile: {
+        title: 'ユーザープロフィール',
+        description:
+          'Account API へのアクセスを管理し、ユーザーがアプリにサインインした後に基本またはカスタムのプロフィールデータを表示・編集できるようにします。',
+        groups: {
+          profile_data: {
+            title: 'プロフィールデータ',
+          },
+        },
+      },
+      secret_vault: {
+        title: 'シークレットボルト',
+        description:
+          'ソーシャルおよびエンタープライズ連携向けに、サードパーティのアクセス トークンを安全に保管して、その API を呼び出します（例: Google カレンダーにイベントを追加）。',
+        third_party_token_storage: {
+          title: 'サードパーティトークン',
+          third_party_access_token_retrieval: 'サードパーティアクセス トークンの取得',
+          third_party_token_tooltip:
+            'トークンを保存するには、対応するソーシャルまたはエンタープライズ連携の設定でこの機能を有効にしてください。',
+          third_party_token_description:
+            'Account API を有効にすると、サードパーティトークンの取得が自動的に有効になります。',
+        },
+      },
+    },
+    fields: {
+      email: 'メールアドレス',
+      phone: '電話番号',
+      social: 'ソーシャル ID',
+      password: 'パスワード',
+      mfa: '多要素認証',
+      mfa_description: 'ユーザーがアカウントセンターから MFA 方法を管理できるようにします。',
+      username: 'ユーザー名',
+      name: '名前',
+      avatar: 'アバター',
+      profile: 'プロフィール',
+      profile_description: '構造化されたプロフィール属性へのアクセスを制御します。',
+      custom_data: 'カスタムデータ',
+      custom_data_description:
+        'ユーザーに保存されているカスタム JSON データへのアクセスを制御します。',
+    },
+    webauthn_related_origins: 'WebAuthn 関連オリジン',
+    webauthn_related_origins_description:
+      'Account API を通じてパスキーを登録できるフロントエンドアプリケーションのドメインを追加します。',
+    webauthn_related_origins_error: 'オリジンは https:// または http:// で始める必要があります',
+    prebuilt_ui: {
+      /** UNTRANSLATED */
+      title: 'INTEGRATE PREBUILT UI',
+      /** UNTRANSLATED */
+      description:
+        'Quickly integrate out-of-the-box verification and security setting flows with prebuilt UI.',
+      /** UNTRANSLATED */
+      flows_title: 'Integrate out-of-the-box security setting flows',
+      /** UNTRANSLATED */
+      flows_description:
+        'Combine your domain with the route to form your account setting URL (e.g., https://auth.foo.com/account/email). Optionally add a `redirect=` URL parameter to return users to your app after successfully updating.',
+      tooltips: {
+        /** UNTRANSLATED */
+        email: 'Update your primary email address',
+        /** UNTRANSLATED */
+        phone: 'Update your primary phone number',
+        /** UNTRANSLATED */
+        username: 'Update your username',
+        /** UNTRANSLATED */
+        password: 'Set a new password',
+        /** UNTRANSLATED */
+        authenticator_app: 'Set up a new authenticator app for multi-factor authentication',
+        /** UNTRANSLATED */
+        passkey_add: 'Register a new passkey',
+        /** UNTRANSLATED */
+        passkey_manage: 'Manage your existing passkeys or add new ones',
+        /** UNTRANSLATED */
+        backup_codes_generate: 'Generate a new set of 10 backup codes',
+        /** UNTRANSLATED */
+        backup_codes_manage: 'View your available backup codes or generate new ones',
+      },
+      /** UNTRANSLATED */
+      customize_note: "Don't want the out-of-the-box experience? You can fully",
+      /** UNTRANSLATED */
+      customize_link: 'customize your flows with the Account API instead.',
+    },
+  },
   sign_up_and_sign_in,
   content,
   setup_warning: {
@@ -93,6 +209,13 @@ const sign_in_exp = {
       'まだメールコネクタが設定されていません。構成を完了する前に、この方法でのサインインはできません。<a>{{link}}</a>「コネクタ」に移動してください',
     no_connector_social:
       'まだソーシャルコネクタを設定していません。ソーシャルサインインの方法を適用するには、まずコネクタを追加してください。<a>{{link}}</a> の中で「コネクタ」をご覧ください。',
+    no_connector_email_account_center:
+      'メールコネクタがまだ設定されていません。<a>「メールおよびSMSコネクタ」</a>で設定してください。',
+    no_connector_sms_account_center:
+      'SMSコネクタがまだ設定されていません。<a>「メールおよびSMSコネクタ」</a>で設定してください。',
+    no_connector_social_account_center:
+      'ソーシャルコネクタがまだ設定されていません。<a>「ソーシャルコネクタ」</a>で設定してください。',
+    no_mfa_factor: 'まだ MFA ファクターが設定されていません。<a>{{link}}</a>で設定してください。',
     setup_link: '設定',
   },
   save_alert: {
@@ -103,6 +226,8 @@ const sign_in_exp = {
     sign_up: 'サインアップ',
     sign_in: 'サインイン',
     social: 'ソーシャル',
+    forgot_password_migration_notice:
+      'パスワードを忘れた場合の検証をカスタムメソッドをサポートするようにアップグレードしました。以前は、これはメールと SMS コネクタによって自動的に決定されていました。アップグレードを完了するには<strong>確認</strong>をクリックしてください。',
   },
   preview: {
     title: 'サインインプレビュー',
@@ -114,6 +239,7 @@ const sign_in_exp = {
     desktop: 'デスクトップ',
     mobile: 'モバイル',
   },
+  custom_profile_fields,
 };
 
 export default Object.freeze(sign_in_exp);

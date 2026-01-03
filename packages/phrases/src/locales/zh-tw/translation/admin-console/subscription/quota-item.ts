@@ -171,6 +171,12 @@ const quota_item = {
     unlimited: '自帶 UI',
     not_eligible: '移除你的自訂 UI 資產',
   },
+  collect_user_profile_enabled: {
+    name: '收集用戶資料',
+    limited: '收集用戶資料',
+    unlimited: '收集用戶資料',
+    not_eligible: '移除你的用戶資料收集欄位',
+  },
   idp_initiated_sso_enabled: {
     name: 'IDP 啟動的 SSO',
     limited: 'IDP 啟動的 SSO',
@@ -195,6 +201,13 @@ const quota_item = {
     limited: '進階安全',
     unlimited: '進階安全',
     not_eligible: '移除你的進階安全設定',
+  },
+  custom_domains_limit: {
+    name: '自訂網域',
+    limited: '{{count, number}} 自訂網域',
+    limited_other: '{{count, number}} 自訂網域',
+    unlimited: '不限自訂網域數',
+    not_eligible: '移除你的自訂網域',
   },
 };
 

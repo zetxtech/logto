@@ -1,7 +1,7 @@
 const general = {
   placeholder: '플레이스홀더',
   submit: '제출',
-  skip: '건너뛰기',
+  skip: '건너�기',
   next: '다음',
   back: '뒤로',
   retry: '재시도',
@@ -75,6 +75,8 @@ const general = {
   or: '또는',
   reset: '재설정',
   generate: '생성',
+  manage: '관리',
+  live_preview: '실시간 미리보기',
 };
 
 export default Object.freeze(general);

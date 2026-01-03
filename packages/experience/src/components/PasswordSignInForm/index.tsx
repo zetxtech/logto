@@ -6,10 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import UserInteractionContext from '@/Providers/UserInteractionContextProvider/UserInteractionContext';
 import LockIcon from '@/assets/icons/lock.svg?react';
-import Button from '@/components/Button';
-import ErrorMessage from '@/components/ErrorMessage';
 import { SmartInputField, PasswordInputField } from '@/components/InputFields';
-import type { IdentifierInputValue } from '@/components/InputFields/SmartInputField';
 import CaptchaBox from '@/containers/CaptchaBox';
 import ForgotPasswordLink from '@/containers/ForgotPasswordLink';
 import TermsAndPrivacyCheckbox from '@/containers/TermsAndPrivacyCheckbox';
@@ -18,6 +15,9 @@ import usePrefilledIdentifier from '@/hooks/use-prefilled-identifier';
 import { useForgotPasswordSettings } from '@/hooks/use-sie';
 import useSingleSignOnWatch from '@/hooks/use-single-sign-on-watch';
 import useTerms from '@/hooks/use-terms';
+import Button from '@/shared/components/Button';
+import ErrorMessage from '@/shared/components/ErrorMessage';
+import type { IdentifierInputValue } from '@/shared/components/InputFields/SmartInputField';
 import { getGeneralIdentifierErrorMessage, validateIdentifierField } from '@/utils/form';
 
 import styles from './index.module.scss';

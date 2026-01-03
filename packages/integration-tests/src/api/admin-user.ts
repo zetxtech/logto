@@ -1,5 +1,6 @@
 import type {
   CreatePersonalAccessToken,
+  DesensitizedEnterpriseSsoTokenSetSecret,
   DesensitizedSocialTokenSetSecret,
   Identities,
   Identity,
@@ -117,11 +118,6 @@ export const putUserIdentity = async (userId: string, target: string, identity: 
 export const verifyUserPassword = async (userId: string, password: string) =>
   authedAdminApi.post(`users/${userId}/password/verify`, { json: { password } });
 
-export const getUserIdentityTokenSetRecord = async (userId: string, target: string) =>
-  authedAdminApi
-    .get(`users/${userId}/identities/${target}/secret`)
-    .json<DesensitizedSocialTokenSetSecret>();
-
 export const getUserMfaVerifications = async (userId: string) =>
   authedAdminApi.get(`users/${userId}/mfa-verifications`).json<MfaVerification[]>();
 
@@ -135,6 +131,14 @@ export const createUserMfaVerification = async (userId: string, type: MfaFactor)
       | { type: MfaFactor.TOTP; secret: string; secretQrCode: string }
       | { type: MfaFactor.BackupCode; codes: string[] }
     >();
+
+export const getUserLogtoConfig = async (userId: string) =>
+  authedAdminApi.get(`users/${userId}/logto-configs`).json<{ mfa: { skipped: boolean } }>();
+
+export const updateUserLogtoConfig = async (userId: string, skipped: boolean) =>
+  authedAdminApi
+    .patch(`users/${userId}/logto-configs`, { json: { mfa: { skipped } } })
+    .json<{ mfa: { skipped: boolean } }>();
 
 export const getUserOrganizations = async (userId: string) =>
   authedAdminApi.get(`users/${userId}/organizations`).json<OrganizationWithRoles[]>();
@@ -151,9 +155,23 @@ export const getUserPersonalAccessTokens = async (userId: string) =>
   authedAdminApi.get(`users/${userId}/personal-access-tokens`).json<PersonalAccessToken[]>();
 
 export const deletePersonalAccessToken = async (userId: string, name: string) =>
-  authedAdminApi.delete(`users/${userId}/personal-access-tokens/${name}`);
+  authedAdminApi.post(`users/${userId}/personal-access-tokens/delete`, { json: { name } });
 
 export const updatePersonalAccessToken = async (
+  userId: string,
+  name: string,
+  body: Record<string, unknown>
+) =>
+  authedAdminApi
+    .patch(`users/${userId}/personal-access-tokens`, {
+      json: { ...body, currentName: name },
+    })
+    .json<PersonalAccessToken>();
+
+export const deletePersonalAccessTokenLegacy = async (userId: string, name: string) =>
+  authedAdminApi.delete(`users/${userId}/personal-access-tokens/${name}`);
+
+export const updatePersonalAccessTokenLegacy = async (
   userId: string,
   name: string,
   body: Record<string, unknown>
@@ -163,3 +181,39 @@ export const updatePersonalAccessToken = async (
       json: body,
     })
     .json<PersonalAccessToken>();
+
+export const getUserIdentity = async (
+  userId: string,
+  target: string,
+  includeTokenSecret = true
+) => {
+  const searchParams = new URLSearchParams({
+    ...conditional(includeTokenSecret && { includeTokenSecret: 'true' }),
+  });
+
+  return authedAdminApi
+    .get(`users/${userId}/identities/${target}`, {
+      searchParams,
+    })
+    .json<{
+      identity: Identity;
+      tokenSecret?: DesensitizedSocialTokenSetSecret;
+    }>();
+};
+
+export const getUserSsoIdentity = async (
+  userId: string,
+  connectorId: string,
+  includeTokenSecret = true
+) => {
+  const searchParams = new URLSearchParams({
+    ...conditional(includeTokenSecret && { includeTokenSecret: 'true' }),
+  });
+
+  return authedAdminApi
+    .get(`users/${userId}/sso-identities/${connectorId}`, { searchParams })
+    .json<{
+      ssoIdentity: UserSsoIdentity;
+      tokenSecret?: DesensitizedEnterpriseSsoTokenSetSecret;
+    }>();
+};

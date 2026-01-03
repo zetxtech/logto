@@ -105,6 +105,52 @@ const profile = {
   unlink_confirm_text: 'Tak, odłącz',
   unlink_reminder:
     'Użytkownicy nie będą mogli się zalogować z kontem <span></span>, jeśli je odłączysz. Czy na pewno chcesz kontynuować?',
+  fields: {
+    name: 'Imię i nazwisko',
+    name_description:
+      'Pełna nazwa użytkownika w formie wyświetlanej, obejmująca wszystkie części nazwy (np. "Jan Kowalski").',
+    avatar: 'Awatar',
+    avatar_description: 'URL obrazu awatara użytkownika.',
+    familyName: 'Nazwisko',
+    familyName_description: 'Nazwisko użytkownika (np. "Kowalski").',
+    givenName: 'Imię',
+    givenName_description: 'Imię użytkownika (np. "Jan").',
+    middleName: 'Drugie imię',
+    middleName_description: 'Drugie imię użytkownika (np. "Maria").',
+    nickname: 'Pseudonim',
+    nickname_description:
+      'Nieformalna lub potoczna nazwa użytkownika, która może różnić się od jego prawdziwego imienia i nazwiska.',
+    preferredUsername: 'Preferowana nazwa użytkownika',
+    preferredUsername_description: 'Skrócony identyfikator, którym użytkownik chce być określany.',
+    profile: 'Profil',
+    profile_description:
+      'URL czytelnej dla człowieka strony profilu użytkownika (np. profil w mediach społecznościowych).',
+    website: 'Strona internetowa',
+    website_description: 'URL osobistej strony internetowej lub bloga użytkownika.',
+    gender: 'Płeć',
+    gender_description:
+      'Samookreślona płeć użytkownika (np. "Kobieta", "Mężczyzna", "Niebinarna").',
+    birthdate: 'Data urodzenia',
+    birthdate_description: 'Data urodzenia użytkownika w określonym formacie (np. "DD-MM-RRRR").',
+    zoneinfo: 'Strefa czasowa',
+    zoneinfo_description:
+      'Strefa czasowa użytkownika w formacie IANA (np. "Europe/Warszawa" lub "America/New_York").',
+    locale: 'Język',
+    locale_description: 'Język użytkownika w formacie IETF BCP 47 (np. "pl-PL" lub "en-US").',
+    address: {
+      formatted: 'Adres',
+      streetAddress: 'Ulica',
+      locality: 'Miasto',
+      region: 'Województwo',
+      postalCode: 'Kod pocztowy',
+      country: 'Kraj',
+    },
+    address_description:
+      'Pełny adres użytkownika w formie wyświetlanej, obejmujący wszystkie części adresu (np. "ul. Główna 1, 00-001 Warszawa, Polska").',
+    fullname: 'Pełne imię i nazwisko',
+    fullname_description:
+      'Elastycznie łączy nazwisko, imię i drugie imię w zależności od konfiguracji.',
+  },
 };
 
 export default Object.freeze(profile);

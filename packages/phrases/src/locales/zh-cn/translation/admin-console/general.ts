@@ -75,6 +75,8 @@ const general = {
   or: '或',
   reset: '重置',
   generate: '生成',
+  manage: '管理',
+  live_preview: '实时预览',
 };
 
 export default Object.freeze(general);

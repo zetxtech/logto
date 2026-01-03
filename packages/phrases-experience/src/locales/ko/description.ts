@@ -17,10 +17,9 @@ const description = {
   passcode_sent: '비밀번호가 재전송되었어요.',
   resend_after_seconds: '아직 못 받으셨나요? <span>{{seconds}}</span> 초 후에 다시 보내기',
   resend_passcode: '아직 못 받으셨나요? <a>인증 코드를 다시 보내기</a>',
-  create_account_id_exists:
-    '{{type}} {{value}} 계정은 다른 계정과 연결되어 있습니다. 다른 {{type}}을(를) 시도해주세요.',
+  create_account_id_exists: '계정 {{value}}이(가) 이미 존재해요. 로그인을 계속합니다.',
   link_account_id_exists: '{{type}} {{value}}와/과 연동된 계정이 이미 존재해요. 연동할까요?',
-  sign_in_id_does_not_exist: '{type}} {{value}} 계정이 존재하지 않아요. 새로 만드시겠어요?',
+  sign_in_id_does_not_exist: '{{value}}에 대한 계정을 찾을 수 없어요. 새로 만드시겠어요?',
   sign_in_id_does_not_exist_alert: '{{type}} {{value}} 계정이 존재하지 않아요.',
   create_account_id_exists_alert: '{{type}} {{value}} 이미 존재해요.',
   social_identity_exist:
@@ -100,6 +99,7 @@ const description = {
   switch_account_title: '현재 {{account}}으로 로그인 중입니다',
   switch_account_description:
     '계속 진행하려면 현재 계정에서 로그아웃되고 새 계정으로 자동 전환됩니다.',
+  about_yourself: '자신에 대해 알려주세요',
 };
 
 export default Object.freeze(description);

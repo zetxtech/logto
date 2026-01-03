@@ -3,9 +3,6 @@
     {
       "name": "Custom profile fields",
       "description": "An admin feature used to create a customized user profile form, which is used to collect additional user information upon successful registrations."
-    },
-    {
-      "name": "Dev feature"
     }
   ],
   "paths": {
@@ -22,6 +19,17 @@
       "post": {
         "summary": "Create a custom profile field",
         "description": "Create a custom profile field."
+      }
+    },
+    "/api/custom-profile-fields/batch": {
+      "post": {
+        "summary": "Batch create custom profile fields",
+        "description": "Create multiple custom profile fields in a single request (max 20 items).",
+        "responses": {
+          "201": {
+            "description": "Custom profile fields created successfully."
+          }
+        }
       }
     },
     "/api/custom-profile-fields/{name}": {
@@ -53,7 +61,7 @@
         }
       }
     },
-    "/api/custom-profile-fields/sie-order": {
+    "/api/custom-profile-fields/properties/sie-order": {
       "post": {
         "summary": "Update the display order of the custom profile fields in Sign-in Experience.",
         "description": "Update the display order of the custom profile fields in Sign-in Experience.",

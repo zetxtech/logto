@@ -134,6 +134,20 @@ const user_details = {
       edited: 'Belirteç {{name}} başarıyla düzenlendi.',
     },
   },
+  connections: {
+    title: 'Bağlantı',
+    description:
+      'Kullanıcı, sosyal giriş, kurumsal SSO veya kaynak erişimi için üçüncü taraf hesapları bağlar.',
+    token_status_column: 'Belirteç durumu',
+    token_status: {
+      active: 'Aktif',
+      expired: 'Süresi dolmuş',
+      inactive: 'Pasif',
+      not_applicable: 'Uygulanamaz',
+      available: 'Mevcut',
+      not_available: 'Mevcut değil',
+    },
+  },
 };
 
 export default Object.freeze(user_details);

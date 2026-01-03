@@ -123,6 +123,11 @@ const enterprise_sso_details = {
     "Faire toujours confiance aux adresses courriel non vérifiées renvoyées par le fournisseur d'identité",
   trust_unverified_email_tip:
     "Le connecteur Entra ID (OIDC) ne retourne pas la revendication `email_verified`, ce qui signifie que les adresses électroniques d'Azure ne sont pas garanties comme étant vérifiées. Par défaut, Logto ne synchronisera pas les adresses email non vérifiées vers le profil utilisateur. Activez cette option uniquement si vous faites confiance à toutes les adresses email du répertoire Entra ID.",
+  offline_access: {
+    label: "Actualiser le jeton d'accès",
+    description:
+      "Activer l'accès `offline` de Google pour demander un jeton d'actualisation, permettant à votre application d'actualiser le jeton d'accès sans nouvelle autorisation de l'utilisateur.",
+  },
 };
 
 export default Object.freeze(enterprise_sso_details);

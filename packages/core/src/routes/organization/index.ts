@@ -1,4 +1,9 @@
-import { type OrganizationWithFeatured, Organizations, featuredUserGuard } from '@logto/schemas';
+import {
+  type OrganizationWithFeatured,
+  Organizations,
+  ProductEvent,
+  featuredUserGuard,
+} from '@logto/schemas';
 import { yes } from '@silverhand/essentials';
 import { z } from 'zod';
 
@@ -8,6 +13,7 @@ import { koaQuotaGuard, koaReportSubscriptionUpdates } from '#src/middleware/koa
 import SchemaRouter from '#src/utils/SchemaRouter.js';
 import { parseSearchOptions } from '#src/utils/search.js';
 
+import { captureEvent } from '../../utils/posthog.js';
 import organizationInvitationRoutes from '../organization-invitation/index.js';
 import organizationRoleRoutes from '../organization-role/index.js';
 import organizationScopeRoutes from '../organization-scope/index.js';
@@ -24,6 +30,7 @@ export default function organizationRoutes<T extends ManagementApiRouter>(
   const [
     originalRouter,
     {
+      id: tenantId,
       queries: { organizations },
       libraries: { quota },
     },
@@ -32,30 +39,33 @@ export default function organizationRoutes<T extends ManagementApiRouter>(
   const router = new SchemaRouter(Organizations, organizations, {
     middlewares: [
       {
-        middlewares: [
-          koaQuotaGuard({ key: 'organizationsLimit', quota, methods: ['POST', 'PUT'] }),
-        ],
-        scope: {
-          native: ['post', 'put'],
-        },
+        middleware: koaQuotaGuard({ key: 'organizationsLimit', quota }),
+        scope: 'native',
+        method: ['post', 'put'],
+        // Throw 403 when quota exceeded
+        status: [403],
       },
       {
-        middlewares: [
-          koaReportSubscriptionUpdates({
-            key: 'organizationsLimit',
-            quota,
-            methods: ['POST', 'PUT', 'DELETE'],
-          }),
-        ],
-        scope: {
-          native: ['post', 'put', 'delete'],
-        },
+        middleware: koaReportSubscriptionUpdates({
+          key: 'organizationsLimit',
+          quota,
+        }),
+        scope: 'native',
+        method: ['post', 'put', 'delete'],
       },
     ],
     errorHandler,
     searchFields: ['name'],
     disabled: { get: true },
     idLength: 12,
+    hooks: {
+      afterInsert: async (ctx) => {
+        captureEvent({ tenantId, request: ctx.req }, ProductEvent.OrganizationCreated);
+      },
+      afterDelete: async (ctx) => {
+        captureEvent({ tenantId, request: ctx.req }, ProductEvent.OrganizationDeleted);
+      },
+    },
   });
 
   router.get(
@@ -97,7 +107,7 @@ export default function organizationRoutes<T extends ManagementApiRouter>(
     }
   );
 
-  userRoutes(router, organizations);
+  userRoutes(router, organizations, quota);
   applicationRoutes(router, organizations);
   jitRoutes(router, organizations);
 

@@ -16,9 +16,11 @@ const paywall = {
   scopes_per_resource:
     '已达到 <planName/> 的{{count, number}}个 API 资源每个权限限制。立即升级以扩展。如需任何帮助，请 <a>联系我们</a>。',
   scopes_per_resource_other:
-    '已达到 <planName/> 的{{count, number}}个 API 资源每个权限限制。立即升级以扩展。如需任何帮助，请 <a>联系我们</a>。',
+    '已达到 <planName/> 的{{count, number}}个 API 资源每个权限限制。立即升级以扩展。如需任何帮助,请 <a>联系我们</a>。',
   custom_domain:
-    '升级至 <strong>Hobby</strong> 或 <strong>Pro</strong> 套餐，解锁自定义域功能。如有任何需要，请不要犹豫 <a>联系我们</a>。',
+    '已达到 <planName/> 的 {{count, number}} 个自定义域名限制。升级到付费计划以添加多个自定义域名和高级福利。如有任何问题,请不要犹豫 <a>联系我们</a>。',
+  custom_domain_others:
+    '已达到 <planName/> 的 {{count, number}} 个自定义域名限制。升级到付费计划以添加多个自定义域名和高级福利。如有任何问题,请不要犹豫 <a>联系我们</a>。',
   social_connectors:
     '已达到 <planName/> 的{{count, number}}个社交连接器限制。为满足您团队的需求，请升级计划以获取额外的社交连接器，并可以使用 OIDC、OAuth 2.0 和 SAML 协议创建您自己的连接器。如需任何帮助，请 <a>联系我们</a>。',
   social_connectors_other:
@@ -33,14 +35,7 @@ const paywall = {
     '已达到 <planName/> 的{{count, number}}个标准连接器限制。为满足您团队的需求，请升级至企业版计划以获取额外的社交连接器，并可以使用 OIDC、OAuth 2.0 和 SAML 协议创建您自己的连接器。如需任何帮助，请 <a>联系我们</a>。',
   standard_connectors_pro_other:
     '已达到 <planName/> 的{{count, number}}个标准连接器限制。为满足您团队的需求，请升级至企业版计划以获取额外的社交连接器，并可以使用 OIDC、OAuth 2.0 和 SAML 协议创建您自己的连接器。如需任何帮助，请 <a>联系我们</a>。',
-  roles:
-    '已达到 <planName/> 的{{count, number}}个角色限制。升级计划以添加额外的角色和权限。如需任何帮助，请 <a>联系我们</a>。',
-  roles_other:
-    '已达到 <planName/> 的{{count, number}}个角色限制。升级计划以添加额外的角色和权限。如需任何帮助，请 <a>联系我们</a>。',
-  machine_to_machine_roles:
-    '{{count, number}} 个机器对机器角色已达到 <planName/> 的限制。升级计划以添加额外的角色和权限。如需任何帮助，请 <a>联系我们</a>。',
-  machine_to_machine_roles_other:
-    '{{count, number}} 个机器对机器角色已达到 <planName/> 的限制。升级计划以添加额外的角色和权限。如需任何帮助，请 <a>联系我们</a>。',
+  roles: '升级计划以添加额外的角色和权限。如需任何帮助，请随时 <a>联系我们</a>。',
   scopes_per_role:
     '已达到 <planName/> 的{{count, number}}个角色每个权限限制。升级计划以添加额外的角色和权限。如需任何帮助，请 <a>联系我们</a>。',
   scopes_per_role_other:
@@ -48,6 +43,8 @@ const paywall = {
   saml_applications_oss: '额外的 SAML 应用可用于 Logto Enterprise 计划。如需帮助，请联系我们。',
   logto_pricing_button_text: 'Logto 云定价',
   saml_applications: '额外的 SAML 应用可在 Logto Enterprise 计划中使用。如果需要帮助，请联系我们。',
+  saml_applications_add_on:
+    '通过升级到付费计划解锁 SAML 应用功能。如需任何帮助，请随时 <a>联系我们</a>。',
   hooks:
     '已达到 <planName/> 的{{count, number}}个 Webhook 限制。升级计划以创建更多 Webhook。如需任何帮助，请 <a>联系我们</a>。',
   hooks_other:
@@ -59,15 +56,19 @@ const paywall = {
   sso_connectors: '通过升级到付费计划，可解锁企业 SSO 功能。如需任何帮助，请随时 <a>联系我们</a>。',
   tenant_members: '通过升级到付费计划，可解锁协作功能。如需任何帮助，请随时 <a>联系我们</a>。',
   tenant_members_dev_plan:
-    '您已达到 {{limit}}-成员限制。释放一个成员或撤销待定邀请以添加新成员。需要更多名额？请随时联系我们。',
+    '已达到 {{limit}}-成员限制。释放一个成员或撤销待定邀请以添加新成员。需要更多名额？请随时联系我们。',
   custom_jwt: {
     title: '添加自定义声明',
     description:
       '升级到付费计划以获取自定义 JWT 功能和高级福利。如有任何问题，请不要犹豫 <a>联系我们</a>。',
   },
+  branding_customization:
+    '升级计划，解锁 "隐藏 Logto 品牌" 和 "带上你的 UI" 功能，全面掌控品牌体验。',
   bring_your_ui: '升级到付费计划，可带上自定义界面功能和高级福利。',
   security_features:
-    '通过升级到 Pro 计划解锁高级安全功能。如果你有任何问题，请不要犹豫 <a>联系我们</a>。',
+    '通过升级到 Pro 计划解锁高级安全功能。如有任何问题，请不要犹豫 <a>联系我们</a>。',
+  collect_user_profile:
+    '升级到付费计划以解锁在新用户注册期间收集更多用户资料信息的功能。如有任何问题，请不要犹豫 <a>联系我们</a>。',
 };
 
 export default Object.freeze(paywall);

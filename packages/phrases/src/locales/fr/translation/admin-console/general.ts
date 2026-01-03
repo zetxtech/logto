@@ -52,7 +52,7 @@ const general = {
   learn_more: 'En savoir plus',
   tab_error: '{{count, number}} erreur',
   tab_error_other: '{{count, number}} erreurs',
-  skip_for_now: 'Passer pour l`instant',
+  skip_for_now: "Passer pour l'instant",
   remove: 'Supprimer',
   visit: 'Visiter',
   join: 'Rejoindre',
@@ -76,6 +76,8 @@ const general = {
   or: 'Ou',
   reset: 'Réinitialiser',
   generate: 'Générer',
+  manage: 'Gérer',
+  live_preview: 'Aperçu en direct',
 };
 
 export default Object.freeze(general);

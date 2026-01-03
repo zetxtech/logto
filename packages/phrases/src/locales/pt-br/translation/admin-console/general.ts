@@ -76,6 +76,8 @@ const general = {
   or: 'Ou',
   reset: 'Redefinir',
   generate: 'Gerar',
+  manage: 'Gerenciar',
+  live_preview: 'Pré-visualização ao vivo',
 };
 
 export default Object.freeze(general);

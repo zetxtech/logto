@@ -23,11 +23,20 @@ describe('domains', () => {
     expect(domain.domain).toBe(domainName);
   });
 
-  it('should fail when already has a domain', async () => {
-    await createDomain();
+  it('should create multiple domains', async () => {
+    const firstDomain = generateDomain();
+    const secondDomain = generateDomain();
 
-    const response = await createDomain().catch((error: unknown) => error);
-    expect(response instanceof HTTPError && response.response.status).toBe(422);
+    const createdFirstDomain = await createDomain(firstDomain);
+    expect(createdFirstDomain.domain).toBe(firstDomain);
+
+    const createdSecondDomain = await createDomain(secondDomain);
+    expect(createdSecondDomain.domain).toBe(secondDomain);
+
+    const domains = await getDomains();
+    expect(domains.length).toBe(2);
+    expect(domains.some((domain) => domain.domain === firstDomain)).toBeTruthy();
+    expect(domains.some((domain) => domain.domain === secondDomain)).toBeTruthy();
   });
 
   it('should get domain detail successfully', async () => {

@@ -3,6 +3,8 @@ import password_rejected from './password-rejected.js';
 const error = {
   general_required: 'Введите {{types, list(type: disjunction;)}}',
   general_invalid: 'Проверьте {{types, list(type: disjunction;)}}',
+  invalid_min_max_input: 'Значение должно быть между {{minValue}} и {{maxValue}}',
+  invalid_min_max_length: 'Длина значения должна быть между {{minLength}} и {{maxLength}}',
   username_required: 'Введите имя пользователя',
   password_required: 'Введите пароль',
   username_exists: 'Имя пользователя занято',
@@ -23,8 +25,12 @@ const error = {
   invalid_link: 'Неверная ссылка',
   invalid_link_description:
     'Ваш одноразовый токен мог истечь или больше не является действительным.',
-  something_went_wrong: 'Что-то пошло не так.',
   captcha_verification_failed: 'Не удалось проверить капчу.',
+  terms_acceptance_required: 'Требуется согласие с условиями',
+  terms_acceptance_required_description:
+    'Вы должны согласиться с условиями, чтобы продолжить. Пожалуйста, попробуйте снова.',
+  something_went_wrong: 'Что-то пошло не так.',
+  feature_not_enabled: 'Эта функция не включена.',
 };
 
 export default Object.freeze(error);

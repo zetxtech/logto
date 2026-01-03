@@ -10,7 +10,7 @@ import { isDevFeaturesEnabled } from './constants.js';
 export const generateName = () => crypto.randomUUID();
 export const generateUserId = () => crypto.randomUUID();
 export const generateUsername = () => `usr_${crypto.randomUUID().replaceAll('-', '_')}`;
-export const generatePassword = () => `pwd_${crypto.randomUUID()}`;
+export const generatePassword = () => `pwd_${crypto.randomUUID().slice(0, 12)}`;
 
 export const generateResourceName = () => `res_${crypto.randomUUID()}`;
 export const generateResourceIndicator = () => `https://${crypto.randomUUID()}.logto.io`;
@@ -148,3 +148,12 @@ export const devFeatureDisabledTest = Object.freeze({
   it: isDevFeaturesEnabled ? it.skip : it,
   describe: isDevFeaturesEnabled ? describe.skip : describe,
 });
+
+export const parseInteractionCookie = (cookie: string): Record<string, string> => {
+  try {
+    // eslint-disable-next-line no-restricted-syntax
+    return JSON.parse(cookie) as Record<string, string>;
+  } catch {
+    return {};
+  }
+};

@@ -4,7 +4,7 @@ const application_details = {
   check_guide: 'Revisar Guía',
   settings: 'Configuraciones',
   settings_description:
-    'Un "Application" es un software o servicio registrado que puede acceder a información del usuario o actuar en nombre de un usuario. Las aplicaciones ayudan a reconocer quién está solicitando qué desde Logto y manejan el inicio de sesión y los permisos. Rellena los campos requeridos para la autenticación.',
+    'Una "aplicación" es un software o servicio registrado que puede acceder a la información del usuario o actuar en su nombre. Las aplicaciones ayudan a Logto a reconocer quién solicita qué y gestionan el inicio de sesión y los permisos. Completa los campos obligatorios para la autenticación.',
   integration: 'Integración',
   integration_description:
     'Despliega con los trabajadores seguros de Logto, potenciados por la red global de Cloudflare para un rendimiento de primer nivel y arranques instantáneos de 0ms a nivel mundial.',
@@ -159,6 +159,18 @@ const application_details = {
     organization_description:
       'Selecciona los permisos solicitados por la aplicación de terceros para acceder a datos específicos de la organización.',
     grant_organization_level_permissions: 'Conceder permisos de datos de organización',
+    oidc_title: 'OIDC',
+    oidc_description:
+      'Los permisos OIDC principales se configuran automáticamente para tu aplicación. Estos scopes son esenciales para la autenticación y no se muestran en la pantalla de consentimiento del usuario.',
+    default_oidc_permissions: 'Permisos OIDC predeterminados',
+    permission_column: 'Permiso',
+    guide_column: 'Guía',
+    openid_permission: 'openid',
+    openid_permission_guide:
+      "Opcional para el acceso a recursos OAuth.\nObligatorio para la autenticación OIDC. Concede acceso a un token de ID y permite acceder al 'userinfo_endpoint'.",
+    offline_access_permission: 'offline_access',
+    offline_access_permission_guide:
+      'Opcional. Obtiene tokens de actualización para acceso prolongado o tareas en segundo plano.',
   },
   roles: {
     assign_button: 'Asignar roles de máquina a máquina',

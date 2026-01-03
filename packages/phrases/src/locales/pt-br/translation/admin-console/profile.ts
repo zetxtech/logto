@@ -107,6 +107,54 @@ const profile = {
   unlink_confirm_text: 'Sim, deslinkar',
   unlink_reminder:
     'Os usuários não poderão fazer login com a conta <span></span> se você deslinká-la. Tem certeza de que deseja prosseguir?',
+  fields: {
+    name: 'Nome',
+    name_description:
+      'O nome completo do usuário em formato exibível, incluindo todos os componentes do nome (por exemplo, "João Silva").',
+    avatar: 'Avatar',
+    avatar_description: 'URL da imagem do avatar do usuário.',
+    familyName: 'Sobrenome',
+    familyName_description: 'O sobrenome do usuário (por exemplo, "Silva").',
+    givenName: 'Nome',
+    givenName_description: 'O nome do usuário (por exemplo, "João").',
+    middleName: 'Nome do meio',
+    middleName_description: 'O nome do meio do usuário (por exemplo, "Carlos").',
+    nickname: 'Apelido',
+    nickname_description: 'Nome casual ou familiar do usuário, que pode diferir do nome legal.',
+    preferredUsername: 'Nome de usuário preferido',
+    preferredUsername_description:
+      'Identificador abreviado pelo qual o usuário deseja ser referenciado.',
+    profile: 'Perfil',
+    profile_description:
+      'URL da página de perfil legível do usuário (por exemplo, perfil de mídia social).',
+    website: 'Site',
+    website_description: 'URL do site pessoal ou blog do usuário.',
+    gender: 'Gênero',
+    gender_description:
+      'O gênero autoidentificado do usuário (por exemplo, "Feminino", "Masculino", "Não-binário").',
+    birthdate: 'Data de nascimento',
+    birthdate_description:
+      'A data de nascimento do usuário em um formato específico (por exemplo, "dd-MM-yyyy").',
+    zoneinfo: 'Fuso horário',
+    zoneinfo_description:
+      'O fuso horário do usuário no formato IANA (por exemplo, "America/Sao_Paulo" ou "Europe/Lisbon").',
+    locale: 'Idioma',
+    locale_description:
+      'O idioma do usuário no formato IETF BCP 47 (por exemplo, "pt-BR" ou "en-US").',
+    address: {
+      formatted: 'Endereço',
+      streetAddress: 'Endereço',
+      locality: 'Cidade',
+      region: 'Estado',
+      postalCode: 'CEP',
+      country: 'País',
+    },
+    address_description:
+      'O endereço completo do usuário em formato exibível, incluindo todos os componentes do endereço (por exemplo, "Rua Principal, 123, Cidade, Brasil 12345-678").',
+    fullname: 'Nome completo',
+    fullname_description:
+      'Combina flexivelmente sobrenome, nome e nome do meio com base na configuração.',
+  },
 };
 
 export default Object.freeze(profile);

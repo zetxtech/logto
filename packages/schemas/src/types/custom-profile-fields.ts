@@ -5,26 +5,31 @@ import { Users } from '../db-entries/user.js';
 import {
   CustomProfileFieldType,
   customProfileFieldTypeGuard,
+  fieldPartGuard,
   type UserProfile,
   userProfileAddressKeys,
   userProfileGuard,
 } from '../foundations/index.js';
+
+import { userOnboardingDataKey } from './onboarding.js';
+import { defaultTenantIdKey } from './tenant.js';
+import { consoleUserPreferenceKey, guideRequestsKey } from './user.js';
 
 export type BaseProfileField = {
   name: string;
   label?: string;
   description?: string;
   type: CustomProfileFieldType;
-  required?: boolean;
+  required: boolean;
 };
 
 const baseProfileFieldGuard = z.object({
   name: z.string(),
   type: customProfileFieldTypeGuard,
-  label: z.string(),
+  label: z.string().min(1).optional(),
   description: z.string().optional(),
-  required: z.boolean().optional(),
-});
+  required: z.boolean(),
+}) satisfies ToZodObject<BaseProfileField>;
 
 export type TextProfileField = BaseProfileField & {
   type: CustomProfileFieldType.Text;
@@ -71,6 +76,7 @@ export type DateProfileField = BaseProfileField & {
   config?: {
     placeholder?: string;
     format: string;
+    customFormat?: string;
   };
 };
 
@@ -80,29 +86,34 @@ export const dateProfileFieldGuard = baseProfileFieldGuard.extend({
     .object({
       placeholder: z.string().optional(),
       format: z.string(),
+      customFormat: z.string().optional(),
     })
     .optional(),
 }) satisfies ToZodObject<DateProfileField>;
 
-export type CheckboxProfileField = BaseProfileField & {
+export type CheckboxProfileField = Omit<BaseProfileField, 'description'> & {
   type: CustomProfileFieldType.Checkbox;
-  config: {
-    options: Array<{ label: string; value: string }>;
+  required: false;
+  config?: {
+    defaultValue: 'true' | 'false';
   };
 };
 
-export const checkboxProfileFieldGuard = baseProfileFieldGuard.extend({
+export const checkboxProfileFieldGuard = baseProfileFieldGuard.omit({ description: true }).extend({
   type: z.literal(CustomProfileFieldType.Checkbox),
-  config: z.object({
-    options: z.array(z.object({ label: z.string(), value: z.string() })),
-  }),
+  required: z.literal(false),
+  config: z
+    .object({
+      defaultValue: z.literal('true').or(z.literal('false')),
+    })
+    .optional(),
 }) satisfies ToZodObject<CheckboxProfileField>;
 
 export type SelectProfileField = BaseProfileField & {
   type: CustomProfileFieldType.Select;
   config: {
     placeholder?: string;
-    options: Array<{ label: string; value: string }>;
+    options: Array<{ label?: string; value: string }>;
   };
 };
 
@@ -110,7 +121,7 @@ export const selectProfileFieldGuard = baseProfileFieldGuard.extend({
   type: z.literal(CustomProfileFieldType.Select),
   config: z.object({
     placeholder: z.string().optional(),
-    options: z.array(z.object({ label: z.string(), value: z.string() })),
+    options: z.array(z.object({ label: z.string().optional(), value: z.string() })),
   }),
 }) satisfies ToZodObject<SelectProfileField>;
 
@@ -149,7 +160,24 @@ export const regexProfileFieldGuard = baseProfileFieldGuard.extend({
 export type AddressProfileField = BaseProfileField & {
   type: CustomProfileFieldType.Address;
   config: {
-    parts: Array<{ key: keyof Exclude<UserProfile['address'], undefined>; enabled: boolean }>;
+    parts: Array<{
+      enabled: boolean;
+      name: keyof Exclude<UserProfile['address'], undefined>;
+      type: CustomProfileFieldType;
+      label?: string;
+      description?: string;
+      required: boolean;
+      config?: {
+        placeholder?: string;
+        minLength?: number;
+        maxLength?: number;
+        minValue?: number;
+        maxValue?: number;
+        options?: Array<{ label?: string; value: string }>;
+        format?: string;
+        customFormat?: string;
+      };
+    }>;
   };
 };
 
@@ -157,9 +185,8 @@ export const addressProfileFieldGuard = baseProfileFieldGuard.extend({
   type: z.literal(CustomProfileFieldType.Address),
   config: z.object({
     parts: z.array(
-      z.object({
-        key: z.enum(userProfileAddressKeys),
-        enabled: z.boolean(),
+      fieldPartGuard.omit({ name: true }).extend({
+        name: z.enum(userProfileAddressKeys),
       })
     ),
   }),
@@ -169,13 +196,27 @@ export type FullnameProfileField = BaseProfileField & {
   type: CustomProfileFieldType.Fullname;
   config: {
     parts: Array<{
-      key: keyof Pick<UserProfile, 'givenName' | 'middleName' | 'familyName'>;
       enabled: boolean;
+      name: keyof Pick<UserProfile, 'givenName' | 'middleName' | 'familyName'>;
+      type: CustomProfileFieldType;
+      label?: string;
+      description?: string;
+      required: boolean;
+      config?: {
+        placeholder?: string;
+        minLength?: number;
+        maxLength?: number;
+        minValue?: number;
+        maxValue?: number;
+        options?: Array<{ label?: string; value: string }>;
+        format?: string;
+        customFormat?: string;
+      };
     }>;
   };
 };
 
-const fullnameKeys = userProfileGuard
+export const fullnameKeys = userProfileGuard
   .pick({
     givenName: true,
     middleName: true,
@@ -186,7 +227,11 @@ const fullnameKeys = userProfileGuard
 export const fullnameProfileFieldGuard = baseProfileFieldGuard.extend({
   type: z.literal(CustomProfileFieldType.Fullname),
   config: z.object({
-    parts: z.array(z.object({ key: z.enum(fullnameKeys), enabled: z.boolean() })),
+    parts: z.array(
+      fieldPartGuard.omit({ name: true }).extend({
+        name: z.enum(fullnameKeys),
+      })
+    ),
   }),
 }) satisfies ToZodObject<FullnameProfileField>;
 
@@ -213,17 +258,19 @@ export type CustomProfileFieldUnion =
   | AddressProfileField
   | FullnameProfileField;
 
+export const nameAndAvatarGuard = z
+  .object({
+    name: z.string(),
+    avatar: z.string().url().or(z.literal('')),
+  })
+  .partial();
+
+export const builtInProfileGuard = nameAndAvatarGuard.merge(
+  z.object({ profile: userProfileGuard })
+);
+
 export const builtInCustomProfileFieldKeys = Object.freeze(
-  userProfileGuard
-    .merge(
-      Users.createGuard.pick({
-        name: true,
-        primaryEmail: true,
-        primaryPhone: true,
-        avatar: true,
-      })
-    )
-    .keyof().options
+  builtInProfileGuard.merge(userProfileGuard).keyof().options
 );
 
 export const updateCustomProfileFieldDataGuard = z.discriminatedUnion('type', [
@@ -248,3 +295,55 @@ export const updateCustomProfileFieldSieOrderGuard = z.object({
 export type UpdateCustomProfileFieldSieOrder = z.infer<
   typeof updateCustomProfileFieldSieOrderGuard
 >;
+
+/**
+ * Reserved custom data keys, which are used by the system and should not be used by custom profile fields.
+ */
+export const reservedCustomDataKeyGuard = z
+  .object({
+    [userOnboardingDataKey]: z.string(),
+    [guideRequestsKey]: z.string(),
+    [consoleUserPreferenceKey]: z.string(),
+    [defaultTenantIdKey]: z.string(),
+  })
+  .partial();
+export const reservedCustomDataKeys = Object.freeze(reservedCustomDataKeyGuard.keyof().options);
+
+/**
+ * Disallow sign-in identifiers related field keys in custom profile fields, as this is conflicting
+ * with the built-in sign-in/sign-up experience flows.
+ */
+export const signInIdentifierKeyGuard = Users.createGuard
+  .pick({
+    username: true,
+    primaryEmail: true,
+    primaryPhone: true,
+  })
+  .extend({
+    email: z.string().nullable().optional(),
+    phone: z.string().nullable().optional(),
+  });
+export const reservedSignInIdentifierKeys = Object.freeze(signInIdentifierKeyGuard.keyof().options);
+
+/**
+ * Reserved user profile keys.
+ * Currently only `preferredUsername` is reserved since it is the standard username property used
+ * by most identity providers. Should not allow user updating this field via profile related APIs.
+ */
+export const reservedBuiltInProfileKeyGuard = userProfileGuard.pick({ preferredUsername: true });
+export const reservedBuiltInProfileKeys = Object.freeze(
+  reservedBuiltInProfileKeyGuard.keyof().options
+);
+
+export enum SupportedDateFormat {
+  US = 'MM/dd/yyyy',
+  UK = 'dd/MM/yyyy',
+  ISO = 'yyyy-MM-dd',
+  Custom = 'custom',
+}
+
+export enum Gender {
+  Female = 'female',
+  Male = 'male',
+  Other = 'prefer_not_to_say',
+}

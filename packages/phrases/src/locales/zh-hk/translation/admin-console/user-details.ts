@@ -124,6 +124,19 @@ const user_details = {
       edited: '令牌 {{name}} 已成功編輯。',
     },
   },
+  connections: {
+    title: '連接',
+    description: '用戶連結第三方帳戶以進行社交登入、企業單點登錄或資源訪問。',
+    token_status_column: '令牌狀態',
+    token_status: {
+      active: '活躍',
+      expired: '已過期',
+      inactive: '未活躍',
+      not_applicable: '不適用',
+      available: '可用',
+      not_available: '不可用',
+    },
+  },
 };
 
 export default Object.freeze(user_details);

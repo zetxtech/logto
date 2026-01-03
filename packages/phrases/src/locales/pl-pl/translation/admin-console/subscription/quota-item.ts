@@ -171,6 +171,12 @@ const quota_item = {
     unlimited: 'Użyj swojego interfejsu użytkownika',
     not_eligible: 'Usuń swoje niestandardowe zasoby interfejsu użytkownika',
   },
+  collect_user_profile_enabled: {
+    name: 'Zbieranie profilu użytkownika',
+    limited: 'Zbieranie profilu użytkownika',
+    unlimited: 'Zbieranie profilu użytkownika',
+    not_eligible: 'Usuń pola zbierania profilu użytkownika',
+  },
   idp_initiated_sso_enabled: {
     name: 'SSO inicjowane przez dostawcę tożsamości',
     limited: 'SSO inicjowane przez dostawcę tożsamości',
@@ -195,6 +201,13 @@ const quota_item = {
     limited: 'Zaawansowane zabezpieczenia',
     unlimited: 'Zaawansowane zabezpieczenia',
     not_eligible: 'Usuń swoje ustawienia zaawansowanych zabezpieczeń',
+  },
+  custom_domains_limit: {
+    name: 'Niestandardowe domeny',
+    limited: '{{count, number}} niestandardowa domena',
+    limited_other: '{{count, number}} niestandardowe domeny',
+    unlimited: 'Nieograniczone niestandardowe domeny',
+    not_eligible: 'Usuń swoje niestandardowe domeny',
   },
 };
 

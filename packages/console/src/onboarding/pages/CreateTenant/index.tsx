@@ -1,7 +1,7 @@
 import { emailRegEx } from '@logto/core-kit';
 import { useLogto } from '@logto/react';
 import { TenantRole, Theme } from '@logto/schemas';
-import { useCallback, useContext } from 'react';
+import { useCallback, useContext, useMemo } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -10,19 +10,19 @@ import CreateTenantHeaderIconDark from '@/assets/icons/create-tenant-header-dark
 import CreateTenantHeaderIcon from '@/assets/icons/create-tenant-header.svg?react';
 import { createTenantApi, useCloudApi } from '@/cloud/hooks/use-cloud-api';
 import ActionBar from '@/components/ActionBar';
-import { GtagConversionId, reportConversion } from '@/components/Conversion/utils';
+import { GtagConversionId, reportToGoogle } from '@/components/Conversion/utils';
 import { type CreateTenantData } from '@/components/CreateTenantModal/types';
 import PageMeta from '@/components/PageMeta';
 import Region, { defaultRegionName } from '@/components/Region';
-import { availableRegions } from '@/consts';
 import { TenantsContext } from '@/contexts/TenantsProvider';
 import Button from '@/ds-components/Button';
 import DangerousRaw from '@/ds-components/DangerousRaw';
 import FormField from '@/ds-components/FormField';
 import OverlayScrollbar from '@/ds-components/OverlayScrollbar';
 import RadioGroup, { Radio } from '@/ds-components/RadioGroup';
+import { Ring } from '@/ds-components/Spinner';
 import TextInput from '@/ds-components/TextInput';
-import useCurrentUser from '@/hooks/use-current-user';
+import useAvailableRegions from '@/hooks/use-available-regions';
 import useTheme from '@/hooks/use-theme';
 import useUserOnboardingData from '@/onboarding/hooks/use-user-onboarding-data';
 import pageLayout from '@/onboarding/scss/layout.module.scss';
@@ -30,11 +30,19 @@ import InviteEmailsInput from '@/pages/TenantSettings/TenantMembers/InviteEmails
 import { type InviteeEmailItem } from '@/pages/TenantSettings/TenantMembers/types';
 import { trySubmitSafe } from '@/utils/form';
 
-type CreateTenantForm = Omit<CreateTenantData, 'tag'> & { collaboratorEmails: InviteeEmailItem[] };
+import styles from './index.module.scss';
+
+type CreateTenantForm = Omit<CreateTenantData, 'tag'> & {
+  collaboratorEmails: InviteeEmailItem[];
+};
 
 function CreateTenant() {
   const methods = useForm<CreateTenantForm>({
-    defaultValues: { name: 'My project', regionName: defaultRegionName, collaboratorEmails: [] },
+    defaultValues: {
+      name: 'My project',
+      regionName: defaultRegionName,
+      collaboratorEmails: [],
+    },
   });
   const {
     control,
@@ -44,7 +52,7 @@ function CreateTenant() {
   } = methods;
   const { prependTenant } = useContext(TenantsContext);
   const theme = useTheme();
-  const { t } = useTranslation(undefined, { keyPrefix: 'admin_console' });
+  const { t, i18n } = useTranslation(undefined, { keyPrefix: 'admin_console' });
   const { update } = useUserOnboardingData();
   const parseEmailOptions = useCallback(
     (values: InviteeEmailItem[]) => {
@@ -63,15 +71,17 @@ function CreateTenant() {
 
   const { isAuthenticated, getOrganizationToken } = useLogto();
   const cloudApi = useCloudApi();
-  const { user } = useCurrentUser();
+  const { currentTenant } = useContext(TenantsContext);
+  const { regions, regionsError } = useAvailableRegions();
+
+  const publicRegions = useMemo(
+    () => regions?.filter((region) => !region.isPrivate) ?? [],
+    [regions]
+  );
 
   const onCreateClick = handleSubmit(
     trySubmitSafe(async ({ name, regionName, collaboratorEmails }: CreateTenantForm) => {
-      reportConversion({
-        gtagId: GtagConversionId.SignUp,
-        redditType: 'SignUp',
-        transactionId: user?.id,
-      });
+      reportToGoogle(GtagConversionId.SignUp, { transactionId: currentTenant?.id });
       const newTenant = await cloudApi.post('/api/tenants', {
         body: { name: name || 'My project', regionName },
       });
@@ -83,6 +93,7 @@ function CreateTenant() {
         isAuthenticated,
         getOrganizationToken,
         tenantId: newTenant.id,
+        language: i18n.language,
       });
 
       if (collaboratorEmails.length > 0) {
@@ -127,27 +138,31 @@ function CreateTenant() {
               title="tenants.settings.tenant_region"
               tip={t('tenants.settings.tenant_region_description')}
             >
-              <Controller
-                control={control}
-                name="regionName"
-                rules={{ required: true }}
-                render={({ field: { onChange, value, name } }) => (
-                  <RadioGroup type="small" name={name} value={value} onChange={onChange}>
-                    {availableRegions.map((region) => (
-                      <Radio
-                        key={region}
-                        title={
-                          <DangerousRaw>
-                            <Region regionName={region} />
-                          </DangerousRaw>
-                        }
-                        value={region}
-                        isDisabled={isSubmitting}
-                      />
-                    ))}
-                  </RadioGroup>
-                )}
-              />
+              {!regions && !regionsError && <Ring />}
+              {regionsError && <span className={styles.error}>{regionsError.message}</span>}
+              {regions && !regionsError && (
+                <Controller
+                  control={control}
+                  name="regionName"
+                  rules={{ required: true }}
+                  render={({ field: { onChange, value, name } }) => (
+                    <RadioGroup type="small" name={name} value={value} onChange={onChange}>
+                      {publicRegions.map((region) => (
+                        <Radio
+                          key={region.name}
+                          title={
+                            <DangerousRaw>
+                              <Region region={region} />
+                            </DangerousRaw>
+                          }
+                          value={region.name}
+                          isDisabled={isSubmitting}
+                        />
+                      ))}
+                    </RadioGroup>
+                  )}
+                />
+              )}
             </FormField>
             <FormField title="cloud.create_tenant.invite_collaborators">
               <Controller

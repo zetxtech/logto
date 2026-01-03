@@ -35,6 +35,7 @@ function ConnectorContent({ isDeleted, connectorData, onConnectorUpdated }: Prop
   const { t } = useTranslation(undefined, { keyPrefix: 'admin_console' });
   const api = useApi();
   const formData = useMemo(() => convertResponseToForm(connectorData), [connectorData]);
+
   const methods = useForm<ConnectorFormType>({
     reValidateMode: 'onBlur',
     // eslint-disable-next-line no-restricted-syntax -- The original type will cause "infinitely deep type" error.
@@ -54,6 +55,7 @@ function ConnectorContent({ isDeleted, connectorData, onConnectorUpdated }: Prop
     type: connectorType,
     formItems,
     isStandard: isStandardConnector,
+    isTokenStorageSupported,
   } = connectorData;
 
   const isSocialConnector = connectorType === ConnectorType.Social;
@@ -64,7 +66,7 @@ function ConnectorContent({ isDeleted, connectorData, onConnectorUpdated }: Prop
   const onSubmit = handleSubmit(
     trySubmitSafe(async (data) => {
       const { formItems, isStandard, id } = connectorData;
-      const { syncProfile, name, logo, logoDark, target, rawConfig } = data;
+      const { syncProfile, name, logo, logoDark, target, rawConfig, enableTokenStorage } = data;
       // Apply the raw config first to avoid losing data updated from other forms that are not
       // included in the form items.
       // Explicitly SKIP falsy values removal logic (the last argument of `configParser()` method) for social connectors.
@@ -77,6 +79,7 @@ function ConnectorContent({ isDeleted, connectorData, onConnectorUpdated }: Prop
         ? {
             config,
             syncProfile: syncProfile === SyncProfileMode.EachSignIn,
+            enableTokenStorage,
           }
         : { config };
       const standardConnectorPayload = {
@@ -121,10 +124,17 @@ function ConnectorContent({ isDeleted, connectorData, onConnectorUpdated }: Prop
         {isSocialConnector && (
           <FormCard
             title="connector_details.settings"
-            description="connector_details.settings_description"
+            description={
+              isTokenStorageSupported
+                ? 'connector_details.setting_description_with_token_storage_supported'
+                : 'connector_details.settings_description'
+            }
             learnMoreLink={{ href: connectors }}
           >
-            <BasicForm isStandard={isStandardConnector} />
+            <BasicForm
+              isStandard={isStandardConnector}
+              isTokenStorageSupported={isTokenStorageSupported}
+            />
           </FormCard>
         )}
         {isEmailServiceConnector ? (

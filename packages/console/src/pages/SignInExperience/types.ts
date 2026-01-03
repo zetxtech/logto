@@ -1,8 +1,11 @@
 import {
+  AccountCenterControlValue,
+  type AccountCenter as AccountCenterConfig,
   type SignUp,
   type SignInExperience,
   type SignInIdentifier,
   type SignUpIdentifier as SignUpIdentifierMethod,
+  type AccountCenterFieldControl,
 } from '@logto/schemas';
 
 /**
@@ -17,8 +20,54 @@ type OmittedSignInExperienceKeys = keyof Pick<
 export enum SignInExperienceTab {
   Branding = 'branding',
   SignUpAndSignIn = 'sign-up-and-sign-in',
+  CollectUserProfile = 'collect-user-profile',
+  AccountCenter = 'account-center',
   Content = 'content',
 }
+
+const accountCenterFieldKeys: Array<keyof AccountCenterFieldControl> = [
+  'email',
+  'phone',
+  'social',
+  'password',
+  'mfa',
+  'username',
+  'name',
+  'avatar',
+  'profile',
+  'customData',
+] as const;
+
+export type AccountCenterFieldKey = (typeof accountCenterFieldKeys)[number];
+
+export type AccountCenterFormValues = {
+  enabled: boolean;
+  fields: Record<AccountCenterFieldKey, AccountCenterControlValue>;
+  webauthnRelatedOrigins: string[];
+};
+
+const createDefaultAccountCenterFormValues = (): AccountCenterFormValues => ({
+  enabled: false,
+  // eslint-disable-next-line no-restricted-syntax
+  fields: Object.fromEntries(
+    accountCenterFieldKeys.map((key) => [key, AccountCenterControlValue.Off])
+  ) as Record<AccountCenterFieldKey, AccountCenterControlValue>,
+  webauthnRelatedOrigins: [],
+});
+
+export const normalizeWebauthnRelatedOrigins = (origins?: string[]): string[] =>
+  origins?.map((origin) => origin.trim()).filter(Boolean) ?? [];
+
+export const convertAccountCenterToForm = (
+  accountCenter?: AccountCenterConfig
+): AccountCenterFormValues => ({
+  enabled: accountCenter?.enabled ?? false,
+  fields: {
+    ...createDefaultAccountCenterFormValues().fields,
+    ...accountCenter?.fields,
+  },
+  webauthnRelatedOrigins: normalizeWebauthnRelatedOrigins(accountCenter?.webauthnRelatedOrigins),
+});
 
 /**
  * @deprecated

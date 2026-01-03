@@ -2,15 +2,28 @@ const mfa = {
   totp: 'OTP de la aplicación autenticadora',
   webauthn: 'Contraseña',
   backup_code: 'Código de respaldo',
+  email_verification_code: 'Código de verificación por correo electrónico',
+  phone_verification_code: 'Código de verificación por SMS',
   link_totp_description: 'Ej., Google Authenticator, etc.',
   link_webauthn_description: 'Vincule su dispositivo o hardware USB',
   link_backup_code_description: 'Genere un código de respaldo',
+  link_email_verification_code_description: 'Vincule su dirección de correo electrónico',
+  link_email_2fa_description:
+    'Vincula tu dirección de correo electrónico para verificación de 2 pasos',
+  link_phone_verification_code_description: 'Vincule su número de teléfono',
+  link_phone_2fa_description: 'Vincula tu número de teléfono para verificación de 2 pasos',
   verify_totp_description: 'Ingrese el código de un solo uso en la aplicación',
   verify_webauthn_description: 'Verifique su dispositivo o hardware USB',
   verify_backup_code_description: 'Pegue el código de respaldo que guardó',
+  verify_email_verification_code_description: 'Ingrese el código enviado a su correo electrónico',
+  verify_phone_verification_code_description: 'Ingrese el código enviado a su teléfono',
+  send_to_email: 'Enviar a {{identifier}}',
+  send_to_phone: 'Enviar a {{identifier}}',
   add_mfa_factors: 'Agregar verificación de 2 pasos',
   add_mfa_description:
     'La verificación de dos factores está habilitada. Seleccione su segundo método de verificación para iniciar sesión de forma segura.',
+  add_another_mfa_factor: 'Agregar otra verificación de 2 pasos',
+  add_another_mfa_description: 'Seleccione otra forma de verificar su identidad al iniciar sesión.',
   verify_mfa_factors: 'Verificación de 2 pasos',
   verify_mfa_description:
     'La verificación de 2 pasos se ha habilitado para esta cuenta. Seleccione la segunda forma de verificar su identidad.',
@@ -29,6 +42,12 @@ const mfa = {
     'Ingrese el código de verificación de 6 dígitos generado por la aplicación autenticadora.',
   enter_one_time_code_description:
     'Se ha habilitado la verificación en dos pasos para esta cuenta. Por favor, ingrese el código de un solo uso que se muestra en su aplicación de autenticación vinculada.',
+  enter_email_verification_code: 'Introducir código de verificación por correo electrónico',
+  enter_email_verification_code_description:
+    'La autenticación en dos pasos está habilitada para esta cuenta. Por favor, introduzca el código de verificación enviado a {{identifier}}.',
+  enter_phone_verification_code: 'Introducir código de verificación por SMS',
+  enter_phone_verification_code_description:
+    'La autenticación en dos pasos está habilitada para esta cuenta. Por favor, introduzca el código de verificación por SMS enviado a {{identifier}}.',
   link_another_mfa_factor: 'Cambiar a otro método',
   save_backup_code: 'Guarde su código de respaldo',
   save_backup_code_description:

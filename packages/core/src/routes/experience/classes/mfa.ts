@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { type ToZodObject } from '@logto/connector-kit';
 import {
   type BindBackupCode,
@@ -9,15 +10,17 @@ import {
   bindWebAuthnGuard,
   InteractionEvent,
   type JsonObject,
-  MfaFactor,
   MfaPolicy,
   type User,
   VerificationType,
   type Mfa as MfaSettings,
   OrganizationRequiredMfaPolicy,
+  MfaFactor,
+  SignInIdentifier,
+  AlternativeSignUpIdentifier,
 } from '@logto/schemas';
-import { generateStandardId } from '@logto/shared';
-import { deduplicate } from '@silverhand/essentials';
+import { generateStandardId, maskEmail, maskPhone } from '@logto/shared';
+import { cond, condObject, deduplicate, pick } from '@silverhand/essentials';
 import { z } from 'zod';
 
 import RequestError from '#src/errors/RequestError/index.js';
@@ -28,21 +31,42 @@ import assertThat from '#src/utils/assert-that.js';
 
 import { type InteractionContext } from '../types.js';
 
+import { getAllUserEnabledMfaVerifications, sortMfaFactors } from './helpers.js';
 import { SignInExperienceValidator } from './libraries/sign-in-experience-validator.js';
 
 export type MfaData = {
   mfaSkipped?: boolean;
+  /**
+   * Whether user skipped the optional suggestion to add another MFA factor during registration.
+   * This flag lives only in the current interaction and should NOT be persisted to user profile.
+   */
+  additionalBindingSuggestionSkipped?: boolean;
   totp?: BindTotp;
   webAuthn?: BindWebAuthn[];
   backupCode?: BindBackupCode;
 };
 
+export type SanitizedMfaData = {
+  mfaSkipped?: boolean;
+  totp?: Pick<BindTotp, 'type'>;
+  webAuthn?: BindWebAuthn[];
+  backupCode?: Omit<BindBackupCode, 'codes'>;
+};
+
 export const mfaDataGuard = z.object({
   mfaSkipped: z.boolean().optional(),
+  additionalBindingSuggestionSkipped: z.boolean().optional(),
   totp: bindTotpGuard.optional(),
   webAuthn: z.array(bindWebAuthnGuard).optional(),
   backupCode: bindBackupCodeGuard.optional(),
 }) satisfies ToZodObject<MfaData>;
+
+export const sanitizedMfaDataGuard = z.object({
+  mfaSkipped: z.boolean().optional(),
+  totp: z.object({ type: z.literal(MfaFactor.TOTP) }).optional(),
+  webAuthn: z.array(bindWebAuthnGuard).optional(),
+  backupCode: bindBackupCodeGuard.pick({ type: true }).optional(),
+}) satisfies ToZodObject<SanitizedMfaData>;
 
 export const userMfaDataKey = 'mfa';
 
@@ -60,24 +84,12 @@ const isMfaSkipped = (logtoConfig: JsonObject): boolean => {
 };
 
 /**
- * Filter out backup codes mfa verifications that have been used
- */
-const filterOutEmptyBackupCodes = (
-  mfaVerifications: User['mfaVerifications']
-): User['mfaVerifications'] =>
-  mfaVerifications.filter((mfa) => {
-    if (mfa.type === MfaFactor.BackupCode) {
-      return mfa.codes.some((code) => !code.usedAt);
-    }
-    return true;
-  });
-
-/**
  * This class stores all the pending new MFA settings for a user.
  */
 export class Mfa {
   private readonly signInExperienceValidator: SignInExperienceValidator;
   #mfaSkipped?: boolean;
+  #additionalBindingSuggestionSkipped?: boolean;
   #totp?: BindTotp;
   #webAuthn?: BindWebAuthn[];
   #backupCode?: BindBackupCode;
@@ -89,9 +101,10 @@ export class Mfa {
     private readonly interactionContext: InteractionContext
   ) {
     this.signInExperienceValidator = new SignInExperienceValidator(libraries, queries);
-    const { mfaSkipped, totp, webAuthn, backupCode } = data;
+    const { mfaSkipped, additionalBindingSuggestionSkipped, totp, webAuthn, backupCode } = data;
 
     this.#mfaSkipped = mfaSkipped;
+    this.#additionalBindingSuggestionSkipped = additionalBindingSuggestionSkipped;
     this.#totp = totp;
     this.#webAuthn = webAuthn;
     this.#backupCode = backupCode;
@@ -99,6 +112,10 @@ export class Mfa {
 
   get mfaSkipped() {
     return this.#mfaSkipped;
+  }
+
+  get additionalBindingSuggestionSkipped() {
+    return this.#additionalBindingSuggestionSkipped;
   }
 
   get bindMfaFactorsArray(): BindMfa[] {
@@ -247,11 +264,11 @@ export class Mfa {
 
     await this.checkMfaFactorsEnabledInSignInExperience([MfaFactor.BackupCode]);
 
-    const { mfaVerifications } = await this.interactionContext.getIdentifiedUser();
-    const userHasOtherMfa = mfaVerifications.some((mfa) => mfa.type !== MfaFactor.BackupCode);
-    const hasOtherNewMfa = Boolean(this.#totp ?? this.#webAuthn?.length);
+    const userFactors = await this.getUserMfaFactors();
+    const hasOtherMfaFactors = userFactors.some((factor) => factor !== MfaFactor.BackupCode);
+
     assertThat(
-      userHasOtherMfa || hasOtherNewMfa,
+      hasOtherMfaFactors,
       new RequestError({
         code: 'session.mfa.backup_code_can_not_be_alone',
         status: 422,
@@ -262,11 +279,115 @@ export class Mfa {
   }
 
   /**
+   * Mark the optional suggestion as skipped for this interaction.
+   * No persistence to user account.
+   */
+  skipAdditionalBindingSuggestion() {
+    this.#additionalBindingSuggestionSkipped = true;
+  }
+
+  /**
    * @throws {RequestError} with status 400 if the mfa factors are not enabled in the sign-in experience
    */
   async checkAvailability() {
     const newBindMfaFactors = deduplicate(this.bindMfaFactorsArray.map(({ type }) => type));
     await this.checkMfaFactorsEnabledInSignInExperience(newBindMfaFactors);
+  }
+
+  /**
+   * Optionally suggest user to bind additional MFA factors during registration.
+   * Encapsulates suggestion logic and throws a 422 with `session.mfa.suggest_additional_mfa`
+   * when conditions are met.
+   * The purpose is to suggest another MFA factor if the user has only one Email or Phone factor.
+   */
+  // eslint-disable-next-line complexity
+  async guardAdditionalBindingSuggestion(
+    factorsInUser: MfaFactor[],
+    availableFactors: MfaFactor[]
+  ) {
+    // Only suggest during registration flow
+    if (this.interactionContext.getInteractionEvent() !== InteractionEvent.Register) {
+      return;
+    }
+
+    // If no Email/Phone factor in use, then the user is not registered by Email/Phone
+    if (
+      !factorsInUser.includes(MfaFactor.EmailVerificationCode) &&
+      !factorsInUser.includes(MfaFactor.PhoneVerificationCode)
+    ) {
+      return;
+    }
+
+    const { signUp } = await this.signInExperienceValidator.getSignInExperienceData();
+    // If the user has email, but not registered by email, no suggestion
+    if (
+      factorsInUser.includes(MfaFactor.EmailVerificationCode) &&
+      !signUp.identifiers.includes(SignInIdentifier.Email) &&
+      !signUp.secondaryIdentifiers?.some(
+        ({ identifier }) =>
+          identifier === SignInIdentifier.Email ||
+          identifier === AlternativeSignUpIdentifier.EmailOrPhone
+      )
+    ) {
+      return;
+    }
+    // If the user has phone, but not registered by phone, no suggestion
+    if (
+      factorsInUser.includes(MfaFactor.PhoneVerificationCode) &&
+      !signUp.identifiers.includes(SignInIdentifier.Phone) &&
+      !signUp.secondaryIdentifiers?.some(
+        ({ identifier }) =>
+          identifier === SignInIdentifier.Phone ||
+          identifier === AlternativeSignUpIdentifier.EmailOrPhone
+      )
+    ) {
+      return;
+    }
+
+    const sortedFactors = sortMfaFactors(availableFactors);
+
+    const additionalFactors = sortedFactors.filter((factor) => !factorsInUser.includes(factor));
+
+    // Respect user's choice to skip suggestion for this interaction
+    if (this.additionalBindingSuggestionSkipped) {
+      return;
+    }
+
+    // If user already bound an MFA in this interaction, don't suggest again
+    if (this.bindMfaFactorsArray.length > 0) {
+      return;
+    }
+
+    // No available factors to suggest
+    if (additionalFactors.length === 0) {
+      return;
+    }
+
+    // Get user data for masking
+    const user = await this.interactionContext.getIdentifiedUser();
+    const { primaryEmail, primaryPhone } = user;
+
+    // Build masked identifiers for bound factors
+    const maskedIdentifiers = condObject({
+      [MfaFactor.EmailVerificationCode]:
+        factorsInUser.includes(MfaFactor.EmailVerificationCode) &&
+        primaryEmail &&
+        maskEmail(primaryEmail),
+      [MfaFactor.PhoneVerificationCode]:
+        factorsInUser.includes(MfaFactor.PhoneVerificationCode) &&
+        primaryPhone &&
+        maskPhone(primaryPhone),
+    });
+
+    throw new RequestError(
+      { code: 'session.mfa.suggest_additional_mfa', status: 422 },
+      {
+        availableFactors: sortedFactors,
+        maskedIdentifiers,
+        skippable: true,
+        suggestion: true,
+      }
+    );
   }
 
   /**
@@ -284,11 +405,7 @@ export class Mfa {
       return;
     }
 
-    const {
-      mfaVerifications,
-      logtoConfig,
-      id: userId,
-    } = await this.interactionContext.getIdentifiedUser();
+    const { logtoConfig, id: userId } = await this.interactionContext.getIdentifiedUser();
 
     const isMfaRequiredByUserOrganizations = await this.isMfaRequiredByUserOrganizations(
       mfaSettings,
@@ -318,9 +435,11 @@ export class Mfa {
       return;
     }
 
-    const availableFactors = factors.filter((factor) => factor !== MfaFactor.BackupCode);
+    const availableFactors = sortMfaFactors(
+      factors.filter((factor) => factor !== MfaFactor.BackupCode)
+    );
 
-    const factorsInUser = filterOutEmptyBackupCodes(mfaVerifications).map(({ type }) => type);
+    const factorsInUser = await this.getUserMfaFactors();
     const factorsInBind = this.bindMfaFactorsArray.map(({ type }) => type);
     const linkedFactors = deduplicate([...factorsInUser, ...factorsInBind]);
 
@@ -335,6 +454,9 @@ export class Mfa {
       )
     );
 
+    // Optional suggestion: Let Mfa decide whether to suggest additional binding during registration
+    await this.guardAdditionalBindingSuggestion(factorsInUser, availableFactors);
+
     // Assert backup code
     assertThat(
       !factors.includes(MfaFactor.BackupCode) || linkedFactors.includes(MfaFactor.BackupCode),
@@ -348,9 +470,19 @@ export class Mfa {
   get data(): MfaData {
     return {
       mfaSkipped: this.mfaSkipped,
+      additionalBindingSuggestionSkipped: this.additionalBindingSuggestionSkipped,
       totp: this.#totp,
       webAuthn: this.#webAuthn,
       backupCode: this.#backupCode,
+    };
+  }
+
+  get sanitizedData(): SanitizedMfaData {
+    return {
+      mfaSkipped: this.mfaSkipped,
+      totp: cond(this.#totp && pick(this.#totp, 'type')),
+      webAuthn: this.#webAuthn,
+      backupCode: cond(this.#backupCode && pick(this.#backupCode, 'type')),
     };
   }
 
@@ -372,4 +504,22 @@ export class Mfa {
 
     return organizations.some(({ isMfaRequired }) => isMfaRequired);
   }
+
+  private async getUserMfaFactors(): Promise<MfaFactor[]> {
+    const mfaSettings = await this.signInExperienceValidator.getMfaSettings();
+    const user = await this.interactionContext.getIdentifiedUser();
+    const currentProfile = this.interactionContext.getCurrentProfile();
+
+    const existingVerifications = getAllUserEnabledMfaVerifications(
+      mfaSettings,
+      user,
+      currentProfile
+    );
+    return [
+      ...existingVerifications,
+      ...(this.#totp ? [MfaFactor.TOTP] : []),
+      ...(this.#webAuthn?.length ? [MfaFactor.WebAuthn] : []),
+    ].filter(Boolean);
+  }
 }
+/* eslint-enable max-lines */

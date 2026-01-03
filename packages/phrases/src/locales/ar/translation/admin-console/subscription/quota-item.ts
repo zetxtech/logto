@@ -171,6 +171,12 @@ const quota_item = {
     unlimited: 'اجلب واجهة المستخدم الخاصة بك',
     not_eligible: 'قم بإزالة أصول واجهة المستخدم المخصصة الخاصة بك',
   },
+  collect_user_profile_enabled: {
+    name: 'جمع ملف تعريف المستخدم',
+    limited: 'جمع ملف تعريف المستخدم',
+    unlimited: 'جمع ملف تعريف المستخدم',
+    not_eligible: 'قم بإزالة حقول جمع ملف تعريف المستخدم الخاصة بك',
+  },
   idp_initiated_sso_enabled: {
     name: 'تسجيل الدخول الأحادي الذي بدأه موفر الهوية',
     limited: 'تسجيل الدخول الأحادي الذي بدأه موفر الهوية',
@@ -195,6 +201,13 @@ const quota_item = {
     limited: 'الأمان المتقدّم',
     unlimited: 'الأمان المتقدّم',
     not_eligible: 'قم بإزالة إعدادات الأمان المتقدّمة الخاصة بك',
+  },
+  custom_domains_limit: {
+    name: 'النطاقات المخصصة',
+    limited: '{{count, number}} نطاق مخصص',
+    limited_other: '{{count, number}} نطاقات مخصصة',
+    unlimited: 'عدد غير محدود من النطاقات المخصصة',
+    not_eligible: 'قم بإزالة النطاقات المخصصة الخاصة بك',
   },
 };
 

@@ -42,6 +42,10 @@ const user = {
     'عنوان البريد الإلكتروني أو رقم الهاتف هو معرف مطلوب، يجب تحديد واحد على الأقل.',
   email_required: 'عنوان البريد الإلكتروني هو معرف مطلوب، لا يمكنك تعيينه ليكون null.',
   phone_required: 'رقم الهاتف هو معرف مطلوب، لا يمكنك تعيينه ليكون null.',
+  enterprise_sso_identity_not_exists:
+    'المستخدم ليس لديه هوية مؤسسية مرتبطة بمعرف الموصل SSO المحدد: {{ ssoConnectorId }}.',
+  identity_not_exists_in_current_user:
+    'الهوية المحددة غير موجودة في حساب المستخدم الحالي. من فضلك قم بربط الهوية قبل المتابعة.',
 };
 
 export default Object.freeze(user);

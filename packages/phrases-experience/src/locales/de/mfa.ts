@@ -2,15 +2,28 @@ const mfa = {
   totp: 'Authenticator-App-OTP',
   webauthn: 'Passkey',
   backup_code: 'Backup-Code',
+  email_verification_code: 'E-Mail-Verifizierungscode',
+  phone_verification_code: 'SMS-Verifizierungscode',
   link_totp_description: 'z.B. Google Authenticator usw.',
   link_webauthn_description: 'Verknüpfen Sie Ihr Gerät oder USB-Hardware',
   link_backup_code_description: 'Backup-Code generieren',
+  link_email_verification_code_description: 'Verknüpfen Sie Ihre E-Mail-Adresse',
+  link_email_2fa_description: 'Verknüpfen Sie Ihre E-Mail-Adresse für 2-Schritt-Verifizierung',
+  link_phone_verification_code_description: 'Verknüpfen Sie Ihre Telefonnummer',
+  link_phone_2fa_description: 'Verknüpfen Sie Ihre Telefonnummer für 2-Schritt-Verifizierung',
   verify_totp_description: 'Geben Sie den Einmalcode in der App ein',
   verify_webauthn_description: 'Verifizieren Sie Ihr Gerät oder Ihre USB-Hardware',
   verify_backup_code_description: 'Fügen Sie den gespeicherten Backup-Code ein',
+  verify_email_verification_code_description: 'Geben Sie den an Ihre E-Mail gesendeten Code ein',
+  verify_phone_verification_code_description: 'Geben Sie den an Ihr Telefon gesendeten Code ein',
+  send_to_email: 'Senden an {{identifier}}',
+  send_to_phone: 'Senden an {{identifier}}',
   add_mfa_factors: '2-Schritte-Verifizierung hinzufügen',
   add_mfa_description:
     'Die Zwei-Faktor-Verifizierung ist aktiviert. Wählen Sie Ihre zweite Verifizierungsmethode für sicheres Anmelden aus.',
+  add_another_mfa_factor: 'Eine weitere 2-Schritte-Verifizierung hinzufügen',
+  add_another_mfa_description:
+    'Wählen Sie eine andere Methode zur Verifizierung Ihrer Identität bei der Anmeldung.',
   verify_mfa_factors: '2-Schritte-Verifizierung',
   verify_mfa_description:
     'Die 2-Schritte-Verifizierung ist für dieses Konto aktiviert. Bitte wählen Sie die zweite Methode zur Verifizierung Ihrer Identität aus.',
@@ -29,6 +42,12 @@ const mfa = {
     'Geben Sie den 6-stelligen Verifizierungscode ein, der von der Authenticator-App generiert wurde.',
   enter_one_time_code_description:
     'Für dieses Konto wurde die Zwei-Faktor-Authentifizierung aktiviert. Bitte geben Sie den einmaligen Code ein, der in Ihrer verknüpften Authentifizierungs-App angezeigt wird.',
+  enter_email_verification_code: 'E-Mail‑Bestätigungscode eingeben',
+  enter_email_verification_code_description:
+    'Für dieses Konto ist die Zwei‑Faktor‑Authentifizierung aktiviert. Bitte geben Sie den an {{identifier}} gesendeten Bestätigungscode ein.',
+  enter_phone_verification_code: 'SMS‑Bestätigungscode eingeben',
+  enter_phone_verification_code_description:
+    'Für dieses Konto ist die Zwei‑Faktor‑Authentifizierung aktiviert. Bitte geben Sie den per SMS an {{identifier}} gesendeten Bestätigungscode ein.',
   link_another_mfa_factor: 'Zu einer anderen Methode wechseln',
   save_backup_code: 'Backup-Code speichern',
   save_backup_code_description:

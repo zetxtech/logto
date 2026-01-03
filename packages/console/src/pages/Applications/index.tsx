@@ -1,11 +1,13 @@
 import { ApplicationType, type Application } from '@logto/schemas';
 import { type Nullable, joinPath, cond } from '@silverhand/essentials';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 
+import { guides } from '@/assets/docs/guides';
 import Plus from '@/assets/icons/plus.svg?react';
 import ApplicationCreation from '@/components/ApplicationCreation';
+import EmptyDataPlaceholder from '@/components/EmptyDataPlaceholder';
 import { type SelectedGuide } from '@/components/Guide/GuideCard';
 import ApplicationPreview from '@/components/ItemPreview/ApplicationPreview';
 import LearnMore from '@/components/LearnMore';
@@ -24,6 +26,8 @@ import { buildUrl } from '@/utils/url';
 import GuideLibrary from './components/GuideLibrary';
 import GuideLibraryModal from './components/GuideLibraryModal';
 import ProtectedAppModal from './components/ProtectedAppModal';
+import ThirdPartyAppGuideLibrary from './components/ThirdPartyAppGuideLibrary';
+import ThirdPartyApplicationEmptyDataPlaceHolder from './components/ThirdPartyApplicationEmptyDataPlaceHolder';
 import useApplicationsData from './hooks/use-application-data';
 import styles from './index.module.scss';
 
@@ -44,6 +48,8 @@ const buildTabPathWithPagePagination = (page: number, tab?: keyof typeof tabs) =
   return page > 1 ? buildUrl(pathname, { page: String(page) }) : pathname;
 };
 
+const thirdPartyAppGuide = guides.find((guide) => guide.id === 'third-party-oidc');
+
 type Props = {
   readonly tab?: keyof typeof tabs;
 };
@@ -62,15 +68,10 @@ function Applications({ tab }: Props) {
    */
   const [selectedGuide, setSelectedGuide] = useState<Nullable<SelectedGuide>>();
 
-  const {
-    data,
-    error,
-    mutate,
-    pagination,
-    updatePagination,
-    paginationRecords,
-    showThirdPartyApplicationTab,
-  } = useApplicationsData(tab === 'thirdPartyApplications');
+  const isThirdPartyTab = tab === 'thirdPartyApplications';
+
+  const { data, error, mutate, pagination, updatePagination, paginationRecords } =
+    useApplicationsData(isThirdPartyTab);
 
   const isLoading = !data && !error;
   const [applications, totalCount] = data ?? [];
@@ -100,6 +101,29 @@ function Applications({ tab }: Props) {
     [navigate, selectedGuide]
   );
 
+  const onCreate = useCallback(() => {
+    navigate({
+      pathname: createApplicationPathname,
+      search,
+    });
+  }, [navigate, search]);
+
+  const onCreateThirdParty = useCallback(() => {
+    if (thirdPartyAppGuide) {
+      setSelectedGuide({
+        id: thirdPartyAppGuide.id,
+        metadata: thirdPartyAppGuide.metadata,
+      });
+    }
+  }, []);
+
+  const tablePlaceholder = useMemo(() => {
+    if (isThirdPartyTab) {
+      return <ThirdPartyApplicationEmptyDataPlaceHolder onCreateThirdParty={onCreateThirdParty} />;
+    }
+    return <EmptyDataPlaceholder />;
+  }, [isThirdPartyTab, onCreateThirdParty]);
+
   return (
     <div className={pageLayout.container}>
       <PageMeta titleKey="applications.title" />
@@ -119,36 +143,30 @@ function Applications({ tab }: Props) {
             type="primary"
             size="large"
             title="applications.create"
-            onClick={() => {
-              navigate({
-                pathname: createApplicationPathname,
-                search,
-              });
-            }}
+            onClick={onCreate}
           />
         )}
       </div>
-      {showThirdPartyApplicationTab && (
-        <TabNav className={styles.tabs}>
-          <TabNavItem
-            href={buildTabPathWithPagePagination(paginationRecords.firstPartyApplicationPage)}
-            isActive={!tab}
-          >
-            {t('applications.tab.my_applications')}
-          </TabNavItem>
-          <TabNavItem
-            href={buildTabPathWithPagePagination(
-              paginationRecords.thirdPartyApplicationPage,
-              'thirdPartyApplications'
-            )}
-            isActive={tab === 'thirdPartyApplications'}
-          >
-            {t('applications.tab.third_party_applications')}
-          </TabNavItem>
-        </TabNav>
-      )}
+      <TabNav className={styles.tabs}>
+        <TabNavItem
+          href={buildTabPathWithPagePagination(paginationRecords.firstPartyApplicationPage)}
+          isActive={!tab}
+        >
+          {t('applications.tab.my_applications')}
+        </TabNavItem>
+        <TabNavItem
+          href={buildTabPathWithPagePagination(
+            paginationRecords.thirdPartyApplicationPage,
+            'thirdPartyApplications'
+          )}
+          isActive={tab === 'thirdPartyApplications'}
+        >
+          {t('applications.tab.third_party_applications')}
+        </TabNavItem>
+      </TabNav>
 
-      {!isLoading && !applications?.length && (
+      {/* Guide library for my applications tab */}
+      {!isLoading && !applications?.length && !isThirdPartyTab && (
         <div className={styles.guideLibraryContainer}>
           <CardTitle
             className={styles.title}
@@ -163,6 +181,9 @@ function Applications({ tab }: Props) {
           />
         </div>
       )}
+      {!isLoading && !applications?.length && isThirdPartyTab && (
+        <ThirdPartyAppGuideLibrary onSelectGuide={setSelectedGuide} />
+      )}
       {(isLoading || !!applications?.length) && (
         <Table
           isLoading={isLoading}
@@ -170,6 +191,7 @@ function Applications({ tab }: Props) {
           rowGroups={[{ key: 'applications', data: applications }]}
           rowIndexKey="id"
           errorMessage={error?.body?.message ?? error?.message}
+          placeholder={tablePlaceholder}
           columns={[
             {
               title: t('applications.application_name'),

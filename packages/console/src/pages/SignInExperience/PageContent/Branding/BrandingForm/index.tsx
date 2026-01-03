@@ -1,10 +1,13 @@
 import { generateDarkColor } from '@logto/core-kit';
 import { Theme } from '@logto/schemas';
-import { useMemo, useCallback, useEffect } from 'react';
+import { useMemo, useCallback, useEffect, useContext } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import LogoAndFavicon from '@/components/ImageInputs/LogoAndFavicon';
+import { isCloud } from '@/consts/env';
+import { latestProPlanId } from '@/consts/subscriptions';
+import { SubscriptionDataContext } from '@/contexts/SubscriptionDataProvider';
 import Button from '@/ds-components/Button';
 import Card from '@/ds-components/Card';
 import ColorPicker from '@/ds-components/ColorPicker';
@@ -25,6 +28,8 @@ function BrandingForm() {
     control,
     formState: { errors, isDirty },
   } = useFormContext<SignInExperienceForm>();
+  const { currentSubscriptionQuota } = useContext(SubscriptionDataContext);
+  const isHideLogtoBrandingEnabled = currentSubscriptionQuota.bringYourUiEnabled;
 
   const isDarkModeEnabled = watch('color.isDarkModeEnabled');
   const primaryColor = watch('color.primaryColor');
@@ -112,6 +117,21 @@ function BrandingForm() {
             }}
           />
         </>
+      )}
+      {isCloud && (
+        <FormField
+          title="sign_in_exp.branding.hide_logto_branding"
+          featureTag={{
+            isVisible: !isHideLogtoBrandingEnabled,
+            plan: latestProPlanId,
+          }}
+        >
+          <Switch
+            label={t('sign_in_exp.branding.hide_logto_branding_description')}
+            {...register('hideLogtoBranding')}
+            disabled={!isHideLogtoBrandingEnabled}
+          />
+        </FormField>
       )}
     </Card>
   );

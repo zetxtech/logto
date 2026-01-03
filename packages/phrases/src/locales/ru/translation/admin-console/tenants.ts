@@ -14,6 +14,11 @@ const tenants = {
       'Установите имя арендатора и просмотрите регион размещения данных и тип арендатора.',
     tenant_id: 'ID арендатора',
     tenant_name: 'Имя арендатора',
+    /** UNTRANSLATED */
+    tenant_instance: 'Select your instance',
+    /** UNTRANSLATED */
+    tenant_instance_description:
+      'Select where your tenant will be hosted. Choose Logto Cloud for public shared infrastructure, or a private instance for dedicated resources.',
     tenant_region: 'Регион размещения данных',
     tenant_region_description:
       'Физическое местоположение, где размещены ваши ресурсы арендатора (пользователи, приложения и т. д.). Это нельзя изменить после создания.',
@@ -52,6 +57,8 @@ const tenants = {
     tenant_usage_purpose: 'Для чего вы хотите использовать этот арендатор?',
     development_description:
       'Только для тестирования и не должно использоваться в производстве. Подписка не требуется.',
+    development_description_for_private_regions:
+      'Только для тестирования и не должно использоваться в производстве.',
     development_hint:
       'Он имеет все профессиональные функции, но с ограничениями, такими как баннер входа.',
     production_description:
