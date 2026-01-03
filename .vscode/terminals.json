@@ -1,0 +1,13 @@
+{
+  "autorun": false,
+  "terminals": [
+    {
+      "name": "Multi",
+      "commands": [
+        "source ~/.snippet/nvm.sh",
+        "nvm use 22",
+        "pnpm dev"
+      ]
+    }
+  ]
+}
