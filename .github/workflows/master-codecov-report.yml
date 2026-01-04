@@ -8,8 +8,9 @@ concurrency: ${{ github.workflow }}
 
 jobs:
   report-coverage:
-    if: secrets.CODECOV_TOKEN != ''
     runs-on: ubuntu-latest
+    env:
+      HAS_CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN != '' }}
 
     steps:
       - uses: actions/checkout@v4
@@ -31,6 +32,7 @@ jobs:
         run: pnpm ci:test
 
       - name: Codecov Core
+        if: ${{ env.HAS_CODECOV_TOKEN == 'true' }}
         uses: codecov/codecov-action@v4
         with:
           flags: core
@@ -38,6 +40,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Codecov UI
+        if: ${{ env.HAS_CODECOV_TOKEN == 'true' }}
         uses: codecov/codecov-action@v4
         with:
           flags: experience

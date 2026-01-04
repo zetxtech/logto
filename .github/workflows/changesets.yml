@@ -10,22 +10,27 @@ concurrency:
 
 jobs:
   changesets:
-    if: secrets.BOT_PAT != ''
     runs-on: ubuntu-latest
+    env:
+      HAS_BOT_PAT: ${{ secrets.BOT_PAT != '' }}
 
     steps:
       - uses: actions/checkout@v4
+        if: ${{ env.HAS_BOT_PAT == 'true' }}
         with:
           token: ${{ secrets.BOT_PAT }}
 
       - name: Setup Node and pnpm
+        if: ${{ env.HAS_BOT_PAT == 'true' }}
         uses: silverhand-io/actions-node-pnpm-run-steps@v5
         with:
           pnpm-version: 10
           node-version: ^22.14.0
 
       - name: Import GPG key
-        if: secrets.BOT_GPG_KEY != ''
+        if: ${{ env.HAS_BOT_PAT == 'true' && env.HAS_GPG_KEY == 'true' }}
+        env:
+          HAS_GPG_KEY: ${{ secrets.BOT_GPG_KEY != '' }}
         uses: crazy-max/ghaction-import-gpg@v6
         with:
           gpg_private_key: ${{ secrets.BOT_GPG_KEY }}
@@ -35,12 +40,13 @@ jobs:
           git_tag_gpgsign: true
 
       - name: Configure Git user
+        if: ${{ env.HAS_BOT_PAT == 'true' }}
         run: |
           git config --global user.email bot@silverhand.io
           git config --global user.name silverhand-bot
 
       - name: Create pull request
-        if: github.event_name == 'push'
+        if: ${{ env.HAS_BOT_PAT == 'true' && github.event_name == 'push' }}
         uses: changesets/action@v1
         with:
           version: node .scripts/version.js

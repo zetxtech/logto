@@ -9,14 +9,16 @@ concurrency: ${{ github.workflow }}
 
 jobs:
   event_dispatch:
-    if: secrets.BOT_PAT != ''
     strategy:
       matrix:
         target: [logto-io/cloud]
     runs-on: ubuntu-latest
+    env:
+      HAS_BOT_PAT: ${{ secrets.BOT_PAT != '' }}
 
     steps:
       - name: Dispatch Event
+        if: ${{ env.HAS_BOT_PAT == 'true' }}
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.BOT_PAT }}
