@@ -27,8 +27,20 @@ const experienceZipsProviderConfig = {
   container: string;
 };
 
+const experienceBlobsProviderConfig = {
+  provider: StorageProvider.AzureStorage,
+  connectionString: 'connectionString',
+  container: 'blobs',
+} satisfies {
+  provider: StorageProvider.AzureStorage;
+  connectionString: string;
+  container: string;
+};
+
 // eslint-disable-next-line @silverhand/fp/no-mutation
 SystemContext.shared.experienceZipsProviderConfig = experienceZipsProviderConfig;
+// eslint-disable-next-line @silverhand/fp/no-mutation
+SystemContext.shared.experienceBlobsProviderConfig = experienceBlobsProviderConfig;
 
 const mockedIsFileExisted = jest.fn(async (filename: string) => false);
 const mockedDownloadFile = jest.fn();
