@@ -3,7 +3,7 @@ import path from 'node:path';
 import { Readable } from 'node:stream';
 import { fileURLToPath } from 'node:url';
 
-import { StorageProvider, type StorageProviderData } from '@logto/schemas';
+import { StorageProvider } from '@logto/schemas';
 import { generateStandardId } from '@logto/shared';
 import { createMockUtils, pickDefault } from '@logto/shared/esm';
 import AdmZip from 'adm-zip';
@@ -27,10 +27,14 @@ const experienceZipsProviderConfig = {
   container: string;
 };
 
-const experienceBlobsProviderConfig: StorageProviderData = {
+const experienceBlobsProviderConfig = {
   provider: StorageProvider.AzureStorage,
   connectionString: 'connectionString',
   container: 'blobs',
+} satisfies {
+  provider: StorageProvider.AzureStorage;
+  connectionString: string;
+  container: string;
 };
 
 // eslint-disable-next-line @silverhand/fp/no-mutation
