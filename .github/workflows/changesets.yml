@@ -10,6 +10,7 @@ concurrency:
 
 jobs:
   changesets:
+    if: secrets.BOT_PAT != ''
     runs-on: ubuntu-latest
 
     steps:
@@ -24,6 +25,7 @@ jobs:
           node-version: ^22.14.0
 
       - name: Import GPG key
+        if: secrets.BOT_GPG_KEY != ''
         uses: crazy-max/ghaction-import-gpg@v6
         with:
           gpg_private_key: ${{ secrets.BOT_GPG_KEY }}

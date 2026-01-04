@@ -8,6 +8,7 @@ concurrency: ${{ github.workflow }}
 
 jobs:
   report-coverage:
+    if: secrets.CODECOV_TOKEN != ''
     runs-on: ubuntu-latest
 
     steps:

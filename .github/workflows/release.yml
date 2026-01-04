@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   dockerize:
-    if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/') && secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' && secrets.BOT_PAT != ''
     environment: release
     runs-on: ubuntu-latest
     permissions:
@@ -66,7 +66,7 @@ jobs:
   # Build and push the edge image on every master push
   # Use official docker workflows since we only need to build amd64 images.
   dockerize-edge:
-    if: ${{ !startsWith(github.ref, 'refs/tags/')}}
+    if: ${{ !startsWith(github.ref, 'refs/tags/') && secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' && secrets.BOT_PAT != '' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -119,7 +119,7 @@ jobs:
     env:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_TOKEN }}
 
-    if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+    if: ${{ !startsWith(github.ref, 'refs/tags/') && secrets.NPM_AUTOMATION_TOKEN != '' && secrets.BOT_PAT != '' }}
 
     steps:
       - uses: actions/checkout@v4
@@ -135,6 +135,7 @@ jobs:
           node-version: ^22.14.0
 
       - name: Import GPG key
+        if: secrets.BOT_GPG_KEY != ''
         uses: crazy-max/ghaction-import-gpg@v6
         with:
           gpg_private_key: ${{ secrets.BOT_GPG_KEY }}
@@ -176,7 +177,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          token: ${{ secrets.BOT_PAT }}
+          token: ${{ secrets.BOT_PAT || github.token }}
           body: ""
           files: /tmp/logto.tar.gz
           append_body: true

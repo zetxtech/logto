@@ -89,6 +89,7 @@ jobs:
         run: pnpm ci:test
 
       - name: Codecov core
+        if: secrets.CODECOV_TOKEN != ''
         uses: codecov/codecov-action@v4
         with:
           flags: core
@@ -96,6 +97,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Codecov ui
+        if: secrets.CODECOV_TOKEN != ''
         uses: codecov/codecov-action@v4
         with:
           flags: ui
