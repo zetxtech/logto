@@ -50,9 +50,15 @@ if (taggedPackages.length === 0) {
   process.exit(0);
 }
 
+const skipNpmPublish = process.env.SKIP_NPM_PUBLISH === 'true';
+
 try {
-  execSync('pnpm prepack');
-  execSync('pnpm -r publish');
+  if (skipNpmPublish) {
+    console.log('SKIP_NPM_PUBLISH is set, skipping npm publish');
+  } else {
+    execSync('pnpm prepack');
+    execSync('pnpm -r publish');
+  }
   execSync('git push --follow-tags');
 } catch (error) {
   console.log(String(error.stdout));
