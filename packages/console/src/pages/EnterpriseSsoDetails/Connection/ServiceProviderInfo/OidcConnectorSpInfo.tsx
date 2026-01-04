@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { isCloud } from '@/consts/env';
 import { AppDataContext } from '@/contexts/AppDataProvider';
 import CopyToClipboard from '@/ds-components/CopyToClipboard';
 import FormField from '@/ds-components/FormField';
@@ -28,23 +27,21 @@ function OidcConnectorSpInfo({ ssoConnectorId }: Props) {
       tip={(closeTipHandler) => (
         <>
           <p>{t('enterprise_sso.basic_info.oidc.redirect_uri_field_description')}</p>
-          {isCloud && (
-            <p>
-              <Trans
-                components={{
-                  a: (
-                    <TextLink
-                      href={customDomainSettingsLink}
-                      targetBlank="noopener"
-                      onClick={closeTipHandler}
-                    />
-                  ),
-                }}
-              >
-                {t('enterprise_sso.basic_info.oidc.redirect_uri_field_custom_domain_description')}
-              </Trans>
-            </p>
-          )}
+          <p>
+            <Trans
+              components={{
+                a: (
+                  <TextLink
+                    href={customDomainSettingsLink}
+                    targetBlank="noopener"
+                    onClick={closeTipHandler}
+                  />
+                ),
+              }}
+            >
+              {t('enterprise_sso.basic_info.oidc.redirect_uri_field_custom_domain_description')}
+            </Trans>
+          </p>
         </>
       )}
     >

@@ -20,48 +20,46 @@ function CustomUiForm() {
   const { getDocumentationUrl } = useDocumentationUrl();
   const { control } = useFormContext<SignInExperienceForm>();
   const { currentSubscriptionQuota } = useContext(SubscriptionDataContext);
-  const isBringYourUiEnabled = currentSubscriptionQuota.bringYourUiEnabled;
+  const isBringYourUiEnabled = isCloud ? currentSubscriptionQuota.bringYourUiEnabled : true;
 
   return (
     <Card>
       <FormSectionTitle title="custom_ui.title" />
       <CustomCssEditorField />
-      {isCloud && (
-        <FormField
-          title="sign_in_exp.custom_ui.bring_your_ui_title"
-          description={
-            <Trans
-              components={{
-                a: (
-                  <TextLink
-                    targetBlank="noopener"
-                    href={getDocumentationUrl('/docs/recipes/customize-sie/bring-your-ui')}
-                  />
-                ),
-              }}
-            >
-              {t('sign_in_exp.custom_ui.bring_your_ui_description')}
-            </Trans>
-          }
-          descriptionPosition="top"
-          featureTag={{
-            isVisible: !isBringYourUiEnabled,
-            plan: latestProPlanId,
-          }}
-        >
-          <Controller
-            name="customUiAssets"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <CustomUiAssetsUploader
-                disabled={!isBringYourUiEnabled}
-                value={value}
-                onChange={onChange}
-              />
-            )}
-          />
-        </FormField>
-      )}
+      <FormField
+        title="sign_in_exp.custom_ui.bring_your_ui_title"
+        description={
+          <Trans
+            components={{
+              a: (
+                <TextLink
+                  targetBlank="noopener"
+                  href={getDocumentationUrl('/docs/recipes/customize-sie/bring-your-ui')}
+                />
+              ),
+            }}
+          >
+            {t('sign_in_exp.custom_ui.bring_your_ui_description')}
+          </Trans>
+        }
+        descriptionPosition="top"
+        featureTag={{
+          isVisible: isCloud && !isBringYourUiEnabled,
+          plan: latestProPlanId,
+        }}
+      >
+        <Controller
+          name="customUiAssets"
+          control={control}
+          render={({ field: { onChange, value } }) => (
+            <CustomUiAssetsUploader
+              disabled={!isBringYourUiEnabled}
+              value={value}
+              onChange={onChange}
+            />
+          )}
+        />
+      </FormField>
     </Card>
   );
 }

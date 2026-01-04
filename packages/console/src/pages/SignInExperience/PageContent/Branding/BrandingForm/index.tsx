@@ -29,7 +29,7 @@ function BrandingForm() {
     formState: { errors, isDirty },
   } = useFormContext<SignInExperienceForm>();
   const { currentSubscriptionQuota } = useContext(SubscriptionDataContext);
-  const isHideLogtoBrandingEnabled = currentSubscriptionQuota.bringYourUiEnabled;
+  const isHideLogtoBrandingEnabled = isCloud ? currentSubscriptionQuota.bringYourUiEnabled : true;
 
   const isDarkModeEnabled = watch('color.isDarkModeEnabled');
   const primaryColor = watch('color.primaryColor');
@@ -118,21 +118,19 @@ function BrandingForm() {
           />
         </>
       )}
-      {isCloud && (
-        <FormField
-          title="sign_in_exp.branding.hide_logto_branding"
-          featureTag={{
-            isVisible: !isHideLogtoBrandingEnabled,
-            plan: latestProPlanId,
-          }}
-        >
-          <Switch
-            label={t('sign_in_exp.branding.hide_logto_branding_description')}
-            {...register('hideLogtoBranding')}
-            disabled={!isHideLogtoBrandingEnabled}
-          />
-        </FormField>
-      )}
+      <FormField
+        title="sign_in_exp.branding.hide_logto_branding"
+        featureTag={{
+          isVisible: isCloud && !isHideLogtoBrandingEnabled,
+          plan: latestProPlanId,
+        }}
+      >
+        <Switch
+          label={t('sign_in_exp.branding.hide_logto_branding_description')}
+          {...register('hideLogtoBranding')}
+          disabled={!isHideLogtoBrandingEnabled}
+        />
+      </FormField>
     </Card>
   );
 }

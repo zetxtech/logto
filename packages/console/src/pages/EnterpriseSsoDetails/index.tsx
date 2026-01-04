@@ -70,9 +70,8 @@ function EnterpriseSsoDetails() {
   const isIdpInitiatedAuthConfigEnabled = useMemo(
     () =>
       isDevFeaturesEnabled &&
-      isCloud &&
       ssoConnector?.providerType === SsoProviderType.SAML &&
-      currentSubscriptionQuota.idpInitiatedSsoEnabled,
+      (isCloud ? currentSubscriptionQuota.idpInitiatedSsoEnabled : true),
     [ssoConnector, currentSubscriptionQuota]
   );
 

@@ -37,3 +37,6 @@ dump.rdb
 
 # readme assets
 /assets/
+
+# Reference projects
+/ref

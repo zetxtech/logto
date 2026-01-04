@@ -5,7 +5,6 @@ import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 
-import { isCloud } from '@/consts/env';
 import { TenantsContext } from '@/contexts/TenantsProvider';
 import Select from '@/ds-components/Select';
 
@@ -30,10 +29,9 @@ function ApplicationSelector({ value, onChange }: Props) {
       value={value}
       options={[
         ...(conditional(
-          isCloud &&
-            currentTenantId === adminTenantId && [
-              { value: adminConsoleApplicationId, title: 'Admin Console' },
-            ]
+          currentTenantId === adminTenantId && [
+            { value: adminConsoleApplicationId, title: 'Admin Console' },
+          ]
         ) ?? []),
         ...options,
       ]}
