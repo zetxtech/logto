@@ -20,7 +20,6 @@ import { onKeyDownHandler } from '@/utils/a11y';
 import ContactModal from './ContactModal';
 import EnterpriseSubscriptions from './EnterpriseSubscriptions';
 import InkeepAskAi from './InkeepAskAi';
-import LanguageSwitcher from './LanguageSwitcher';
 import TenantSelector from './TenantSelector';
 import UserInfo from './UserInfo';
 import styles from './index.module.scss';
@@ -61,7 +60,6 @@ function Topbar({ className, hideTenantSelector, hideTitle }: Props) {
       <DocumentButton />
       <HelpButton />
       {!isCloud && <VersionButton />}
-      <LanguageSwitcher className={styles.button} />
       <UserInfo />
     </div>
   );

@@ -7,6 +7,10 @@ export const config = Object.freeze({
   entry: ['src/index.ts', 'src/workers/tasks/**/*.ts'],
   outDir: 'build',
   onSuccess: 'pnpm run copy:apidocs',
+  // Mark adm-zip as external to avoid "Dynamic require of fs is not supported" error
+  // adm-zip is a CommonJS module that uses require() internally
+  noExternal: [],
+  external: ['adm-zip'],
 } satisfies Options);
 
 export default defineConfig(config);

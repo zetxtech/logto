@@ -63,8 +63,8 @@ const paywall = {
       '升级到付费计划以获取自定义 JWT 功能和高级福利。如有任何问题，请不要犹豫 <a>联系我们</a>。',
   },
   branding_customization:
-    '升级计划，解锁 "隐藏 Logto 品牌" 和 "带上你的 UI" 功能，全面掌控品牌体验。',
-  bring_your_ui: '升级到付费计划，可带上自定义界面功能和高级福利。',
+    '升级计划，解锁 "隐藏 Logto 品牌" 和 "使用自定义 UI" 功能，全面掌控品牌体验。',
+  bring_your_ui: '升级到付费计划，可使用自定义 UI 功能和高级福利。',
   security_features:
     '通过升级到 Pro 计划解锁高级安全功能。如有任何问题，请不要犹豫 <a>联系我们</a>。',
   collect_user_profile:

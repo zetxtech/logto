@@ -22,7 +22,7 @@ const quota_table = {
     custom_domain: '自定义域名',
     custom_css: '自定义 CSS',
     logo_and_favicon: 'Logo 和 Favicon',
-    bring_your_ui: '携带你的 UI',
+    bring_your_ui: '使用自定义 UI',
     dark_mode: '深色模式',
     i18n: '国际化',
   },
