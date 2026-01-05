@@ -32,7 +32,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/logto-io/logto
+            ghcr.io/${{ github.repository }}
             ${{ env.HAS_DOCKERHUB_SECRETS == 'true' && 'svhd/logto' || '' }}
           # https://github.com/docker/metadata-action#typesemver
           tags: |
@@ -91,7 +91,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/logto-io/logto
+            ghcr.io/${{ github.repository }}
             ${{ env.HAS_DOCKERHUB_SECRETS == 'true' && 'svhd/logto' || '' }}
           tags: |
             type=edge
