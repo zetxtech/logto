@@ -4,7 +4,6 @@ import { Navigate, type RouteObject } from 'react-router-dom';
 import { safeLazy } from 'react-safe-lazy';
 
 import { TenantSettingsTabs } from '@/consts';
-import { isCloud } from '@/consts/env';
 import { SubscriptionDataContext } from '@/contexts/SubscriptionDataProvider';
 import { TenantsContext } from '@/contexts/TenantsProvider';
 import useCurrentTenantScopes from '@/hooks/use-current-tenant-scopes';
@@ -60,7 +59,7 @@ export const useTenantSettings = () => {
           ],
         },
         { path: TenantSettingsTabs.Domains, element: <TenantDomainSettings /> },
-        !isCloud && [{ path: TenantSettingsTabs.Storage, element: <StorageSettings /> }],
+        { path: TenantSettingsTabs.Storage, element: <StorageSettings /> },
         !isDevTenant &&
           canManageTenant && [
             { path: TenantSettingsTabs.Subscription, element: <Subscription /> },
