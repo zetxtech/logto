@@ -59,7 +59,7 @@ function Topbar({ className, hideTenantSelector, hideTitle }: Props) {
       {isCloud && isDevFeaturesEnabled && <EnterpriseSubscriptions className={styles.button} />}
       <DocumentButton />
       <HelpButton />
-      <VersionButton />
+      {!isCloud && <VersionButton />}
       <UserInfo />
     </div>
   );

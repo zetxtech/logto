@@ -11,6 +11,7 @@ import useSWR, { useSWRConfig } from 'swr';
 import { GtagConversionId, reportToGoogle } from '@/components/Conversion/utils';
 import LearnMore from '@/components/LearnMore';
 import { pricingLink, defaultPageSize, integrateLogto, thirdPartyApp } from '@/consts';
+import { isCloud } from '@/consts/env';
 import { latestProPlanId } from '@/consts/subscriptions';
 import { SubscriptionDataContext } from '@/contexts/SubscriptionDataProvider';
 import { TenantsContext } from '@/contexts/TenantsProvider';
@@ -77,7 +78,8 @@ function CreateForm({
   });
 
   const { data } = useSWR<[Application[], number], RequestError>(
-    defaultCreateType === ApplicationType.SAML &&
+    !isCloud &&
+      defaultCreateType === ApplicationType.SAML &&
       buildUrl(applicationsEndpoint, [
         ['page', String(1)],
         ['page_size', String(defaultPageSize)],
@@ -242,6 +244,7 @@ function CreateForm({
         hasAddOnTag={hasAddOnTag}
         size={defaultCreateType ? 'medium' : 'large'}
         footer={
+          !isCloud &&
           defaultCreateType === ApplicationType.SAML &&
           typeof samlAppTotalCount === 'number' &&
           samlAppTotalCount >= samlApplicationsLimit ? (
