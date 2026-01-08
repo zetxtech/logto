@@ -4,6 +4,7 @@ import { Navigate, type RouteObject } from 'react-router-dom';
 import { safeLazy } from 'react-safe-lazy';
 
 import { TenantSettingsTabs } from '@/consts';
+import { isCloud } from '@/consts/env';
 import { SubscriptionDataContext } from '@/contexts/SubscriptionDataProvider';
 import { TenantsContext } from '@/contexts/TenantsProvider';
 import useCurrentTenantScopes from '@/hooks/use-current-tenant-scopes';
@@ -23,6 +24,7 @@ const Invitations = safeLazy(
 const Members = safeLazy(async () => import('@/pages/TenantSettings/TenantMembers/Members'));
 const BillingHistory = safeLazy(async () => import('@/pages/TenantSettings/BillingHistory'));
 const Subscription = safeLazy(async () => import('@/pages/TenantSettings/Subscription'));
+const StorageSettings = safeLazy(async () => import('@/pages/TenantSettings/StorageSettings'));
 
 export const useTenantSettings = () => {
   const { isDevTenant } = useContext(TenantsContext);
@@ -58,6 +60,7 @@ export const useTenantSettings = () => {
           ],
         },
         { path: TenantSettingsTabs.Domains, element: <TenantDomainSettings /> },
+        !isCloud && [{ path: TenantSettingsTabs.Storage, element: <StorageSettings /> }],
         !isDevTenant &&
           canManageTenant && [
             { path: TenantSettingsTabs.Subscription, element: <Subscription /> },

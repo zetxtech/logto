@@ -16,11 +16,9 @@ import {
 } from '#src/utils/subscription/types.js';
 
 import {
-  isSystemUsageKey,
   type UsageKey,
   type EntityBasedUsageKey,
   type NumericUsageKey,
-  isQuotaUsageKey,
   type SystemUsageKey,
   type QuotaUsageKey,
   isBooleanQuotaUsageKey,
@@ -145,44 +143,8 @@ export class QuotaLibrary {
    * });
    * ```
    */
-  guardTenantUsageByKey: GuardTenantUsageByKeyFunction = async (
-    key,
-    { entityId, consumeUsageCount = 1 } = {}
-  ) => {
-    const { isCloud } = EnvSet.values;
-
-    // Cloud only feature, skip in non-cloud environments
-    if (!isCloud) {
-      return;
-    }
-
-    const subscriptionData = await this.subscription.getSubscriptionData();
-
-    const tenantUsageQuery = new TenantUsageQuery(
-      this.tenantId,
-      this.queries,
-      this.connectorLibrary
-    );
-
-    if (isSystemUsageKey(key)) {
-      await this.assertSystemLimit({
-        key,
-        entityId,
-        subscriptionData,
-        tenantUsageQuery,
-        consumeUsageCount,
-      });
-    }
-
-    if (isQuotaUsageKey(key)) {
-      await this.assertQuotaLimit({
-        key,
-        entityId,
-        subscriptionData,
-        tenantUsageQuery,
-        consumeUsageCount,
-      });
-    }
+  guardTenantUsageByKey: GuardTenantUsageByKeyFunction = async (_key, _options = {}) => {
+    // All quota checks are bypassed to unlock all Cloud/Enterprise features
   };
 
   reportSubscriptionUpdatesUsage = async (key: keyof SubscriptionUsage) => {

@@ -5,6 +5,7 @@ const tenants = {
     settings: 'Settings',
     members: 'Members',
     domains: 'Domains',
+    storage: 'Storage',
     subscription: 'Plan and billing',
     billing_history: 'Billing history',
   },
@@ -28,6 +29,24 @@ const tenants = {
     production_description:
       'Intended for apps that are being used by end-users and may require a paid subscription.',
     tenant_info_saved: 'Tenant information saved successfully.',
+  },
+  storage: {
+    title: 'Storage Provider',
+    description:
+      'Configure storage provider for custom UI assets (Bring Your UI). Required for uploading custom sign-in experience.',
+    provider: 'Provider',
+    status_configured: 'Configured ({{provider}})',
+    status_not_configured:
+      'Not configured. Configure a storage provider to enable custom UI uploads.',
+    s3_endpoint: 'S3 Endpoint',
+    s3_region: 'Region',
+    s3_bucket: 'Bucket',
+    s3_access_key_id: 'Access Key ID',
+    s3_secret_access_key: 'Secret Access Key',
+    s3_public_url: 'Public URL (optional)',
+    azure_connection_string: 'Connection String',
+    azure_container: 'Container',
+    azure_public_url: 'Public URL (optional)',
   },
   full_env_tag: {
     development: 'Development',
