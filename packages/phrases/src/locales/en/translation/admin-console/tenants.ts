@@ -44,6 +44,9 @@ const tenants = {
     s3_access_key_id: 'Access Key ID',
     s3_secret_access_key: 'Secret Access Key',
     s3_public_url: 'Public URL (optional)',
+    s3_force_path_style: 'Force path style',
+    s3_force_path_style_description:
+      'Enable this for MinIO or S3-compatible storage. Uses path-style URLs (endpoint/bucket) instead of virtual-hosted style (bucket.endpoint).',
     azure_connection_string: 'Connection String',
     azure_container: 'Container',
     azure_public_url: 'Public URL (optional)',

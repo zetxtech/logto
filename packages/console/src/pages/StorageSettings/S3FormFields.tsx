@@ -1,12 +1,13 @@
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 
 import FormField from '@/ds-components/FormField';
+import Switch from '@/ds-components/Switch';
 import TextInput from '@/ds-components/TextInput';
 
 import type { FormData } from './types';
 
 function S3FormFields() {
-  const { register } = useFormContext<FormData>();
+  const { register, control } = useFormContext<FormData>();
 
   return (
     <>
@@ -37,6 +38,23 @@ function S3FormFields() {
       </FormField>
       <FormField title="tenants.storage.s3_public_url">
         <TextInput {...register('s3PublicUrl')} placeholder="https://cdn.example.com/bucket" />
+      </FormField>
+      <FormField
+        title="tenants.storage.s3_force_path_style"
+        tip="tenants.storage.s3_force_path_style_description"
+      >
+        <Controller
+          name="s3ForcePathStyle"
+          control={control}
+          render={({ field: { value, onChange } }) => (
+            <Switch
+              checked={value}
+              onChange={({ currentTarget: { checked } }) => {
+                onChange(checked);
+              }}
+            />
+          )}
+        />
       </FormField>
     </>
   );
