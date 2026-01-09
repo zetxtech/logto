@@ -24,6 +24,11 @@ export type Props<T extends Record<string, unknown> = UserAssets> = {
    */
   readonly defaultApiInstanceTimeout?: number;
   readonly allowedMimeTypes: AllowedUploadMimeType[];
+  /**
+   * Additional MIME types to accept in the dropzone (e.g., for ZIP files that browsers may send with different MIME types).
+   * Format: { 'mime/type': ['.ext'] }
+   */
+  readonly additionalAcceptTypes?: Record<string, string[]>;
   readonly actionDescription?: string;
   readonly onUploadStart?: (file: File) => void;
   readonly onUploadComplete?: (response: T) => void;
@@ -46,6 +51,7 @@ function FileUploader<T extends Record<string, unknown> = UserAssets>({
   maxSize,
   defaultApiInstanceTimeout,
   allowedMimeTypes,
+  additionalAcceptTypes,
   actionDescription,
   onUploadStart,
   onUploadComplete,
@@ -86,7 +92,11 @@ function FileUploader<T extends Record<string, unknown> = UserAssets>({
          * Note:
          * We need to display this invalid file type error, since the user can select an invalid file type by modifying the file input dialog settings.
          */
-        if (!allowedMimeTypes.map(String).includes(rejectedFile.type)) {
+        const allAllowedMimeTypes = [
+          ...allowedMimeTypes.map(String),
+          ...Object.keys(additionalAcceptTypes ?? {}),
+        ];
+        if (!allAllowedMimeTypes.includes(rejectedFile.type)) {
           setUploadError(
             t('components.uploader.error_file_type', {
               extensions: convertToFileExtensionArray(allowedMimeTypes),
@@ -132,14 +142,27 @@ function FileUploader<T extends Record<string, unknown> = UserAssets>({
         setIsUploading(false);
       }
     },
-    [api, apiInstance, allowedMimeTypes, maxSize, onUploadComplete, onUploadStart, t, uploadUrl]
+    [
+      additionalAcceptTypes,
+      api,
+      apiInstance,
+      allowedMimeTypes,
+      maxSize,
+      onUploadComplete,
+      onUploadStart,
+      t,
+      uploadUrl,
+    ]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     disabled: isUploading || disabled,
     multiple: false,
-    accept: Object.fromEntries(allowedMimeTypes.map((mimeType) => [mimeType, []])),
+    accept: {
+      ...Object.fromEntries(allowedMimeTypes.map((mimeType) => [mimeType, []])),
+      ...additionalAcceptTypes,
+    },
   });
 
   return (

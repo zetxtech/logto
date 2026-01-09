@@ -48,7 +48,18 @@ export default function customUiAssetsRoutes<T extends ManagementApiRouter>(
 
       assertThat(file, 'guard.invalid_input');
       assertThat(file.size <= maxUploadFileSize, 'guard.file_size_exceeded');
-      assertThat(file.mimetype === 'application/zip', 'guard.mime_type_not_allowed');
+
+      // Accept multiple ZIP MIME types (different browsers/OS send different types)
+      const allowedZipMimeTypes = [
+        'application/zip',
+        'application/x-zip-compressed',
+        'application/x-zip',
+        'application/octet-stream',
+      ];
+      const isZipFile =
+        allowedZipMimeTypes.includes(file.mimetype) ||
+        file.originalFilename.toLowerCase().endsWith('.zip');
+      assertThat(isZipFile, 'guard.mime_type_not_allowed');
 
       const [tenantId] = await getTenantId(ctx.URL);
       assertThat(tenantId, 'guard.can_not_get_tenant_id');

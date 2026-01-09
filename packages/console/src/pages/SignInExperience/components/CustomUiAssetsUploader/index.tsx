@@ -26,6 +26,13 @@ type Props = {
 
 const allowedMimeTypes: AllowedUploadMimeType[] = ['application/zip'];
 
+// Additional ZIP MIME types for dropzone accept (browsers may send different types)
+const additionalZipMimeTypes: Record<string, string[]> = {
+  'application/x-zip-compressed': ['.zip'],
+  'application/x-zip': ['.zip'],
+  'application/octet-stream': ['.zip'],
+};
+
 function CustomUiAssetsUploader({ disabled, value, onChange }: Props) {
   const { t } = useTranslation(undefined, { keyPrefix: 'admin_console' });
   const [file, setFile] = useState<File>();
@@ -70,6 +77,7 @@ function CustomUiAssetsUploader({ disabled, value, onChange }: Props) {
         apiInstance={api}
         disabled={disabled}
         allowedMimeTypes={allowedMimeTypes}
+        additionalAcceptTypes={additionalZipMimeTypes}
         maxSize={maxUploadFileSize}
         uploadUrl="api/sign-in-exp/default/custom-ui-assets"
         onUploadStart={() => {
