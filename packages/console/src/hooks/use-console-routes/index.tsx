@@ -26,6 +26,7 @@ import { webhooks } from './routes/webhooks';
 const Dashboard = safeLazy(async () => import('@/pages/Dashboard'));
 const GetStarted = safeLazy(async () => import('@/pages/GetStarted'));
 const SigningKeys = safeLazy(async () => import('@/pages/SigningKeys'));
+const StorageSettings = safeLazy(async () => import('@/pages/StorageSettings'));
 
 export const useConsoleRoutes = () => {
   const tenantSettings = useTenantSettings();
@@ -50,7 +51,8 @@ export const useConsoleRoutes = () => {
         organizationTemplate,
         organizations,
         { path: 'signing-keys', element: <SigningKeys /> },
-        isCloud && tenantSettings,
+        !isCloud && { path: 'storage-settings', element: <StorageSettings /> },
+        tenantSettings,
         // TODO: Remove dev features flag check when enterprise subscription is generally available
         isCloud && isDevFeaturesEnabled && enterpriseSubscriptionRoute,
         customizeJwt

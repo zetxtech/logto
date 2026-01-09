@@ -18,6 +18,7 @@ const tabs = {
   customize_jwt: 'Custom JWT',
   signing_keys: 'Signing keys',
   organization_template: 'Organization template',
+  storage_settings: 'Storage',
 };
 
 export default Object.freeze(tabs);

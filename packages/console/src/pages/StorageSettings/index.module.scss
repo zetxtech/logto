@@ -1,0 +1,44 @@
+@use '@/scss/underscore' as _;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: _.unit(4);
+  padding-bottom: _.unit(6);
+}
+
+.cardTitle {
+  flex-shrink: 0;
+}
+
+.description {
+  font: var(--font-body-2);
+  color: var(--color-text-secondary);
+  margin-bottom: _.unit(4);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: _.unit(4);
+}
+
+.statusCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: _.unit(3) _.unit(4);
+  border-radius: 8px;
+  margin-bottom: _.unit(4);
+  font: var(--font-body-2);
+
+  &[data-configured='true'] {
+    background-color: var(--color-success-container);
+    color: var(--color-text);
+  }
+
+  &[data-configured='false'] {
+    background-color: var(--color-layer-2);
+    color: var(--color-text-secondary);
+  }
+}

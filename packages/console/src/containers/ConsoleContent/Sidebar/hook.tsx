@@ -19,6 +19,7 @@ import Role from '@/assets/icons/role.svg?react';
 import SecurityLock from '@/assets/icons/security-lock.svg?react';
 import Security from '@/assets/icons/security.svg?react';
 import EnterpriseSso from '@/assets/icons/single-sign-on.svg?react';
+import Storage from '@/assets/icons/storage.svg?react';
 import Web from '@/assets/icons/web.svg?react';
 import { isCloud } from '@/consts/env';
 
@@ -145,11 +146,15 @@ export const useSidebarMenuItems = (): {
           Icon: List,
           title: 'audit_logs',
         },
+        {
+          Icon: Storage,
+          title: 'storage_settings',
+          isHidden: isCloud,
+        },
       ],
     },
     {
       title: 'tenant',
-      isHidden: !isCloud,
       items: [
         {
           Icon: Gear,
