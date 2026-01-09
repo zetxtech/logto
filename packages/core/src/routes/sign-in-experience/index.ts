@@ -10,7 +10,6 @@ import {
 import { conditional, type Optional, tryThat } from '@silverhand/essentials';
 import { literal, object, string, z } from 'zod';
 
-import { EnvSet } from '#src/env-set/index.js';
 import {
   validateSignUp,
   validateSignIn,
@@ -21,7 +20,6 @@ import { validateMfa } from '#src/libraries/sign-in-experience/mfa.js';
 import koaGuard from '#src/middleware/koa-guard.js';
 
 import RequestError from '../../errors/RequestError/index.js';
-import assertThat from '../../utils/assert-that.js';
 import { checkPasswordPolicyForUser } from '../../utils/password.js';
 import { captureEvent } from '../../utils/posthog.js';
 import type { ManagementApiRouter, RouterInitArgs } from '../types.js';
@@ -192,14 +190,7 @@ export default function signInExperiencesRoutes<T extends ManagementApiRouter>(
 
       // Guard the quota for BYUI if the hideLogtoBranding is set to true
       if (hideLogtoBranding) {
-        // Hide Logto branding is only available for Logto Cloud
-        assertThat(
-          EnvSet.values.isCloud,
-          new RequestError({
-            code: 'request.invalid_input',
-            details: 'Hide Logto branding is not supported in this environment',
-          })
-        );
+        // Quota check is bypassed for self-hosted environments
         await quota.guardTenantUsageByKey('bringYourUiEnabled');
       }
 

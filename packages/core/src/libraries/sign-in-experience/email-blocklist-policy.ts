@@ -44,16 +44,7 @@ export const parseEmailBlocklistPolicy = (
 ): EmailBlocklistPolicy => {
   const { customBlocklist, ...rest } = emailBlocklistPolicy;
 
-  // BlockDisposableAddresses is not supported for OSS.
-  if (rest.blockDisposableAddresses) {
-    assertThat(
-      EnvSet.values.isCloud,
-      new RequestError({
-        code: 'request.invalid_input',
-        details: 'Disposable email domain validation is not supported in this environment',
-      })
-    );
-  }
+  // BlockDisposableAddresses check is bypassed for self-hosted environments
 
   return {
     ...rest,
