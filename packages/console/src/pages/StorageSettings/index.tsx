@@ -3,12 +3,12 @@ import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 
+import DetailsPage from '@/components/DetailsPage';
 import FormCard from '@/components/FormCard';
 import PageMeta from '@/components/PageMeta';
 import SubmitFormChangesActionBar from '@/components/SubmitFormChangesActionBar';
 import UnsavedChangesAlertModal from '@/components/UnsavedChangesAlertModal';
 import Button from '@/ds-components/Button';
-import CardTitle from '@/ds-components/CardTitle';
 import DangerousRaw from '@/ds-components/DangerousRaw';
 import FormField from '@/ds-components/FormField';
 import RadioGroup, { Radio } from '@/ds-components/RadioGroup';
@@ -71,24 +71,21 @@ function StorageSettings() {
 
   const isConfigured = Boolean(currentConfig);
 
+  const providerLabel = currentConfig?.provider === 'S3Storage' ? 'S3' : 'Azure';
+
   return (
-    <div className={styles.container}>
-      <PageMeta titleKey="general.settings_nav" />
-      <CardTitle
-        title={<DangerousRaw>Storage Provider</DangerousRaw>}
-        subtitle={<DangerousRaw>Configure storage provider for custom UI assets</DangerousRaw>}
-        className={styles.cardTitle}
-      />
-      <FormCard title={<DangerousRaw>Storage Configuration</DangerousRaw>}>
-        <div className={styles.description}>
-          Configure storage provider for custom UI assets (Bring Your UI). Required for uploading
-          custom sign-in experience.
-        </div>
+    <DetailsPage
+      backLink="/storage-settings"
+      backLinkTitle="tenants.storage.title"
+      isLoading={false}
+    >
+      <PageMeta titleKey="tenants.storage.title" />
+      <FormCard title="tenants.storage.title" description="tenants.storage.description">
         <div className={styles.statusCard} data-configured={isConfigured}>
           <span>
             {isConfigured
-              ? `Configured (${currentConfig?.provider === 'S3Storage' ? 'S3' : 'Azure'})`
-              : 'Not configured. Configure a storage provider to enable custom UI uploads.'}
+              ? t('tenants.storage.status_configured', { provider: providerLabel })
+              : t('tenants.storage.status_not_configured')}
           </span>
           {isConfigured && (
             <Button type="default" size="small" title="general.delete" onClick={handleDelete} />
@@ -97,7 +94,7 @@ function StorageSettings() {
 
         <FormProvider {...methods}>
           <form className={styles.form}>
-            <FormField title={<DangerousRaw>Provider</DangerousRaw>}>
+            <FormField title="tenants.storage.provider">
               <RadioGroup
                 name="provider"
                 value={selectedProvider}
@@ -130,7 +127,7 @@ function StorageSettings() {
         onSubmit={onSubmit}
       />
       <UnsavedChangesAlertModal hasUnsavedChanges={isDirty} />
-    </div>
+    </DetailsPage>
   );
 }
 
