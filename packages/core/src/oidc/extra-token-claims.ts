@@ -1,5 +1,5 @@
+import { jsonObjectGuard } from '@logto/connector-kit';
 import {
-  type Json,
   LogtoJwtTokenKey,
   LogtoJwtTokenKeyType,
   LogResult,
@@ -7,6 +7,7 @@ import {
   type CustomJwtFetcher,
   GrantType,
   CustomJwtErrorCode,
+  jwtCustomizerUserContextGuard,
   jwtCustomizerUserInteractionContextGuard,
 } from '@logto/schemas';
 import { generateStandardId } from '@logto/shared';
@@ -122,6 +123,22 @@ const getInteractionLastSubmission = async (
   return interactionData.data;
 };
 
+const removeUndefinedDeep = (value: unknown): unknown => {
+  if (Array.isArray(value)) {
+    return value.map((item) => removeUndefinedDeep(item)).filter((item) => item !== undefined);
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value)
+        .filter(([, item]) => item !== undefined)
+        .map(([key, item]) => [key, removeUndefinedDeep(item)])
+    );
+  }
+
+  return value;
+};
+
 /* eslint-disable complexity */
 export const getExtraTokenClaimsForJwtCustomization = async (
   ctx: KoaContextWithOIDC,
@@ -189,6 +206,28 @@ export const getExtraTokenClaimsForJwtCustomization = async (
       ? undefined
       : await getInteractionLastSubmission(queries, token);
 
+    const applicationId = ctx.oidc.client?.clientId;
+    const logtoApplicationInfo = conditional(
+      !isTokenClientCredentials &&
+        applicationId &&
+        (await trySafe(async () => queries.applications.findApplicationById(applicationId)))
+    );
+
+    const userContextResult = jwtCustomizerUserContextGuard.safeParse(logtoUserInfo);
+    const sanitizedUserContext = removeUndefinedDeep(
+      userContextResult.success ? userContextResult.data : undefined
+    );
+    const userJsonResult = jsonObjectGuard.safeParse(sanitizedUserContext);
+    const userContext = userJsonResult.success ? userJsonResult.data : {};
+
+    const applicationCustomDataJsonResult = logtoApplicationInfo
+      ? jsonObjectGuard.safeParse(removeUndefinedDeep(logtoApplicationInfo.customData))
+      : undefined;
+
+    const applicationCustomData = applicationCustomDataJsonResult?.success
+      ? applicationCustomDataJsonResult.data
+      : undefined;
+
     const subjectTokenResult = z
       .object({
         subjectTokenId: z.string(),
@@ -209,11 +248,22 @@ export const getExtraTokenClaimsForJwtCustomization = async (
         ? { tokenType: LogtoJwtTokenKeyType.ClientCredentials }
         : {
             tokenType: LogtoJwtTokenKeyType.AccessToken,
-            // TODO (LOG-8555): the newly added `UserProfile` type includes undefined fields and can not be directly assigned to `Json` type. And the `undefined` fields should be removed by zod guard.
+            // Note (LOG-8555): the `UserProfile` type may include undefined fields and can not be directly assigned to `Json` type.
             // `context` parameter is only eligible for user's access token for now.
             context: {
-              // eslint-disable-next-line no-restricted-syntax
-              user: logtoUserInfo as Record<string, Json>,
+              user: userContext,
+              ...conditional(
+                logtoApplicationInfo && {
+                  application: {
+                    id: logtoApplicationInfo.id,
+                    ...conditional(
+                      applicationCustomData && {
+                        customData: applicationCustomData,
+                      }
+                    ),
+                  },
+                }
+              ),
               ...conditional(
                 subjectToken && {
                   grant: {

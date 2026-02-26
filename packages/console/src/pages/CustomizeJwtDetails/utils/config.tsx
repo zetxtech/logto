@@ -31,6 +31,7 @@ declare interface CustomJwtClaims extends Record<string, any> {}
 /** Logto internal data that can be used to pass additional information
  * 
  * @param {${JwtCustomizerTypeDefinitionKey.JwtCustomizerUserContext}} user - The user info associated with the token.
+ * @param application - The application info associated with the token.
  * @param {${JwtCustomizerTypeDefinitionKey.JwtCustomizerGrantContext}} [grant] - The grant context associated with the token.
  * @param {${JwtCustomizerTypeDefinitionKey.JwtCustomizerUserInteractionContext}} [interaction] - The user interaction context associated with the token.
  */
@@ -39,6 +40,13 @@ declare type Context = {
    * The user data associated with the token.
    */
   user: ${JwtCustomizerTypeDefinitionKey.JwtCustomizerUserContext};
+  /**
+   * The application data associated with the token.
+   */
+  application?: {
+    id: string;
+    customData?: Record<string, any>;
+  };
   /**
    * The grant context associated with the token.
    */
@@ -272,6 +280,10 @@ const defaultUserInteractionContext: Partial<JwtCustomizerUserInteractionContext
 
 export const defaultUserTokenContextData = {
   user: defaultUserContext,
+  application: {
+    id: 'my_app',
+    customData: {},
+  },
   grant: defaultGrantContext,
   interaction: defaultUserInteractionContext,
 };

@@ -57,6 +57,16 @@ export type JwtCustomizerUserContext = UserInfo & {
   }>;
 };
 
+export type JwtCustomizerApplicationContext = {
+  id: string;
+  customData?: Record<string, unknown>;
+};
+
+export const jwtCustomizerApplicationContextGuard = z.object({
+  id: z.string(),
+  customData: jsonObjectGuard.optional(),
+}) satisfies ZodType<JwtCustomizerApplicationContext>;
+
 export const jwtCustomizerUserContextGuard = userInfoGuard.extend({
   hasPassword: z.boolean(),
   ssoIdentities: UserSsoIdentities.guard
@@ -144,6 +154,7 @@ export const accessTokenJwtCustomizerGuard = jwtCustomizerGuard
     contextSample: z
       .object({
         user: jwtCustomizerUserContextGuard.partial(),
+        application: jwtCustomizerApplicationContextGuard.partial().optional(),
         grant: jwtCustomizerGrantContextGuard.partial().optional(),
         interaction: jwtCustomizerUserInteractionContextGuard.partial().optional(),
       })
