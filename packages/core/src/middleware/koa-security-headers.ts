@@ -26,11 +26,27 @@ const helmetPromise = async (
     });
   })();
 
+const parseOrigins = (value: string | undefined): string[] => {
+  if (!value) {
+    return [];
+  }
+
+  return value
+    .split(/[\s,]+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+};
+
 export default function koaSecurityHeaders<StateT, ContextT, ResponseBodyT>(
   mountedApps: string[],
   tenantId: string
 ): MiddlewareType<StateT, ContextT, ResponseBodyT> {
   const { isProduction, isCloud, urlSet, adminUrlSet, cloudUrlSet } = EnvSet.values;
+
+  // Extra connect-src origins for Experience UI (e.g. external access-check service).
+  // Format: whitespace/comma separated origins.
+  // Example: LOGTO_EXPERIENCE_CONNECT_SRC=https://accountapi.example.com
+  const extraExperienceConnectSource = parseOrigins(process.env.LOGTO_EXPERIENCE_CONNECT_SRC);
 
   const tenantEndpointOrigin = getTenantEndpoint(tenantId, EnvSet.values).origin;
   // Logto Cloud uses cloud service to serve the admin console; while Logto OSS uses a fixed path under the admin URL set.
@@ -129,6 +145,7 @@ export default function koaSecurityHeaders<StateT, ContextT, ResponseBodyT>(
           "'self'",
           gsiOrigin,
           tenantEndpointOrigin,
+          ...extraExperienceConnectSource,
           // Allow reCAPTCHA API calls
           'https://www.google.com/recaptcha/',
           'https://recaptcha.net/recaptcha/',
