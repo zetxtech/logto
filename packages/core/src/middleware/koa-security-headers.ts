@@ -46,7 +46,7 @@ export default function koaSecurityHeaders<StateT, ContextT, ResponseBodyT>(
   // Extra connect-src origins for Experience UI (e.g. external access-check service).
   // Format: whitespace/comma separated origins.
   // Example: LOGTO_EXPERIENCE_CONNECT_SRC=https://accountapi.example.com
-  const extraExperienceConnectSource = parseOrigins(process.env.LOGTO_EXPERIENCE_CONNECT_SRC);
+  const extraExperienceConnectSource = parseOrigins(process.env.CONNECT_SRC);
 
   const tenantEndpointOrigin = getTenantEndpoint(tenantId, EnvSet.values).origin;
   // Logto Cloud uses cloud service to serve the admin console; while Logto OSS uses a fixed path under the admin URL set.
